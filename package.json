@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@astrojs/preact": "^1.2.0",
+    "@astrojs/vercel": "^2.3.4",
     "astro": "^1.6.9",
     "preact": "^10.6.5"
   },
