@@ -1,0 +1,53 @@
+---
+
+---
+
+<div id="titlebar">
+  <h1 id="titlebar-title">TheSchedule</h1>
+  <a href="/login" id="login-button-link"><button id="login-button">Sign up</button></a>
+</div>
+
+<style lang="scss">
+  #titlebar {
+    display: flex;
+    border-bottom: 0.5vh solid #181926;
+    width: 100vw;
+    background-color: #1e2030;
+    margin-top: 0;
+    height: 100%;
+    padding-top: 1px;
+  }
+  #titlebar-title {
+    margin-left: 5vw;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    font-size: 2rem;
+    background: rgb(198,160,246);
+    background: linear-gradient(90deg, rgba(198,160,246,1) 0%, rgba(237,135,150,1) 50%, rgba(238,212,159,1) 100%); 
+    background-size: 25vw;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  #login-button-link {
+    &>#login-button {
+      align-self: center;
+      border-radius: 15px;
+      font-size: 1.2rem;
+      padding: 10px;
+      border: 3px solid #cad3f5;
+      background-color: #1e2030;
+      color: #cad3f5;
+
+      &:active {
+        transform: translateY(4px) !important;
+      }
+
+      &:hover {
+        transform: translateY(2px);
+      }
+    }
+    margin-left: auto;
+    margin-right: 4vw;
+    margin-top: 1.5vh;
+    margin-bottom: 1vh;
+  }
+</style>
