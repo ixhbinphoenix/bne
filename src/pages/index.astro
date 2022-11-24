@@ -1,8 +1,57 @@
 ---
+import HomeTitleBar from "../components/HomeTitleBar.astro";
 import IndexLayout from "../layouts/IndexLayout.astro";
 ---
 
-<IndexLayout title="BNE Projekt 2022">
-  <h1>YEAH BABYYY</h1>
-  <a href="/stundenplan">Stundenplan</a>
+<IndexLayout title="TheSchedule">
+  <HomeTitleBar/>
+  <div id="main-content">
+    <div id="title-content">
+      <h1 id="front-title">TheSchedule</h1>
+      <p id="front-subtitle">Der einzige Planner den du jemals brauchen wirst</p>
+    </div>
+    <a href="/login"><button id="front-signup">Coming Soon!</button></a>
+  </div>
 </IndexLayout>
+
+<style lang="scss">
+#main-content {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+}
+#title-content {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  &>#front-title {
+    font-size: 3.5rem; 
+    background: rgb(198,160,246);
+    background: linear-gradient(90deg, rgba(198,160,246,1) 0%, rgba(237,135,150,1) 50%, rgba(238,212,159,1) 100%); 
+    background-size: 50vw;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  &>#front-subtitle {
+    font-size: 1.25rem;
+    color: #b8c0e0;
+    text-align: center;
+  }
+}
+#front-signup {
+  margin-top: 40vh;
+  font-size: 24px;
+  padding: 1rem;
+  border-radius: 15px;
+  border: 5px solid #8aadf4;
+  background-color: #1e2030;
+  color: #8aadf4;
+
+  &:active {
+    transform: translateY(4px);
+  }
+}
+</style>
