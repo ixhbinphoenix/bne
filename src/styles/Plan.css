@@ -1,0 +1,21 @@
+.table-layout {
+    flex: 0 0 auto;
+    height: 100%;
+    min-width: 85%;
+    background-color: #363a4f;
+}
+.table {
+    display: grid;
+    grid-template-columns: repeat(5,20%);
+    grid-template-rows: repeat(10,10%);
+    height: 100%;
+    width: 100%;
+}
+.table > div {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: calc(100% - 0.1vh);
+    height: calc(100% - 0.1vh);
+    background-color: rgb(228, 64, 64);
+}
