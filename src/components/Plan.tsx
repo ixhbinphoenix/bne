@@ -21,7 +21,6 @@ export default function Plan(): JSX.Element {
     for(let index = 0; index < 50; index++) {
         let tableIndex: string = "table-index-" + index;
         tableDivs.push(<div id={tableIndex}><p>{content[index]}</p></div>)
-        //console.log(content[index]);
     }
 
     return(
