@@ -31,11 +31,11 @@
         width: 100%;
         margin: 0px;
         padding: 0px;
-        font-size: max(20px, 1vw);
+        font-size: calc(1rem + .5vw);
         font-family: Verdana, Geneva, Tahoma, sans-serif;  
     }
     .title {
-        height: 14.5%;
+        height: min(14.5vw, 14.5%);
         display: flex;
         align-items: center;
         justify-content: center;
@@ -53,7 +53,7 @@
     }
     .content {
         display: flex;
-        height: 85%;
+        height: calc(99.5% - min(14.5vw , 14.5%));
         width: 100%;
     }
     .sidebar {
@@ -62,8 +62,10 @@
         align-items: center;
         justify-content: center;
         height: 100%;
+        min-width: 5%;
         width: 15%;
         background-color: #1e2030;
+        font-size: max(1rem, 1vw);
     }
     .sidebar-element {
         width: 100%;

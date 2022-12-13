@@ -1,5 +1,4 @@
 .table-layout {
-
     height: 100%;
     min-width: 85%;
     background-color: #363a4f;
@@ -10,19 +9,19 @@
     justify-content: center;
     position: relative;
     left: 1.7%;
-    height: 3%;
+    height: clamp(20px, 4%, 35px);
     width: 98.3%;
 }
 .table-body {
     display: flex;
     width: 100%;
-    height: 97%;
+    height: 96.9%;
 }
 .table-sidebar-left {
     position: relative;
     display: flex;
     height: 100%;
-    width: 1.75%;
+    width: max(1.75%, 2rem);
     flex-direction: column;
     align-items: center;
     justify-content: space-around;
@@ -33,7 +32,7 @@
 .day {
     text-align: center;
     width: 20%;
-    font-size: max(15px, .9vw)
+    font-size: clamp(1rem, .95vw, 100px);
 }
 .table {
     position: relative;
@@ -50,4 +49,5 @@
     width: calc(100% - 0.1vh);
     height: calc(100% - 0.1vh);
     background-color: rgb(228, 64, 64);
+    font-size: clamp(1rem, calc(1rem + 1.2vw), 30px);
 }
