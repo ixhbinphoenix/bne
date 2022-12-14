@@ -2,6 +2,7 @@
 
 ---
 
+
 <div class="background">
     <div class="title"><h1>TheScheduler</h1></div>
     <div class="content">
@@ -65,7 +66,12 @@
         min-width: 5%;
         width: 15%;
         background-color: #1e2030;
-        font-size: max(1rem, 1vw);
+        font-size: clamp(.85rem, .95vw, 25px);
+    }
+    @media only screen and (max-width: 675px) {
+        .sidebar{
+            display: none;
+        }
     }
     .sidebar-element {
         width: 100%;
