@@ -1,39 +1,46 @@
+:root {
+    --spacing-left: clamp(28px, 1.5vw, 55px);
+    --spacing-top: clamp(4%, 4%, 35px);
+}
+
 .table-layout {
+    font-size: clamp(1px, 85%, 5rem);
     height: 100%;
     min-width: 85%;
     width: 100%;
     background-color: #363a4f;
 }
 .table-top {
+    position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
     position: relative;
-    left: 1.7%;
-    height: clamp(4%, 4%, 35px);
-    width: 98.3%;
+    left: var(--spacing-left);
+    height: var(--spacing-top);
+    width: calc(100% - var(--spacing-left));
+}
+.day {
+    text-align: center;
+    width: 20%;
+    font-size: clamp(.7rem, .95vw, 25px);
 }
 .table-body {
     display: flex;
     width: 100%;
-    height: 96%;
+    height: calc(100% - var(--spacing-top));
 }
 .table-sidebar-left {
     position: relative;
     display: flex;
     height: 100%;
-    width: max(1.75%, 2rem);
+    width: var(--spacing-left);
     flex-direction: column;
     align-items: center;
     justify-content: space-around;
 }
 .table-sidebar-left > span {
     text-align: center;
-}
-.day {
-    text-align: center;
-    width: 20%;
-    font-size: clamp(.85rem, .95vw, 25px);
 }
 .table {
     position: relative;
