@@ -1,15 +1,54 @@
+:root {
+    --spacing-left: clamp(28px, 1.5vw, 55px);
+    --spacing-top: clamp(4%, 4%, 35px);
+}
+
 .table-layout {
-    flex: 0 0 auto;
+    font-size: clamp(1px, 85%, 5rem);
     height: 100%;
     min-width: 85%;
+    width: 100%;
     background-color: #363a4f;
 }
+.table-top {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    left: var(--spacing-left);
+    height: var(--spacing-top);
+    width: calc(100% - var(--spacing-left));
+}
+.day {
+    text-align: center;
+    width: 20%;
+    font-size: clamp(.7rem, .95vw, 25px);
+}
+.table-body {
+    display: flex;
+    width: 100%;
+    height: calc(100% - var(--spacing-top));
+}
+.table-sidebar-left {
+    position: relative;
+    display: flex;
+    height: 100%;
+    width: var(--spacing-left);
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
+}
+.table-sidebar-left > span {
+    text-align: center;
+}
 .table {
+    position: relative;
     display: grid;
+    width: 100%;
+    height: 100%;
     grid-template-columns: repeat(5,20%);
     grid-template-rows: repeat(10,10%);
-    height: 100%;
-    width: 100%;
 }
 .table > div {
     display: flex;
@@ -18,4 +57,5 @@
     width: calc(100% - 0.1vh);
     height: calc(100% - 0.1vh);
     background-color: rgb(228, 64, 64);
+    font-size: clamp(.8rem, calc(.85rem + 1.4vw), 30px);
 }
