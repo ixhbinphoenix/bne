@@ -1,0 +1,15 @@
+<div id="login">
+    <p>Login</p>
+</div>
+<style>
+    #login{
+        user-select: none;
+        cursor: pointer;
+    }
+</style>
+<script>
+    let login = document.getElementById("login")
+    login!.addEventListener("click", () => {
+        window.location.href = `${window.location.href}login`
+    })
+</script>
