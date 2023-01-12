@@ -1,0 +1,56 @@
+---
+---
+
+<div id="inputBox">
+    <h1>Login</h1>
+    <input placeholder="Nutzername" id="username" type="text"/>
+    <input placeholder="Passwort" id="password" type="password"/>
+    <button id="submit">Login</button>
+</div>
+<style>
+    #inputBox{
+        opacity: 40;
+        font-family: Verdana;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        height: 97vh;
+    }
+    input{
+        font-size: 5vw;
+        margin-bottom: 3vh;
+        height: 7vh;
+        width: 30vw;
+        border-top: none;
+        border-left: none;
+        border-right: none;
+        border-bottom: solid;
+        border-bottom-width: 1px;
+    }
+    input:focus{
+        outline: none;
+        border-bottom-color: gray;
+    }
+    h1{
+        font-size: 7vw;
+    }
+    #submit{
+        font-size: 5vw;
+        width: 10vw;
+        height: 5vh;
+        box-shadow: none;
+        border: none;
+        background-color: lightgray;
+    }
+    #submit:hover{
+        background-color: rgb(196, 196, 196);
+    }
+</style>
+<script>
+    const username: HTMLInputElement = document.getElementById("username") as HTMLInputElement
+    const password: HTMLInputElement = document.getElementById("password") as HTMLInputElement
+    document.getElementById("submit")!.addEventListener('click', () => {
+        alert(username.value + " " + password.value)
+    })
+</script>
