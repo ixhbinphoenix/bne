@@ -1,4 +1,6 @@
 ---
+import Sidebar from '../components/Sidebar.astro';
+import Plan from '../components/Plan.jsx';
 export interface Props {
   title: string
 }
@@ -8,9 +10,13 @@ const {title} = Astro.props;
 
 <html lang="de">
   <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{title}</title>
   </head>
   <body>
-    <slot />
+    <Sidebar>
+      <slot />
+    </Sidebar>
   </body>
 </html>
