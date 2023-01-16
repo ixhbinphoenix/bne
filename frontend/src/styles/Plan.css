@@ -45,17 +45,24 @@
 .table {
     position: relative;
     display: grid;
+    grid-auto-flow: column;
     width: 100%;
     height: 100%;
     grid-template-columns: repeat(5,20%);
     grid-template-rows: repeat(10,10%);
 }
 .table > div {
+    width: 100%;
+    margin: none;
+    flex-wrap: wrap;
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: space-around;
     width: calc(100% - 0.1vh);
     height: calc(100% - 0.1vh);
     background-color: rgb(228, 64, 64);
-    font-size: clamp(.8rem, calc(.85rem + 1.4vw), 30px);
+    font-size: clamp(35%, calc(.25vw + 45%), 30px);
+}
+.table > div > h2 {
+    font-size: clamp(4px, calc(.6vw + 45%), 30px);
 }

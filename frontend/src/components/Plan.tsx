@@ -1,26 +1,32 @@
 /* @jsxImportSource preact */
 
+import type { TheScheduleObject } from "../api/main";
 import type { JSX } from "preact";
 import "../styles/Plan.css"
-import { useState } from "preact/hooks";
 
 export default function Plan(): JSX.Element {
-    const [content, setContent] = useState([""])
-
-    const createContent = []
-
-    for(let i = 0; i < 50; i++) {
-        let newContent = "Test" + i;
-        createContent.push(newContent);
-    }
-
-    setContent(createContent);
     
-    const tableDivs = [];
+    const testObject: TheScheduleObject  = {
+        teacher: "ABCDE",
+        lernbuero: false,
+        starts: 0,
+        length: 2,
+        day: 0,
+        subject: "Sozialwissenschaft",
+        room: "OG0-00 "
+    }
+    
 
-    for(let index = 0; index < 50; index++) {
-        let tableIndex: string = "table-index-" + index;
-        tableDivs.push(<div id={tableIndex}><p>{content[index]}</p></div>)
+    const tableDivs: Array<Array<JSX.Element>> = [[],[],[],[],[]];
+
+    for(let index = 0; index < testObject.length; index++) {
+        tableDivs[testObject.day].push(
+            <div>
+                <p>{testObject.room}</p>
+                <h2>{testObject.subject}</h2>
+                <p>{testObject.teacher}</p>
+            </div>
+        )
     }
 
     return(
