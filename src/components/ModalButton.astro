@@ -1,0 +1,33 @@
+---
+export interface Props {
+  id: string
+}
+
+const {id} = Astro.props;
+---
+
+<a href="/login" id="login-button-link">
+    <button id={id}>
+      <slot/>
+    </button>
+</a>
+<style lang="scss">
+  #login-button-link {
+    &>button {
+      align-self: center;
+      border-radius: 15px;
+      font-size: clamp(12px, 2.5rem, 75px);
+      padding: 10px;
+      border: 3px solid #cad3f5;
+      background-color: #1e2030;
+      color: #cad3f5;
+      cursor: pointer;
+      &:active {
+        transform: translateY(4px) !important;
+      }
+      &:hover {
+        transform: translateY(2px);
+      }
+    }
+  }
+</style>

@@ -1,0 +1,40 @@
+---
+---
+
+<h1>Login</h1>
+<input placeholder="Nutzername" id="username" type="text"/>
+<input placeholder="Passwort" id="password" type="password"/>
+
+<style>
+    input{
+        border-radius: 7px;
+        padding: .5rem;
+        font-size: clamp(20px, 2rem, 35px);
+        color: #cad3f5;
+        margin-bottom: 3vh;
+        height: 4.5vh;
+        width: clamp(50px, 120rem, 800px);
+        border: solid;
+        border-bottom-width: 3px;
+        background-color: #1e2030;
+    }
+    input:focus{
+        outline: none;
+        border-bottom-color: gray;
+    }
+    h1{
+        font-size: clamp(60px, 6.5rem, 100px);
+        background: linear-gradient(90deg,rgb(198,160,246) 0%,rgb(237,135,150) 50%,rgb(238,212,159) 100%);
+        background-size: 400%;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        color: transparent;
+    }
+</style>
+<script>
+    const username: HTMLInputElement = document.getElementById("username") as HTMLInputElement
+    const password: HTMLInputElement = document.getElementById("password") as HTMLInputElement
+    document.getElementById("submit")!.addEventListener('click', () => {
+        alert(username.value + " " + password.value)
+    })
+</script>
