@@ -12,12 +12,10 @@ pub struct SurrealDBRepo {
 }
 
 impl SurrealDBRepo {
-    pub async fn init() -> Result<Self, Error> {
-        // TODO: File location or tikv, customizable
-        let ds = Arc::new(Datastore::new("memory").await?);
+    pub async fn init(location: String, namespace: String, db: String) -> Result<Self, Error> {
+        let ds = Arc::new(Datastore::new(&location).await?);
 
-        // TODO: Namespace and DB Customizable
-        let ses = Session::for_kv().with_ns("test").with_db("test");
+        let ses = Session::for_kv().with_ns(&namespace).with_db(&db);
 
         Ok(SurrealDBRepo { ds, ses })
     }
