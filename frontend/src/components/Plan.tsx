@@ -2,7 +2,7 @@
 
 import type { TheScheduleObject } from "../api/main";
 import type { JSX } from "preact";
-import "../styles/Plan.css"
+import "../styles/Plan.scss"
 
 export default function Plan(): JSX.Element {
     
@@ -19,15 +19,13 @@ export default function Plan(): JSX.Element {
 
     const tableDivs: Array<Array<JSX.Element>> = [[],[],[],[],[]];
 
-    for(let index = 0; index < testObject.length; index++) {
-        tableDivs[testObject.day].push(
-            <div>
-                <p>{testObject.room}</p>
-                <h2>{testObject.subject}</h2>
-                <p>{testObject.teacher}</p>
-            </div>
-        )
-    }
+    tableDivs[testObject.day].push(
+        <div className={"length-" + testObject.length}>
+            <p>{testObject.room}</p>
+            <h2>{testObject.subject}</h2>
+            <p>{testObject.teacher}</p>
+        </div>
+    )
 
     return(
         <div className="table-layout">
