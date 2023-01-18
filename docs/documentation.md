@@ -15,7 +15,11 @@
 >>12.1.23 : Zwischenstand
 >>>1. Entwurf der Willkommensseite.
 >>>2. Layout der Stundeplanseite (inklusive Testinhalt).
-
+>>
+>>16.01.23 : Beginn Serverentwicklung
+>>>1. Neue Ordnerstruktur: Aufteilung frontend / backend
+>>>2. Beginn API-Wrapperentwicklung
+>>>3. Beginn HTTP-Serverentwicklung mit actix und surrealDB
 
 
 
