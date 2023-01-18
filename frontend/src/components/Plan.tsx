@@ -6,26 +6,38 @@ import "../styles/Plan.scss"
 
 export default function Plan(): JSX.Element {
     
-    const testObject: TheScheduleObject  = {
-        teacher: "ABCDE",
-        lernbuero: false,
-        starts: 0,
-        length: 2,
-        day: 0,
-        subject: "Sozialwissenschaft",
-        room: "OG0-00 "
-    }
+    const testStudent: Array<TheScheduleObject>  = [
+        {
+            teacher: "ABCDE",
+            lernbuero: false,
+            starts: 1,
+            length: 1,
+            day: 1,
+            subject: "Sozialwissenschaft",
+            room: "OG0-00"
+        },
+    ]
     
+    const tableDivs: Array<JSX.Element> = [];
+    
+    const addToDivs = (lesson: TheScheduleObject) => {
+        const objectStyle = {
+            gridColumnStart: lesson.day,
+            gridRow: lesson.starts + " / span " + lesson.length
+        }
 
-    const tableDivs: Array<Array<JSX.Element>> = [[],[],[],[],[]];
+        tableDivs.push(
+            <div style={objectStyle}>
+                <p>{lesson.room}</p>
+                <h2>{lesson.subject}</h2>
+                <p>{lesson.teacher}</p>
+            </div>
+        )
+    }
 
-    tableDivs[testObject.day].push(
-        <div className={"length-" + testObject.length}>
-            <p>{testObject.room}</p>
-            <h2>{testObject.subject}</h2>
-            <p>{testObject.teacher}</p>
-        </div>
-    )
+    for(let i: number = 0; i < testStudent.length; i++) {
+        addToDivs(testStudent[i]);
+    }
 
     return(
         <div className="table-layout">

@@ -65,17 +65,15 @@
                 background-color: rgb(228, 64, 64);
                 font-size: clamp(35%, calc(.25vw + 45%), 30px);
 
-                h2 {
+                &>h2 {
+                    margin: 0;
                     text-align: center;
                     width: 100%;
                     font-size: clamp(4px, calc(.6vw + 45%), 30px);
                 }
-            }
-            .length-2 {
-                grid-row: span 2;
-            }
-            .length-3 {
-                grid-row: span 3;
+                &>p {
+                    margin: 0;
+                }
             }
         }
     }
