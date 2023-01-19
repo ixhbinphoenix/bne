@@ -2,26 +2,17 @@
 
 import type { TheScheduleObject } from "../api/main";
 import type { JSX } from "preact";
+import { testStudent } from "../logs/testStudent";
+import { SubjectColor } from "../api/main";
 import "../styles/Plan.scss"
 
 export default function Plan(): JSX.Element {
-    
-    const testStudent: Array<TheScheduleObject>  = [
-        {
-            teacher: "ABCDE",
-            lernbuero: false,
-            starts: 1,
-            length: 1,
-            day: 1,
-            subject: "Sozialwissenschaft",
-            room: "OG0-00"
-        },
-    ]
-    
+
     const tableDivs: Array<JSX.Element> = [];
     
     const addToDivs = (lesson: TheScheduleObject) => {
         const objectStyle = {
+            backgroundColor: SubjectColor[lesson.subjectShort],
             gridColumnStart: lesson.day,
             gridRow: lesson.starts + " / span " + lesson.length
         }
