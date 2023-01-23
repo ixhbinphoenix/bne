@@ -1,7 +1,9 @@
+mod utils;
 mod error;
 mod prelude;
 mod database;
 mod api_wrapper;
+mod models;
 
 use std::{io, env, collections::HashMap};
 use actix_identity::IdentityMiddleware;
@@ -10,7 +12,6 @@ use actix_web::{HttpServer, middleware::Logger, web, HttpResponse, App, cookie::
 use database::surrealdb_repo::SurrealDBRepo;
 use dotenv::dotenv;
 use openssl::ssl::{SslAcceptor, SslMethod, SslFiletype};
-
 
 #[actix_web::main]
 async fn main() -> io::Result<()> {

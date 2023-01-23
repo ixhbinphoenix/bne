@@ -1315,6 +1315,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "db-derive"
+version = "0.1.0"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn",
+]
+
+[[package]]
 name = "derive_more"
 version = "0.99.17"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3583,12 +3592,15 @@ dependencies = [
  "actix-session",
  "actix-web",
  "actix-web-lab",
+ "argon2",
  "async-stream",
+ "db-derive",
  "dotenv",
  "env_logger 0.10.0",
  "futures",
  "log",
  "openssl",
+ "rand_core 0.6.4",
  "reqwest",
  "serde",
  "serde_json",
