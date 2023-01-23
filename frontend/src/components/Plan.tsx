@@ -1,15 +1,27 @@
 /* @jsxImportSource preact */
 
+interface IProps {
+    activePage: string
+}
+
 import type { TheScheduleObject } from "../api/main";
 import type { JSX } from "preact";
 import { testStudent } from "../logs/testStudent";
 import { SubjectColor } from "../api/main";
-import "../styles/Plan.scss"
+import "../styles/Plan.scss";
 
-export default function Plan(): JSX.Element {
-
-    const tableDivs: Array<JSX.Element> = [];
+export default function Plan(props: IProps): JSX.Element {
     
+    switch(props.activePage) {
+        case "stundenplan":
+
+    }
+
+    const tableElements: {[key: string]: Array<JSX.Element>} = {
+        stundenplan: [],
+        lernbueros: [],
+    }
+
     const addToDivs = (lesson: TheScheduleObject) => {
         const objectStyle = {
             backgroundColor: SubjectColor[lesson.subjectShort],
@@ -17,7 +29,7 @@ export default function Plan(): JSX.Element {
             gridRow: lesson.starts + " / span " + lesson.length
         }
 
-        tableDivs.push(
+        tableElements.stundenplan.push(
             <div style={objectStyle}>
                 <p>{lesson.room}</p>
                 <h2>{lesson.subject}</h2>
@@ -53,7 +65,7 @@ export default function Plan(): JSX.Element {
                     <span>10</span>
                 </div>
                 <div className="table">
-                    {tableDivs}
+                    {tableElements[props.activePage]}
                 </div>
             </div>
             
