@@ -2,6 +2,7 @@ import type { TheScheduleObject } from "../api/main"
 
 export const testStudent: Array<TheScheduleObject>  = [
     {
+        matched: false,
         teacher: "FSMI",
         lernbuero: true,
         starts: 3,
@@ -12,9 +13,10 @@ export const testStudent: Array<TheScheduleObject>  = [
         subjectShort: "ER"
     },
     {
+        matched: false,
         teacher: "USTR",
         lernbuero: true,
-        starts: 4,
+        starts: 3,
         length: 1,
         day: 1,
         subject: "Geschichte",
@@ -22,6 +24,7 @@ export const testStudent: Array<TheScheduleObject>  = [
         subjectShort: "GE"
     },
     {
+        matched: false,
         teacher: "TKIN",
         lernbuero: false,
         starts: 5,
@@ -32,6 +35,7 @@ export const testStudent: Array<TheScheduleObject>  = [
         subjectShort: "M"
     },
     {
+        matched: false,
         teacher: "USTR",
         lernbuero: false,
         starts: 8,
@@ -42,6 +46,7 @@ export const testStudent: Array<TheScheduleObject>  = [
         subjectShort: "GE"
     },
     {
+        matched: false,
         teacher: "FSPR",
         lernbuero: true,
         starts: 1,
@@ -52,6 +57,7 @@ export const testStudent: Array<TheScheduleObject>  = [
         subjectShort: "MU"
     },
     {
+        matched: false,
         teacher: "PPOW",
         lernbuero: false,
         starts: 3,
@@ -62,6 +68,7 @@ export const testStudent: Array<TheScheduleObject>  = [
         subjectShort: "IF"
     },
     {
+        matched: false,
         teacher: "FSMI",
         lernbuero: false,
         starts: 5,
@@ -72,6 +79,7 @@ export const testStudent: Array<TheScheduleObject>  = [
         subjectShort: "ER"
     },
     {
+        matched: false,
         teacher: "RKAR",
         lernbuero: false,
         starts: 1,
@@ -82,6 +90,7 @@ export const testStudent: Array<TheScheduleObject>  = [
         subjectShort: "E"
     },
     {
+        matched: false,
         teacher: "TKIN",
         lernbuero: false,
         starts: 3,
@@ -92,6 +101,7 @@ export const testStudent: Array<TheScheduleObject>  = [
         subjectShort: "PH"
     },
     {
+        matched: false,
         teacher: "MVEL",
         lernbuero: true,
         starts: 5,
@@ -102,6 +112,7 @@ export const testStudent: Array<TheScheduleObject>  = [
         subjectShort: "CH"
     },
     {
+        matched: false,
         teacher: "PPOW",
         lernbuero: true,
         starts: 6,
@@ -112,6 +123,7 @@ export const testStudent: Array<TheScheduleObject>  = [
         subjectShort: "IF"
     },
     {
+        matched: false,
         teacher: "JMUL",
         lernbuero: true,
         starts: 8,
@@ -122,6 +134,7 @@ export const testStudent: Array<TheScheduleObject>  = [
         subjectShort: "L8"
     },
     {
+        matched: false,
         teacher: "RSCH",
         lernbuero: false,
         starts: 9,
@@ -132,6 +145,7 @@ export const testStudent: Array<TheScheduleObject>  = [
         subjectShort: "D"
     },
     {
+        matched: false,
         teacher: "RSCH",
         lernbuero: true,
         starts: 1,
@@ -142,6 +156,7 @@ export const testStudent: Array<TheScheduleObject>  = [
         subjectShort: "D"
     },
     {
+        matched: false,
         teacher: "TKIN",
         lernbuero: true,
         starts: 2,
@@ -152,6 +167,7 @@ export const testStudent: Array<TheScheduleObject>  = [
         subjectShort: "M"
     },
     {
+        matched: false,
         teacher: "JMUL",
         lernbuero: false,
         starts: 3,
@@ -162,6 +178,7 @@ export const testStudent: Array<TheScheduleObject>  = [
         subjectShort: "L8"
     },
     {
+        matched: false,
         teacher: "HKÜS",
         lernbuero: false,
         starts: 5,
@@ -172,6 +189,7 @@ export const testStudent: Array<TheScheduleObject>  = [
         subjectShort: "SW"
     },
     {
+        matched: false,
         teacher: "TWAR",
         lernbuero: false,
         starts: 8,
@@ -182,6 +200,7 @@ export const testStudent: Array<TheScheduleObject>  = [
         subjectShort: "SP"
     },
     {
+        matched: false,
         teacher: "HKUS",
         lernbuero: true,
         starts: 10,
@@ -192,6 +211,7 @@ export const testStudent: Array<TheScheduleObject>  = [
         subjectShort: "SW"
     },
     {
+        matched: false,
         teacher: "TKIN",
         lernbuero: true,
         starts: 4,
@@ -202,6 +222,7 @@ export const testStudent: Array<TheScheduleObject>  = [
         subjectShort: "PH"
     },
     {
+        matched: false,
         teacher: "FSPR",
         lernbuero: false,
         starts: 5,
@@ -212,6 +233,7 @@ export const testStudent: Array<TheScheduleObject>  = [
         subjectShort: "MU"
     },
     {
+        matched: false,
         teacher: "RKAR",
         lernbuero: true,
         starts: 8,
@@ -222,6 +244,7 @@ export const testStudent: Array<TheScheduleObject>  = [
         subjectShort: "E"
     },
     {
+        matched: false,
         teacher: "MVEL",
         lernbuero: false,
         starts: 9,

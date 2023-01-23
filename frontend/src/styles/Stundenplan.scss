@@ -56,6 +56,7 @@
             div {
                 width: 100%;
                 margin: none;
+                text-overflow: ellipsis;
                 flex-wrap: wrap;
                 display: flex;
                 align-items: center;
