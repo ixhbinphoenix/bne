@@ -5,62 +5,38 @@ import type { JSX } from "preact";
 import { testStudent } from "../../logs/testStudent";
 import { SubjectColor } from "../../api/main";
 import "../../styles/Stundenplan.scss";
+import { createDefaultDevConfig } from "astro/dist/core/config";
 
 export default function Stundenplan(): JSX.Element {
-    const tableElements: Array<JSX.Element> = [];
+    const tableElements: Array<Array<JSX.Element>> = [[],[],[],[],[]];
     
-    const addToDivs = (lesson: TheScheduleObject) => {
-        const objectStyle = {
-            backgroundColor: SubjectColor[lesson.subjectShort],
-            gridColumnStart: lesson.day,
-            gridRow: lesson.starts + " / span " + lesson.length
-        }
-        const parentFlexboxStyle = {
-            backgroundColor: "transparent",
-            height: "100%",
-            display: "flex",
-            flexFlow: "row",
-            gridRow: lesson.starts + " / span " + lesson.length
-        }
-
-        let match = false;
-
-        for(let i: number = 0; i < testStudent.length; i++) {
-            if(lesson.day == testStudent[i].day && lesson.starts == testStudent[i].starts && lesson.subject != testStudent[i].subject) {
-                if(!testStudent[i].matched) {
-                    testStudent[testStudent.indexOf(lesson)].matched = true;
-                    tableElements.push(
-                        <div style={parentFlexboxStyle}>
-                            <div style={objectStyle}>
-                                <p>{lesson.room}</p>
-                                <h2>{lesson.subject}</h2>
-                                <p>{lesson.teacher}</p>
-                            </div>
-                            <div style={{backgroundColor: SubjectColor[testStudent[i].subjectShort]}}>
-                                <p>{testStudent[i].room}</p>
-                                <h2>{testStudent[i].subject}</h2>
-                                <p>{testStudent[i].teacher}</p>
-                            </div>
-                        </div>
-                    );  
-                }
-                match = true;
+    const getGridColumns = (currentLesson: TheScheduleObject, lessons: Array<TheScheduleObject>) => {
+        for(let i: number = 0; i < lessons.length; i++) {
+            if(currentLesson.day == lessons[i].day && currentLesson.starts == lessons[i].starts && currentLesson.subject != lessons[i].subject) {
+                return null;
             }
         }
-        if(!match) {
-            tableElements.push(
-                <div style={objectStyle}>
-                    <p>{lesson.room}</p>
-                    <h2>{lesson.subject}</h2>
-                    <p>{lesson.teacher}</p>
-                </div>
-            );
-        }
+        return "1 / -4";
     }
 
-    for(let i: number = 0; i < testStudent.length; i++) {
-        addToDivs(testStudent[i]);
+    const addToDivs = (lessons: Array<TheScheduleObject>) => {
+        for(let i: number = 0; i < lessons.length; i++) {
+            const objectStyle = {
+                backgroundColor: SubjectColor[lessons[i].subjectShort],
+                gridRow: lessons[i].starts + "/ span " + lessons[i].length,
+                width: "100%",
+                gridColumn: getGridColumns(lessons[i], lessons)
+            }
+            tableElements[lessons[i].day].push(
+                <div style={objectStyle}>
+                    <p>{lessons[i].room}</p>
+                    <h2>{lessons[i].subject}</h2>
+                    <p>{lessons[i].teacher}</p>
+                </div>
+            )
+        }
     }
+    addToDivs(testStudent);
 
     return(
         <div className="table-layout">
@@ -85,7 +61,21 @@ export default function Stundenplan(): JSX.Element {
                     <span>10</span>
                 </div>
                 <div className="table">
-                    {tableElements}
+                    <div className="table-day">
+                        {tableElements[0]}
+                    </div>
+                    <div className="table-day">
+                        {tableElements[1]}
+                    </div>
+                    <div className="table-day">
+                        {tableElements[2]}
+                    </div>
+                    <div className="table-day">
+                        {tableElements[3]}
+                    </div>
+                    <div className="table-day">
+                        {tableElements[4]}
+                    </div>
                 </div>
             </div>
             

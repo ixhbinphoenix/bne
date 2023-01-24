@@ -46,37 +46,40 @@
         }
         .table {
             position: relative;
-            display: grid;
-            grid-auto-flow: column;
+            display: flex;
             width: 100%;
             height: 100%;
-            grid-template-columns: repeat(5,20%);
-            grid-template-rows: repeat(10,10%);
 
-            div {
-                width: 100%;
-                margin: none;
-                text-overflow: ellipsis;
-                flex-wrap: wrap;
-                display: flex;
-                align-items: center;
-                justify-content: space-around;
-                width: calc(100% - 0.1vh);
-                height: calc(100% - 0.1vh);
-                background-color: rgb(228, 64, 64);
-                font-size: clamp(35%, calc(.25vw + 45%), 30px);
+            .table-day{
+                background-color: transparent;
+                height: 100%;
+                width: 20%;
+                display: grid;
+                grid-template-rows: repeat(10,10%);
 
-                &>h2 {
-                    margin: 0;
-                    text-align: center;
-                    width: 100%;
-                    font-size: clamp(4px, calc(.6vw + 45%), 30px);
+                div {
+                    margin: none;
+                    text-overflow: ellipsis;
+                    overflow: hidden;
+                    white-space: nowrap;
+                    flex-wrap: wrap;
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-around;
+                    background-color: rgb(228, 64, 64);
+                    font-size: clamp(25%, calc(.25vw + 45%), 30px);
+    
+                    &>h2 {
+                        width: 100%;
+                        margin: 0;
+                        text-align: center;
+                        font-size: clamp(4px, calc(.6vw + 45%), 20px);
+                    }
+                    &>p {
+                        margin: 0;
+                    }
                 }
-                &>p {
-                    margin: 0;
-                }
-            }
+            }            
         }
     }
 }
-

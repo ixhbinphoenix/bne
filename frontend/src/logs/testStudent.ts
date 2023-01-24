@@ -7,7 +7,7 @@ export const testStudent: Array<TheScheduleObject>  = [
         lernbuero: true,
         starts: 3,
         length: 1,
-        day: 1,
+        day: 0,
         subject: "Religion",
         room: "O 1-13",
         subjectShort: "ER"
@@ -18,7 +18,7 @@ export const testStudent: Array<TheScheduleObject>  = [
         lernbuero: true,
         starts: 3,
         length: 1,
-        day: 1,
+        day: 0,
         subject: "Geschichte",
         room: "O 2-07",
         subjectShort: "GE"
@@ -29,7 +29,7 @@ export const testStudent: Array<TheScheduleObject>  = [
         lernbuero: false,
         starts: 5,
         length: 2,
-        day: 1,
+        day: 0,
         subject: "Mathematik",
         room: "O 2-11",
         subjectShort: "M"
@@ -40,7 +40,7 @@ export const testStudent: Array<TheScheduleObject>  = [
         lernbuero: false,
         starts: 8,
         length: 2,
-        day: 1,
+        day: 0,
         subject: "Geschichte",
         room: "O 1-01",
         subjectShort: "GE"
@@ -51,7 +51,7 @@ export const testStudent: Array<TheScheduleObject>  = [
         lernbuero: true,
         starts: 1,
         length: 1,
-        day: 2,
+        day: 1,
         subject: "Musik",
         room: "O E-02",
         subjectShort: "MU"
@@ -62,7 +62,7 @@ export const testStudent: Array<TheScheduleObject>  = [
         lernbuero: false,
         starts: 3,
         length: 2,
-        day: 2,
+        day: 1,
         subject: "Informatik",
         room: "O 2-16",
         subjectShort: "IF"
@@ -73,7 +73,7 @@ export const testStudent: Array<TheScheduleObject>  = [
         lernbuero: false,
         starts: 5,
         length: 2,
-        day: 2,
+        day: 1,
         subject: "Religion",
         room: "O 2-01",
         subjectShort: "ER"
@@ -84,7 +84,7 @@ export const testStudent: Array<TheScheduleObject>  = [
         lernbuero: false,
         starts: 1,
         length: 2,
-        day: 3,
+        day: 2,
         subject: "Englisch",
         room: "O 2-11",
         subjectShort: "E"
@@ -95,7 +95,7 @@ export const testStudent: Array<TheScheduleObject>  = [
         lernbuero: false,
         starts: 3,
         length: 2,
-        day: 3,
+        day: 2,
         subject: "Physik",
         room: "H PH",
         subjectShort: "PH"
@@ -106,7 +106,7 @@ export const testStudent: Array<TheScheduleObject>  = [
         lernbuero: true,
         starts: 5,
         length: 1,
-        day: 3,
+        day: 2,
         subject: "Chemie",
         room: "O 1-17",
         subjectShort: "CH"
@@ -117,7 +117,7 @@ export const testStudent: Array<TheScheduleObject>  = [
         lernbuero: true,
         starts: 6,
         length: 1,
-        day: 3,
+        day: 2,
         subject: "Informatik",
         room: "O 2-16",
         subjectShort: "IF"
@@ -128,7 +128,7 @@ export const testStudent: Array<TheScheduleObject>  = [
         lernbuero: true,
         starts: 8,
         length: 1,
-        day: 3,
+        day: 2,
         subject: "Latein",
         room: "O 1-02",
         subjectShort: "L8"
@@ -139,7 +139,7 @@ export const testStudent: Array<TheScheduleObject>  = [
         lernbuero: false,
         starts: 9,
         length: 2,
-        day: 3,
+        day: 2,
         subject: "Deutsch",
         room: "O 2-07",
         subjectShort: "D"
@@ -150,7 +150,7 @@ export const testStudent: Array<TheScheduleObject>  = [
         lernbuero: true,
         starts: 1,
         length: 1,
-        day: 4,
+        day: 3,
         subject: "Deutsch",
         room: "O 2-11",
         subjectShort: "D"
@@ -161,7 +161,7 @@ export const testStudent: Array<TheScheduleObject>  = [
         lernbuero: true,
         starts: 2,
         length: 1,
-        day: 4,
+        day: 3,
         subject: "Mathematik",
         room: "O 2-11",
         subjectShort: "M"
@@ -172,7 +172,7 @@ export const testStudent: Array<TheScheduleObject>  = [
         lernbuero: false,
         starts: 3,
         length: 2,
-        day: 4,
+        day: 3,
         subject: "Latein",
         room: "---",
         subjectShort: "L8"
@@ -183,7 +183,7 @@ export const testStudent: Array<TheScheduleObject>  = [
         lernbuero: false,
         starts: 5,
         length: 2,
-        day: 4,
+        day: 3,
         subject: "Sozialwissenschaft",
         room: "O 1-01",
         subjectShort: "SW"
@@ -194,7 +194,7 @@ export const testStudent: Array<TheScheduleObject>  = [
         lernbuero: false,
         starts: 8,
         length: 2,
-        day: 4,
+        day: 3,
         subject: "Sport",
         room: "O TH2",
         subjectShort: "SP"
@@ -205,7 +205,7 @@ export const testStudent: Array<TheScheduleObject>  = [
         lernbuero: true,
         starts: 10,
         length: 1,
-        day: 4,
+        day: 3,
         subject: "Sozialwissenschaft",
         room: "O E-01",
         subjectShort: "SW"
@@ -216,7 +216,7 @@ export const testStudent: Array<TheScheduleObject>  = [
         lernbuero: true,
         starts: 4,
         length: 1,
-        day: 5,
+        day: 4,
         subject: "Physik",
         room: "H PH",
         subjectShort: "PH"
@@ -227,7 +227,7 @@ export const testStudent: Array<TheScheduleObject>  = [
         lernbuero: false,
         starts: 5,
         length: 2,
-        day: 5,
+        day: 4,
         subject: "Musik",
         room: "O E-02",
         subjectShort: "MU"
@@ -238,7 +238,7 @@ export const testStudent: Array<TheScheduleObject>  = [
         lernbuero: true,
         starts: 8,
         length: 1,
-        day: 5,
+        day: 4,
         subject: "Englisch",
         room: "O 2-11",
         subjectShort: "E"
@@ -249,7 +249,7 @@ export const testStudent: Array<TheScheduleObject>  = [
         lernbuero: false,
         starts: 9,
         length: 2,
-        day: 5,
+        day: 4,
         subject: "Chemie",
         room: "O 1-17",
         subjectShort: "CH"
