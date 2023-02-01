@@ -37,7 +37,7 @@ impl UntisClient {
         Ok(response)
     }
     
-    pub async fn init(user: String, password: String, id: String, school: String, subdomain: String) -> Result<Self, Box<dyn std::error::Error>>{
+    pub async fn init(user: String, password: String, id: String, school: String, subdomain: String) -> Result<Self, Box<dyn std::error::Error>> {
         
         let mut untis_client = Self {
             person_type: 0,

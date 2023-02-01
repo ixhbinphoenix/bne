@@ -1,8 +1,5 @@
 use serde::{Serialize, Deserialize};
-
 use super::untis_client::UntisClient;
-
-
 
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(untagged)]
@@ -13,12 +10,8 @@ pub enum Parameter{
     Null()
 }
 
-
-
 pub trait Result {}
 pub trait ArrayResult {}
-
-
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct UntisBody {
@@ -30,7 +23,7 @@ pub struct UntisBody {
 }
 
 ///
-/// Authentification
+/// Authentication
 /// 
 
 #[derive(Serialize, Deserialize, Debug)]
