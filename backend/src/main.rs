@@ -9,7 +9,6 @@ use std::{io, env, collections::HashMap};
 use actix_identity::IdentityMiddleware;
 use actix_session::{SessionMiddleware, config::PersistentSession, storage::CookieSessionStore};
 use actix_web::{HttpServer, middleware::Logger, web, HttpResponse, App, cookie::{Key, time::Duration}};
-use api_wrapper::untis_client::UntisClient;
 use database::surrealdb_repo::SurrealDBRepo;
 use dotenv::dotenv;
 use openssl::ssl::{SslAcceptor, SslMethod, SslFiletype};
@@ -26,8 +25,6 @@ async fn main() -> io::Result<()> {
         .expect("Key to load");
     builder.set_certificate_chain_file("cert.pem").expect("Certificate to load");
 
-
-    let client = UntisClient::init("Renkert_Marek_20060614".to_string(), "".to_string(), "theschedule".to_string(), "ges-münster".to_string(), "borys".to_string()).await.expect("Error creating the client");
 
     HttpServer::new(move || {
         let logger = Logger::default();

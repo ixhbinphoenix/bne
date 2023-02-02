@@ -1,6 +1,33 @@
 use serde::{Serialize, Deserialize};
 use super::untis_client::UntisClient;
 
+pub fn default_timetable(client: &UntisClient, start_date: String, end_date: String) -> TimetableParameter {
+    TimetableParameter { 
+        options: TimetableOptions {
+            element: TimetableElement {
+                id: client.person_id,
+                r#type: client.person_type,
+                key_type: "id".to_string()
+            },
+            start_date: start_date,
+            end_date: end_date,
+            only_base_timetable: false,
+            show_booking: false,
+            show_info: true,
+            show_subst_text: true,
+            show_ls_text: true,
+            show_ls_number: true,
+            show_studentgroup: false,
+            klasse_fields: vec!["id".to_string(),"name".to_string(),"longname".to_string()],
+            room_fields: vec!["id".to_string(),"name".to_string(),"longname".to_string()],
+            subject_fields: vec!["id".to_string(),"name".to_string(),"longname".to_string()],
+            teacher_fields: vec!["id".to_string(),"name".to_string(),"longname".to_string()], 
+        }
+    }
+}
+
+
+
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(untagged)]
 pub enum Parameter{
