@@ -1,12 +1,14 @@
 use reqwest::{Client, Response};
 use reqwest::Error;
 
-use super::utils::{self};
+use crate::api_wrapper::utils::UntisResponse;
+
+use super::utils::{self, LoginResults, TimetableParameter, UntisArrayResponse, PeriodObject, DetailedSubject, Schoolyear, Holidays};
 
 #[derive(Clone)]
 pub struct UntisClient {
-    user: String,
-    password: String,
+    pub person_type: u16,
+    pub person_id: u16,
     id: String,
     school: String,
     subdomain: String,
@@ -15,49 +17,153 @@ pub struct UntisClient {
 }
 
 impl UntisClient {
-
     async fn request(&mut self, params: utils::Parameter, method: String) -> Result<Response, Error> {
         let body = utils::UntisBody {
             school: self.school.clone(),
             id: self.id.clone(),
-            method: method,
-            params: params,
+            method,
+            params,
             jsonrpc: "2.0".to_string()
         };
+
         let response = self.client.post(format!("https://{}.webuntis.com/WebUntis/jsonrpc.do?school={}", self.subdomain, self.school))
             .body(serde_json::to_string(&body).unwrap())
+            .header("Cookie", "JSESSIONID=".to_owned() + &self.jsessionid)
             .send()
             .await?;
+        
         Ok(response)
     }
-
+    
     pub async fn init(user: String, password: String, id: String, school: String, subdomain: String) -> Result<Self, Error>{
-        let user = user.clone();
-        let password = password.clone();
-        let id = id.clone();
-        let school = school.clone();
-        let client = Client::new();
-        let subdomain = subdomain.clone();
-        let jsessionid = "".to_string();
+        
+        let mut untis_client = Self {
+            person_type: 0,
+            person_id: 0,
+            id,
+            school,
+            subdomain,
+            client: Client::new(),
+            jsessionid: "".to_string()
+        };
 
-        let mut untis_client = Self { user: user, password: password, id: id, school: school, subdomain: subdomain, client: client, jsessionid: jsessionid };
-
-        untis_client.login().await;
+        untis_client.login(user, password).await?;
 
         Ok(untis_client)
     }
 
-    async fn login(&mut self) {
+    pub async fn unsafe_init(jsessionid: String, person_id: u16, person_type: u16,id: String, school: String, subdomain: String) -> Result<Self, Error> {
+        let client = Client::new();
+        
+        let untis_client = Self {
+            person_type,
+            person_id,
+            id,
+            school,
+            subdomain,
+            client,
+            jsessionid
+        };
 
+        Ok(untis_client)
+    }
+
+    async fn login(&mut self, user: String, password: String) -> Result<bool, Error> {
         let params = utils::Parameter::AuthParameter(utils::AuthParameter {
-            user: self.user.clone(),
-            password: self.password.clone(),
+            user,
+            password,
             client: self.id.clone()
         });
 
-        let response = self.request(params, "authenticate".to_string()).await.expect("Request failed");
-        let text = response.text().await.expect("No Response");
+        let response = self.request(
+            params,
+            "authenticate".to_string()
+        ).await?;
 
-        println!("{:#?}", text);
+        let text = response.text().await?;
+        let json: UntisResponse<LoginResults> = serde_json::from_str(&text).unwrap();
+
+        self.jsessionid = json.result.session_id;
+        self.person_id = json.result.person_id;
+        self.person_type = json.result.person_type;
+
+        Ok(true)
+    }
+
+    pub fn logout(&mut self) -> Result<bool, Error> {
+        let _reponse = self.request(
+            utils::Parameter::Null(),
+            "logout".to_string()
+        );
+
+        Ok(true)
+    }
+
+    pub async fn get_timetable(&mut self, parameter: TimetableParameter) -> Result<Vec<PeriodObject>, Error> {
+        let response = self.request(
+            utils::Parameter::TimetableParameter(parameter), 
+            "getTimetable".to_string()
+        ).await?;
+
+        let text = response.text().await?;
+        let json: UntisArrayResponse<PeriodObject> = serde_json::from_str(&text).unwrap();
+
+        Ok(json.result)
+    }
+
+    pub async fn get_subjects(&mut self) -> Result<Vec<DetailedSubject>, Error> {
+        let response = self.request(
+            utils::Parameter::Null(),
+            "getSubjects".to_string()
+        ).await?;
+
+        let text = response.text().await?;
+        let json: UntisArrayResponse<DetailedSubject> = serde_json::from_str(&text).unwrap();
+
+        Ok(json.result)
+    }
+
+    pub async fn get_schoolyears(&mut self) -> Result<Vec<Schoolyear>, Error> {
+        let response = self.request(
+            utils::Parameter::Null(),
+            "getSchoolyears".to_string()
+        ).await?;
+
+        let text = response.text().await?;
+        let json: UntisArrayResponse<Schoolyear> = serde_json::from_str(&text).unwrap();
+
+        Ok(json.result)
+    }
+
+    pub async fn get_current_schoolyear(&mut self) -> Result<Schoolyear, Error> {
+        let response = self.request(
+            utils::Parameter::Null(),
+            "getCurrentSchoolyear".to_string()
+        ).await?;
+
+        let text = response.text().await?;
+        let json: UntisArrayResponse<Schoolyear> = serde_json::from_str(&text).unwrap();
+        let first = json.result[0].clone();
+
+        Ok(first)
+    }
+
+    pub async fn get_holidays(&mut self) -> Result<Vec<Holidays>, Error> {
+        let response = self.request(
+            utils::Parameter::Null(),
+            "getHolidays".to_string()
+        ).await?;
+
+        let text = response.text().await?;
+        let json: UntisArrayResponse<Holidays> = serde_json::from_str(&text).unwrap();
+
+        Ok(json.result)
+    }
+
+}
+
+impl Drop for UntisClient {
+    fn drop(&mut self) {
+        self.logout().expect("Error with the logout :)");
     }
 }
