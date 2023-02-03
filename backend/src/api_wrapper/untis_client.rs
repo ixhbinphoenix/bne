@@ -17,7 +17,7 @@ pub struct UntisClient {
 }
 
 impl UntisClient {
-    async fn request(&mut self, params: utils::Parameter, method: String) -> Result<Response, Error> {
+    async fn request(&mut self, params: utils::Parameter, method: String) -> Result<Response, Box<dyn std::error::Error>> {
         let body = utils::UntisBody {
             school: self.school.clone(),
             id: self.id.clone(),
@@ -27,7 +27,7 @@ impl UntisClient {
         };
 
         let response = self.client.post(format!("https://{}.webuntis.com/WebUntis/jsonrpc.do?school={}", self.subdomain, self.school))
-            .body(serde_json::to_string(&body).unwrap())
+            .body(serde_json::to_string(&body)?)
             .header("Cookie", "JSESSIONID=".to_owned() + &self.jsessionid)
             .send()
             .await?;
@@ -35,7 +35,7 @@ impl UntisClient {
         Ok(response)
     }
     
-    pub async fn init(user: String, password: String, id: String, school: String, subdomain: String) -> Result<Self, Error>{
+    pub async fn init(user: String, password: String, id: String, school: String, subdomain: String) -> Result<Self, Box<dyn std::error::Error>>{
         
         let mut untis_client = Self {
             person_type: 0,
@@ -68,7 +68,7 @@ impl UntisClient {
         Ok(untis_client)
     }
 
-    async fn login(&mut self, user: String, password: String) -> Result<bool, Error> {
+    async fn login(&mut self, user: String, password: String) -> Result<bool, Box<dyn std::error::Error>> {
         let params = utils::Parameter::AuthParameter(utils::AuthParameter {
             user,
             password,
@@ -81,7 +81,7 @@ impl UntisClient {
         ).await?;
 
         let text = response.text().await?;
-        let json: UntisResponse<LoginResults> = serde_json::from_str(&text).unwrap();
+        let json: UntisResponse<LoginResults> = serde_json::from_str(&text)?;
 
         self.jsessionid = json.result.session_id;
         self.person_id = json.result.person_id;
@@ -90,7 +90,7 @@ impl UntisClient {
         Ok(true)
     }
 
-    pub fn logout(&mut self) -> Result<bool, Error> {
+    pub fn logout(&mut self) -> Result<bool, Box<dyn std::error::Error>> {
         let _reponse = self.request(
             utils::Parameter::Null(),
             "logout".to_string()
@@ -99,63 +99,63 @@ impl UntisClient {
         Ok(true)
     }
 
-    pub async fn get_timetable(&mut self, parameter: TimetableParameter) -> Result<Vec<PeriodObject>, Error> {
+    pub async fn get_timetable(&mut self, parameter: TimetableParameter) -> Result<Vec<PeriodObject>, Box<dyn std::error::Error>> {
         let response = self.request(
             utils::Parameter::TimetableParameter(parameter), 
             "getTimetable".to_string()
         ).await?;
 
         let text = response.text().await?;
-        let json: UntisArrayResponse<PeriodObject> = serde_json::from_str(&text).unwrap();
+        let json: UntisArrayResponse<PeriodObject> = serde_json::from_str(&text)?;
 
         Ok(json.result)
     }
 
-    pub async fn get_subjects(&mut self) -> Result<Vec<DetailedSubject>, Error> {
+    pub async fn get_subjects(&mut self) -> Result<Vec<DetailedSubject>, Box<dyn std::error::Error>> {
         let response = self.request(
             utils::Parameter::Null(),
             "getSubjects".to_string()
         ).await?;
 
         let text = response.text().await?;
-        let json: UntisArrayResponse<DetailedSubject> = serde_json::from_str(&text).unwrap();
+        let json: UntisArrayResponse<DetailedSubject> = serde_json::from_str(&text)?;
 
         Ok(json.result)
     }
 
-    pub async fn get_schoolyears(&mut self) -> Result<Vec<Schoolyear>, Error> {
+    pub async fn get_schoolyears(&mut self) -> Result<Vec<Schoolyear>, Box<dyn std::error::Error>> {
         let response = self.request(
             utils::Parameter::Null(),
             "getSchoolyears".to_string()
         ).await?;
 
         let text = response.text().await?;
-        let json: UntisArrayResponse<Schoolyear> = serde_json::from_str(&text).unwrap();
+        let json: UntisArrayResponse<Schoolyear> = serde_json::from_str(&text)?;
 
         Ok(json.result)
     }
 
-    pub async fn get_current_schoolyear(&mut self) -> Result<Schoolyear, Error> {
+    pub async fn get_current_schoolyear(&mut self) -> Result<Schoolyear, Box<dyn std::error::Error>> {
         let response = self.request(
             utils::Parameter::Null(),
             "getCurrentSchoolyear".to_string()
         ).await?;
 
         let text = response.text().await?;
-        let json: UntisArrayResponse<Schoolyear> = serde_json::from_str(&text).unwrap();
+        let json: UntisArrayResponse<Schoolyear> = serde_json::from_str(&text)?;
         let first = json.result[0].clone();
 
         Ok(first)
     }
 
-    pub async fn get_holidays(&mut self) -> Result<Vec<Holidays>, Error> {
+    pub async fn get_holidays(&mut self) -> Result<Vec<Holidays>, Box<dyn std::error::Error>> {
         let response = self.request(
             utils::Parameter::Null(),
             "getHolidays".to_string()
         ).await?;
 
         let text = response.text().await?;
-        let json: UntisArrayResponse<Holidays> = serde_json::from_str(&text).unwrap();
+        let json: UntisArrayResponse<Holidays> = serde_json::from_str(&text)?;
 
         Ok(json.result)
     }
