@@ -3,7 +3,7 @@ use reqwest::Error;
 
 use crate::api_wrapper::utils::UntisResponse;
 
-use super::utils::{self, LoginResults, TimetableParameter, UntisArrayResponse, PeriodObject, DetailedSubject, Schoolyear, Holidays};
+use super::utils::{self, LoginResults, TimetableParameter, UntisArrayResponse, PeriodObject, DetailedSubject, Schoolyear, Holidays, FormatedLesson, day_of_week, TimegridUnits};
 
 #[derive(Clone)]
 pub struct UntisClient {
@@ -99,7 +99,7 @@ impl UntisClient {
         Ok(true)
     }
 
-    pub async fn get_timetable(&mut self, parameter: TimetableParameter) -> Result<Vec<PeriodObject>, Box<dyn std::error::Error>> {
+    pub async fn get_timetable(&mut self, parameter: TimetableParameter) -> Result<Vec<FormatedLesson>, Box<dyn std::error::Error>> {
         let response = self.request(
             utils::Parameter::TimetableParameter(parameter), 
             "getTimetable".to_string()
@@ -108,7 +108,96 @@ impl UntisClient {
         let text = response.text().await?;
         let json: UntisArrayResponse<PeriodObject> = serde_json::from_str(&text)?;
 
-        Ok(json.result)
+        Ok(self.format_lessons(json.result).await?)
+    }
+
+    async fn format_lessons(&mut self, mut lessons: Vec<PeriodObject>) -> Result<Vec<FormatedLesson>, Box<dyn std::error::Error>> {
+        let mut formated: Vec<FormatedLesson> = vec![];
+
+        lessons.sort_unstable_by_key(|les| les.date);
+        let mut days: Vec<Vec<PeriodObject>> = vec![]; 
+
+        let mut date = lessons[0].date;
+        let mut day: Vec<PeriodObject> = vec![];
+
+        for l in lessons {
+            if l.date != date {
+                day.sort_unstable_by_key(|ele| ele.start_time);
+                let d = &day;
+                days.push(d.to_owned());
+                let new_date = &l.date;
+                date = new_date.to_owned();
+                day = vec![l];
+            }
+            else {
+                day.push(l)
+            }
+        }
+        day.sort_unstable_by_key(|ele| ele.start_time);
+        let d = &day;
+        days.push(d.to_owned());
+
+        let mut skip: u32 = 0;
+        let timegrid = self.get_timegrid_units().await?;
+    
+        for d in days {
+            let clone = d.clone();
+            for lesson in clone {
+                if skip > 0 {
+                    skip -= 1;
+                    continue;
+                }
+                let teacher = lesson.te[0].name.to_owned();
+                let day = day_of_week(lesson.date);
+                let start = timegrid[usize::try_from(day)?].time_units.iter().position(|unit| unit.start_time == lesson.start_time).unwrap() + 1;
+                let mut subject = "".to_string();
+                let mut subject_short = "".to_string();
+                match lesson.code {
+                    Some(code) => {
+                        if code == "irregular" {
+                            subject = match lesson.subst_text{
+                                Some(text) => text,
+                                None => "Entfällt".to_string()
+                            }
+                        }
+                        else if code == "cancelled"{
+                            continue;
+                        }
+                    },
+                    None => {
+                        subject = lesson.su[0].longname.to_owned();
+                        subject_short = lesson.su[0].name.to_owned();
+                    }
+                }
+                
+                let room = lesson.ro[0].name.to_owned();
+                let pos = d.iter().position(|l| l.id == lesson.id).unwrap();
+                
+                let mut formated_lesson = FormatedLesson {
+                    teacher,
+                    is_lb: false,
+                    start: u32::try_from(start)?,
+                    length: if lesson.su.len() > 0 && (d.len() - pos) >= 2 && pos > 0 && d[pos - 1].su.len() > 0 && d[pos + 1].su.len() > 0 && d[pos - 1].su[0].id == lesson.su[0].id && d[pos + 1].su[0].id == lesson.su[0].id {
+                        3
+                    }else if lesson.su.len() > 0 && (d.len() - pos) >= 2 && d[pos + 1].su.len() > 0 && (d[pos + 1].su[0].id == lesson.su[0].id) {
+                        2
+                    }else if (lesson.end_time - lesson.start_time) > 85{
+                        (((lesson.end_time - lesson.start_time) / 85) as f32).floor() as u32
+                    }else{
+                        1
+                    },
+                    day,
+                    subject,
+                    subject_short,
+                    room
+                };
+                formated_lesson.is_lb = formated_lesson.length == 1;
+                skip = formated_lesson.length - 1;
+                formated.push(formated_lesson);
+            }
+        }
+
+        Ok(formated)
     }
 
     pub async fn get_subjects(&mut self) -> Result<Vec<DetailedSubject>, Box<dyn std::error::Error>> {
@@ -156,6 +245,18 @@ impl UntisClient {
 
         let text = response.text().await?;
         let json: UntisArrayResponse<Holidays> = serde_json::from_str(&text)?;
+
+        Ok(json.result)
+    }
+
+    pub async fn get_timegrid_units(&mut self) -> Result<Vec<TimegridUnits>, Box<dyn std::error::Error>> {
+        let response = self.request(
+            utils::Parameter::Null(),
+            "getTimegridUnits".to_string()
+        ).await?;
+
+        let text = response.text().await?;
+        let json: UntisArrayResponse<TimegridUnits> = serde_json::from_str(&text)?;
 
         Ok(json.result)
     }

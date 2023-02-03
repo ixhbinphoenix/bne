@@ -130,14 +130,14 @@ pub struct TimetableElement {
     pub key_type: String
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Klasse {
     pub id: u16,
     pub name: String,
     pub longname: String
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Teacher {
     pub id: u16,
     pub name: String,
@@ -148,14 +148,14 @@ pub struct Teacher {
     pub orgname: Option<String>
 }
  
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Subject {
     pub id: u16,
     pub name: String,
     pub longname: String
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Room {
     pub id: u16,
     pub name: String,
@@ -166,7 +166,7 @@ pub struct Room {
     pub orgname: Option<String>
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct PeriodObject {
     pub id: u32,
@@ -179,7 +179,9 @@ pub struct PeriodObject {
     pub ro: Vec<Room>,
     pub activity_type: String,
     #[serde(default)]
-    pub subst_text: Option<String>
+    pub subst_text: Option<String>,
+    #[serde(default)]
+    pub code: Option<String>
 }
 
 impl ArrayResult for PeriodObject {}
@@ -204,7 +206,7 @@ impl ArrayResult for DetailedSubject {}
 /// Schoolyear
 /// 
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct Schoolyear{
     pub id: u16,
@@ -214,16 +216,6 @@ pub struct Schoolyear{
 }
 
 impl ArrayResult for Schoolyear {}
-impl Clone for Schoolyear {
-    fn clone(&self) -> Self {  
-        Schoolyear {
-            id: self.id.clone(),
-            name: self.name.clone(),
-            start_date: self.start_date.clone(),
-            end_date: self.end_date.clone()
-        }
-    }
-}
 
 /// 
 /// Holiday
@@ -232,14 +224,39 @@ impl Clone for Schoolyear {
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct Holidays {
-    id: u16,
-    name: String,
-    longname: String,
-    start_date: u16,
-    end_date: u16
+    pub id: u16,
+    pub name: String,
+    pub longname: String,
+    pub start_date: u16,
+    pub end_date: u16
 }
 
 impl ArrayResult for Holidays {}
+
+///
+/// TimegridUnits
+/// 
+
+#[derive(Serialize, Deserialize, Debug)]
+#[serde(rename_all = "camelCase")]
+pub struct TimeUnit {
+    pub name: String,
+    pub start_time: u16,
+    pub end_time: u16
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+#[serde(rename_all = "camelCase")]
+pub struct TimegridUnits {
+    pub day: u16,
+    pub time_units: Vec<TimeUnit>
+}
+
+impl ArrayResult for TimegridUnits {}
+
+///
+/// Untis Response
+/// 
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct UntisResponse<T> where T: Result {
@@ -253,4 +270,40 @@ pub struct UntisArrayResponse<T> where T: ArrayResult {
     pub id: String,
     pub result: Vec<T>,
     pub jsonrpc: String
+}
+
+//
+// Formats
+//
+
+#[derive(Serialize, Debug, Clone)]
+pub struct FormatedLesson{
+    pub teacher: String,
+    pub is_lb: bool,
+    pub start: u32,
+    pub length: u32,
+    pub day: u32,
+    pub subject: String,
+    pub subject_short: String,
+    pub room: String
+}
+
+//
+// Helper functions
+// 
+
+pub fn day_of_week(date: u32) -> u32 {
+    let mut y = date / 10000;
+    let mut m = (date / 100) % 100;
+    let d = date % 100;
+
+    if m < 3 {
+        m += 12;
+        y -= 1;
+    }
+
+    let k = y % 100;
+    let j = y / 100;
+    let h = (d + (13 * (m + 1)) / 5 + k + k / 4 + j / 4 + 5 * j) % 7;
+    (h + 5) % 7
 }
