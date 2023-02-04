@@ -1,7 +1,6 @@
 export interface TheScheduleObject {
     teacher: string;
     lernbuero: boolean;
-    matched: boolean
     starts: number;
     length: number;
     day: number;
