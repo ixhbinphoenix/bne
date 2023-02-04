@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use reqwest::{Client, Response};
 use reqwest::Error;
 
@@ -137,14 +139,17 @@ impl UntisClient {
         let d = &day;
         days.push(d.to_owned());
 
-        let mut skip: u32 = 0;
+        let mut skip: HashMap<u16, u32> = HashMap::new();
         let timegrid = self.get_timegrid_units().await?;
     
         for d in days {
             let clone = d.clone();
             for lesson in clone {
-                if skip > 0 {
-                    skip -= 1;
+                if lesson.su.len() > 0 && skip.contains_key(&lesson.su[0].id) && skip[&lesson.su[0].id] > 0 {
+                    skip.entry(lesson.su[0].id).and_modify(|skips| *skips -= 1);
+                    if skip[&lesson.su[0].id] == 0 {
+                        skip.remove(&lesson.su[0].id);
+                    }
                     continue;
                 }
                 let teacher = lesson.te[0].name.to_owned();
@@ -171,16 +176,18 @@ impl UntisClient {
                 }
                 
                 let room = lesson.ro[0].name.to_owned();
-                let pos = d.iter().position(|l| l.id == lesson.id).unwrap();
                 
                 let mut formated_lesson = FormatedLesson {
                     teacher,
                     is_lb: false,
                     start: u32::try_from(start)?,
-                    length: if lesson.su.len() > 0 && (d.len() - pos) >= 2 && pos > 0 && d[pos - 1].su.len() > 0 && d[pos + 1].su.len() > 0 && d[pos - 1].su[0].id == lesson.su[0].id && d[pos + 1].su[0].id == lesson.su[0].id {
-                        3
-                    }else if lesson.su.len() > 0 && (d.len() - pos) >= 2 && d[pos + 1].su.len() > 0 && (d[pos + 1].su[0].id == lesson.su[0].id) {
-                        2
+                    length: if lesson.su.len() > 0 && d.iter().any(|les| les.su.len() > 0 && les.su[0].id == lesson.su[0].id && (les.start_time == lesson.end_time || les.start_time == lesson.end_time + 5)) {
+                        if d.iter().any(|les| les.su.len() > 0 && les.su[0].id == lesson.su[0].id && (les.end_time == lesson.start_time || les.end_time == lesson.start_time - 5)) {
+                            3
+                        }
+                        else{
+                            2
+                        }
                     }else if (lesson.end_time - lesson.start_time) > 85{
                         (((lesson.end_time - lesson.start_time) / 85) as f32).floor() as u32
                     }else{
@@ -192,7 +199,9 @@ impl UntisClient {
                     room
                 };
                 formated_lesson.is_lb = formated_lesson.length == 1;
-                skip = formated_lesson.length - 1;
+                if formated_lesson.length > 1 && lesson.su.len() > 0 {
+                    skip.insert(lesson.su[0].id, formated_lesson.length - 1);
+                }
                 formated.push(formated_lesson);
             }
         }
