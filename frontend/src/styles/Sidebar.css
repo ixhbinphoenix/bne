@@ -1,7 +1,7 @@
 body {
     color: #cad3f5;
     display: flex;
-    position: absolute;
+    position: fixed;
     height: 100%;
     width: 100%;
     margin: 0%;
@@ -23,6 +23,7 @@ body {
     border-bottom: 0.5vh solid #181926;
 }
 h1 {
+    user-select: none;
     background: rgb(198,160,246);
     background: linear-gradient(90deg, rgb(199, 160, 246) 0%, rgb(237,135,150) 50%, rgb(238,212,159) 100%);
     background-size: 200%;

@@ -31,7 +31,7 @@ export default function Stundenplan(): JSX.Element {
                         lessonElements.push(
                             <div style={objectStyle}>
                                 <p>{lessons[k].room}</p>
-                                <h2>{lessons[k].subject}</h2>
+                                <h2>{lessons[k].subjectShort}</h2>
                                 <p>{lessons[k].teacher}</p>
                             </div>
                         )
