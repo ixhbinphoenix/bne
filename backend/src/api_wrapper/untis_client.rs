@@ -170,8 +170,9 @@ impl UntisClient {
                         }
                     },
                     None => {
-                        subject = lesson.su[0].longname.to_owned();
+                        subject = lesson.su[0].name.to_owned();
                         subject_short = lesson.su[0].name.to_owned();
+                        subject_short = subject_short.split(" ").collect::<Vec<&str>>()[0].to_owned();
                     }
                 }
                 
