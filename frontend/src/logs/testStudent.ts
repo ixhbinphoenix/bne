@@ -24,8 +24,8 @@ export const testStudent: Array<TheScheduleObject>  = [
     {
         teacher: "TKIN",
         lernbuero: false,
-        starts: 5,
-        length: 2,
+        starts: 3,
+        length: 1,
         day: 0,
         subject: "Mathematik",
         room: "O 2-11",
@@ -34,8 +34,8 @@ export const testStudent: Array<TheScheduleObject>  = [
     {
         teacher: "USTR",
         lernbuero: false,
-        starts: 8,
-        length: 2,
+        starts: 3,
+        length: 1,
         day: 0,
         subject: "Geschichte",
         room: "O 1-01",
@@ -44,9 +44,9 @@ export const testStudent: Array<TheScheduleObject>  = [
     {
         teacher: "FSPR",
         lernbuero: true,
-        starts: 1,
+        starts: 3,
         length: 1,
-        day: 1,
+        day: 0,
         subject: "Musik",
         room: "O E-02",
         subjectShort: "MU"

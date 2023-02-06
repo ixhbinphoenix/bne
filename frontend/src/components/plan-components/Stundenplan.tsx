@@ -1,14 +1,20 @@
 /* @jsxImportSource preact */
 
 import type { TheScheduleObject } from "../../api/main";
+import Popup from "./Popup";
 import type { JSX } from "preact";
 import { testStudent } from "../../logs/testStudent";
 import { SubjectColor } from "../../api/main";
 import "../../styles/Stundenplan.scss";
+import { useState } from "preact/hooks";
 
 export default function Stundenplan(): JSX.Element {
     const tableElements: Array<Array<JSX.Element>> = [[],[],[],[],[]];
-    
+    const [popupStatus, setPopupStatus] = useState<boolean>(false);
+    const [popupContent, setPopupContent] = useState<JSX.Element>()
+    const openPopup = () => {
+        setPopupStatus(true)
+    }
     const addToDivs = (lessons: Array<TheScheduleObject>) => {
         for(let i: number = 0; i < 5; i++) {
             for(let j: number = 0; j < 10; j++) {
@@ -29,7 +35,15 @@ export default function Stundenplan(): JSX.Element {
                             gridRowEnd: "span " + lessons[k].length
                         }
                         lessonElements.push(
-                            <div style={objectStyle}>
+                            <div style={objectStyle} onClick={() => {
+                                openPopup()
+                                setPopupContent(
+                                <div style={objectStyle}>
+                                    <p>{lessons[k].room}</p>
+                                    <h2>{lessons[k].subjectShort}</h2>
+                                    <p>{lessons[k].teacher}</p>
+                                </div>)
+                            }}>
                                 <p>{lessons[k].room}</p>
                                 <h2>{lessons[k].subjectShort}</h2>
                                 <p>{lessons[k].teacher}</p>
@@ -50,6 +64,14 @@ export default function Stundenplan(): JSX.Element {
     }
     addToDivs(testStudent);
 
+    const tableDays: Array<JSX.Element> = [];
+    for(let i: number = 0; i < 5; i++) {
+        tableDays.push(
+            <div className="table-day">
+                {tableElements[i]}
+            </div>
+        )
+    }
     return(
         <div className="table-layout">
             <div className="table-top">
@@ -149,21 +171,8 @@ export default function Stundenplan(): JSX.Element {
                     </span>
                 </div>
                 <div className="table">
-                    <div className="table-day">
-                        {tableElements[0]}
-                    </div>
-                    <div className="table-day">
-                        {tableElements[1]}
-                    </div>
-                    <div className="table-day">
-                        {tableElements[2]}
-                    </div>
-                    <div className="table-day">
-                        {tableElements[3]}
-                    </div>
-                    <div className="table-day">
-                        {tableElements[4]}
-                    </div>
+                    <Popup trigger={popupStatus} setPopupStatus={setPopupStatus} content={popupContent}></Popup>
+                    {tableDays}
                 </div>
             </div>
             
