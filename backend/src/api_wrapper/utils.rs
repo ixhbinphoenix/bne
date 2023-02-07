@@ -1,3 +1,4 @@
+use db_derive::{UntisResult, UntisArrayResult};
 use serde::{Serialize, Deserialize};
 use super::untis_client::UntisClient;
 
@@ -37,8 +38,8 @@ pub enum Parameter{
     Null()
 }
 
-pub trait Result {}
-pub trait ArrayResult {}
+pub trait UntisResult {}
+pub trait UntisArrayResult {}
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct UntisBody {
@@ -60,15 +61,13 @@ pub struct AuthParameter {
     pub client: String
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, UntisResult)]
 #[serde(rename_all = "camelCase")]
 pub struct LoginResults {
     pub session_id: String,
     pub person_type: u16,
     pub person_id: u16
 }
-
-impl Result for LoginResults {}
 
 ///
 /// Date
@@ -186,7 +185,7 @@ pub struct Room {
     pub orgname: Option<String>
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone)]
+#[derive(Serialize, Deserialize, Debug, Clone, UntisArrayResult)]
 #[serde(rename_all = "camelCase")]
 pub struct PeriodObject {
     pub id: u32,
@@ -204,13 +203,11 @@ pub struct PeriodObject {
     pub code: Option<String>
 }
 
-impl ArrayResult for PeriodObject {}
-
 ///
 /// Subjects
 /// 
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, UntisArrayResult)]
 #[serde(rename_all = "camelCase")]
 pub struct DetailedSubject {
     pub id: u16,
@@ -220,13 +217,11 @@ pub struct DetailedSubject {
     pub back_color: String
 }
 
-impl ArrayResult for DetailedSubject {}
-
 /// 
 /// Schoolyear
 /// 
 
-#[derive(Serialize, Deserialize, Debug, Clone)]
+#[derive(Serialize, Deserialize, Debug, Clone, UntisArrayResult)]
 #[serde(rename_all = "camelCase")]
 pub struct Schoolyear{
     pub id: u16,
@@ -235,13 +230,11 @@ pub struct Schoolyear{
     pub end_date: String
 }
 
-impl ArrayResult for Schoolyear {}
-
 /// 
 /// Holiday
 /// 
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, UntisArrayResult)]
 #[serde(rename_all = "camelCase")]
 pub struct Holidays {
     pub id: u16,
@@ -250,8 +243,6 @@ pub struct Holidays {
     pub start_date: u16,
     pub end_date: u16
 }
-
-impl ArrayResult for Holidays {}
 
 ///
 /// TimegridUnits
@@ -265,28 +256,26 @@ pub struct TimeUnit {
     pub end_time: u16
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, UntisArrayResult)]
 #[serde(rename_all = "camelCase")]
 pub struct TimegridUnits {
     pub day: u16,
     pub time_units: Vec<TimeUnit>
 }
 
-impl ArrayResult for TimegridUnits {}
-
 ///
 /// Untis Response
 /// 
 
 #[derive(Serialize, Deserialize, Debug)]
-pub struct UntisResponse<T> where T: Result {
+pub struct UntisResponse<T> where T: UntisResult {
     pub id: String,
     pub result: T,
     pub jsonrpc: String
 }
 
 #[derive(Serialize, Deserialize, Debug)]
-pub struct UntisArrayResponse<T> where T: ArrayResult {
+pub struct UntisArrayResponse<T> where T: UntisArrayResult {
     pub id: String,
     pub result: Vec<T>,
     pub jsonrpc: String
