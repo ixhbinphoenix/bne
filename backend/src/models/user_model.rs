@@ -2,14 +2,15 @@ use std::collections::BTreeMap;
 
 use actix_web::web::Data;
 use db_derive::{Creatable, Patchable};
+use log::debug;
 use serde::{Serialize, Deserialize};
-use surrealdb::sql::{Value, Object, thing};
+use surrealdb::{sql::{Value, Object, thing}, Response};
 
 use crate::{utils::macros::map, database::surrealdb_repo::{Creatable, Patchable, SurrealDBRepo}, prelude::*};
 
 #[derive(Debug, Serialize, Deserialize, Creatable)]
 pub struct User {
-    pub id: String,
+    pub id: Option<String>,
     pub username: String,
     pub password_hash: String
 }
@@ -21,6 +22,32 @@ impl From<User> for Value {
             "username".into() => value.username.into(),
             "password_hash".into() => value.password_hash.into()
         ].into()
+    }
+}
+
+impl TryFrom<Object> for User {
+    type Error = Error;
+
+    fn try_from(value: Object) -> Result<Self, Self::Error> {
+        debug!("Pre-conversion");
+        let id: String = W(match value.get("id") {
+            Some(n) => n.to_owned(),
+            None => return Err(Error::ConversionError("id".to_owned()))
+        }).try_into()?;
+        let username: String = W(match value.get("username") {
+            Some(n) => n.to_owned(),
+            None => return Err(Error::ConversionError("username".to_owned()))
+        }).try_into()?;
+        let password_hash: String = W(match value.get("password_hash") {
+            Some(n) => n.to_owned(),
+            None => return Err(Error::ConversionError("password_hash".to_owned()))
+        }).try_into()?;
+
+        Ok(User {
+            id: Some(id),
+            username,
+            password_hash
+        })
     }
 }
 
@@ -44,6 +71,19 @@ impl From<UserPatch> for Value {
 pub struct UserCRUD;
 
 impl UserCRUD {
+    pub async fn init_table(db: SurrealDBRepo) -> Result<Vec<Response>, Error> {
+        let sql = "DEFINE TABLE users SCHEMAFULL;\
+                   DEFINE FIELD username ON users TYPE string;\
+                   DEFINE FIELD password_hash ON users TYPE string;";
+        
+        match db.ds.execute(sql, &db.ses, None, false).await {
+            Ok(n) => Ok(n),
+            Err(e) => {
+                Err(Error::Surreal(e))
+            },
+        }
+    }
+
     pub async fn create<T: Creatable>(db: Data<SurrealDBRepo>, tb: &str, data: T) -> Result<Object, Error> {
         let sql = "CREATE type::table($tb) CONTENT $data RETURN *;";
 
@@ -61,10 +101,10 @@ impl UserCRUD {
         W(first_val.first()).try_into()
     }
 
-    pub async fn get(db: Data<SurrealDBRepo>, tid: &str) -> Result<Object, Error> {
+    pub async fn get_from_id(db: Data<SurrealDBRepo>, tid: &str) -> Result<Object, Error> {
         let sql = "SELECT * FROM $th;";
 
-        let tid = format!("messages:{}", tid);
+        let tid = format!("users:{tid}");
 
         let vars: BTreeMap<String, Value> = map!["th".into() => thing(&tid)?.into()];
 
@@ -75,10 +115,29 @@ impl UserCRUD {
         W(first_res.result?.first()).try_into()
     }
 
+    pub async fn get_from_username(db: Data<SurrealDBRepo>, username: &str) -> Result<Object, Error> {
+        let sql = "SELECT * FROM users WHERE username=$username;";
+
+        let vars: BTreeMap<String, Value> = map![
+            "username".into() => username.into()
+        ];
+
+        let res = db.ds.execute(sql, &db.ses, Some(vars), true).await?;
+
+        let first_res = match res.into_iter().next() {
+            Some(r) => r,
+            None => {
+                return Err(Error::ObjectNotFound(username.to_owned()))
+            },
+        };
+
+        W(first_res.result?.first()).try_into()
+    }
+
     pub async fn update<T: Patchable>(db: Data<SurrealDBRepo>, tid: &str, data: T) -> Result<Object, Error> {
         let sql = "UPDATE $th MERGE $data RETURN *;";
 
-        let tid = format!("messages:{}", tid);
+        let tid = format!("users:{tid}");
 
         let vars = map![
             "th".into() => thing(&tid)?.into(),
@@ -97,7 +156,7 @@ impl UserCRUD {
     pub async fn delete(db: Data<SurrealDBRepo>, tid: &str) -> Result<String, Error> {
         let sql = "DELETE $th RETURN *;";
 
-        let tid = format!("messages:{}", tid);
+        let tid = format!("users:{tid}");
 
         let vars = map!["th".into() => thing(&tid)?.into()];
 
