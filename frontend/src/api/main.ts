@@ -1,3 +1,16 @@
+export async function getJSessionId(username: string, password: string): Promise<string> {
+    let resultRaw = await fetch('https://borys.webuntis.com/WebUntis/jsonrpc.do?school=ges-münster', {
+        method: 'POST',
+        body: JSON.stringify({
+            id: 'theSchedule',
+            method: 'authenticate',
+            params: {user: username, password: password, client: "theSchedule"},
+            jsonrpc: '2.0'
+        })
+    })
+   let resultClean = await resultRaw.json()
+   return resultClean.result.sessionId
+};
 export interface TheScheduleObject {
     teacher: string;
     lernbuero: boolean;

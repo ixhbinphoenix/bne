@@ -1,14 +1,20 @@
 /* @jsxImportSource preact */
 
 import type { TheScheduleObject } from "../../api/main";
+import { getJSessionId } from "../../api/main";
 import Popup from "./Popup";
 import type { JSX } from "preact";
 import { testStudent } from "../../logs/testStudent";
 import { SubjectColor } from "../../api/main";
 import "../../styles/Stundenplan.scss";
-import { useState } from "preact/hooks";
+import { useState, useEffect } from "preact/hooks";
 
 export default function Stundenplan(): JSX.Element {
+    useEffect(() => {
+        getJSessionId("Kannenberg_Jakob_20060922", "eBXj4SY3e9").then((sessionId) => {
+            document.cookie = `JSESSIONID=${sessionId}; max-age=600; secure; samesite=strict`    
+        })
+    }, [])
     const tableElements: Array<Array<JSX.Element>> = [[],[],[],[],[]];
     const [popupStatus, setPopupStatus] = useState<boolean>(false);
     const [popupContent, setPopupContent] = useState<JSX.Element>()
