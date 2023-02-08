@@ -2,6 +2,7 @@ body {
     color: #cad3f5;
     display: flex;
     position: fixed;
+    background-color: #1e2030;
     height: 100%;
     width: 100%;
     margin: 0%;
