@@ -1,20 +1,44 @@
 /* @jsxImportSource preact */
 
 import type { TheScheduleObject } from "../../api/main";
-import { getJSessionId } from "../../api/main";
+import { SubjectColor } from "../../api/main";
+import { fetchJSessionId } from "../../api/main";
 import Popup from "./Popup";
 import type { JSX } from "preact";
 import { testStudent } from "../../logs/testStudent";
-import { SubjectColor } from "../../api/main";
 import "../../styles/Stundenplan.scss";
 import { useState, useEffect } from "preact/hooks";
 
 export default function Stundenplan(): JSX.Element {
     useEffect(() => {
-        getJSessionId("Kannenberg_Jakob_20060922", "eBXj4SY3e9").then((sessionId) => {
-            document.cookie = `JSESSIONID=${sessionId}; max-age=600; secure; samesite=strict`    
+        fetchJSessionId("account", "password").then((sessionId) => {
+            if(sessionId.result) {
+                document.cookie = `JSESSIONID=${sessionId.result}; max-age=600; secure; samesite=strict`
+            }
+            else {
+                alert(sessionId.status)
+            }
         })
     }, [])
+    const getJSessionIdCookie = () => {
+        const storedJSessionId = document.cookie.match('(^|;)\\s*' + "JSESSIONID" + '\\s*=\\s*([^;]+)')?.pop() || ''
+        if(storedJSessionId) {
+            console.log(storedJSessionId)
+            return storedJSessionId
+        }
+        else {
+            fetchJSessionId("", "").then((sessionId) => {
+                if(sessionId.result) {
+                    document.cookie = `JSESSIONID=${sessionId.result}; max-age=600; secure; samesite=strict`
+                    return sessionId.result
+                }
+                else {
+                    alert(sessionId.status)
+                    return false
+                }
+            })
+        }
+    }
     const tableElements: Array<Array<JSX.Element>> = [[],[],[],[],[]];
     const [popupStatus, setPopupStatus] = useState<boolean>(false);
     const [popupContent, setPopupContent] = useState<JSX.Element>()
