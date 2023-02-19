@@ -692,6 +692,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d468802bab17cbc0cc575e9b053f41e72aa36bfa6b7f55e3529ffa43161b97fa"
 
 [[package]]
+name = "backend-derive"
+version = "0.1.0"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn",
+]
+
+[[package]]
 name = "base-x"
 version = "0.2.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1310,15 +1319,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b36230598a2d5de7ec1c6f51f72d8a99a9208daff41de2084d06e3fd3ea56685"
 dependencies = [
  "darling_core",
- "quote",
- "syn",
-]
-
-[[package]]
-name = "db-derive"
-version = "0.1.0"
-dependencies = [
- "proc-macro2",
  "quote",
  "syn",
 ]
@@ -3594,7 +3594,7 @@ dependencies = [
  "actix-web-lab",
  "argon2",
  "async-stream",
- "db-derive",
+ "backend-derive",
  "dotenv",
  "env_logger 0.10.0",
  "futures",

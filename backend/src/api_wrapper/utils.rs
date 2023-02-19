@@ -1,4 +1,4 @@
-use db_derive::{UntisResult, UntisArrayResult};
+use backend_derive::{UntisResult, UntisArrayResult};
 use serde::{Serialize, Deserialize};
 use super::untis_client::UntisClient;
 

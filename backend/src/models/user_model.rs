@@ -1,7 +1,7 @@
 use std::collections::BTreeMap;
 
 use actix_web::web::Data;
-use db_derive::{Creatable, Patchable};
+use backend_derive::{Creatable, Patchable};
 use log::debug;
 use serde::{Serialize, Deserialize};
 use surrealdb::{sql::{Value, Object, thing}, Response};

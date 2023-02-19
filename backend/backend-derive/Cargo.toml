@@ -1,5 +1,5 @@
 [package]
-name = "db-derive"
+name = "backend-derive"
 version = "0.1.0"
 edition = "2021"
 

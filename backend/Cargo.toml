@@ -12,7 +12,7 @@ actix-web = { version = "4.2.1", features = ["openssl"] }
 actix-web-lab = "0.18.9"
 argon2 = "0.4.1"
 async-stream = "0.3.3"
-db-derive = { version = "0.1.0", path = "db-derive" }
+backend-derive = { version = "0.1.0", path = "backend-derive" }
 dotenv = "0.15.0"
 env_logger = "0.10.0"
 futures = "0.3.25"

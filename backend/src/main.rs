@@ -10,7 +10,7 @@ use std::{io, env, collections::HashMap};
 use actix_identity::IdentityMiddleware;
 use actix_session::{SessionMiddleware, config::PersistentSession, storage::CookieSessionStore};
 use actix_web::{HttpServer, middleware::Logger, web::{self, Data}, HttpResponse, App, cookie::{Key, time::Duration}};
-use api::{login::login_post, check_session::check_session_get, register::register_post};
+use api::{login::login_post, check_session::check_session_get, register::register_post, demo::get_timetable::get_timetable};
 use database::surrealdb_repo::SurrealDBRepo;
 use dotenv::dotenv;
 use models::user_model::UserCRUD;
@@ -63,6 +63,10 @@ async fn main() -> io::Result<()> {
             .service(web::resource("/register").route(web::post().to(register_post)))
             .service(web::resource("/login").route(web::post().to(login_post)))
             .service(web::resource("/check_session").route(web::get().to(check_session_get)))
+            .service(
+                web::scope("/demo")
+                    .service(web::resource("/get_timetable").route(web::get().to(get_timetable)))
+            )
     })
     .bind_openssl("127.0.0.1:8080", builder)?
     .run().await
