@@ -286,12 +286,12 @@ pub struct UntisArrayResponse<T> where T: UntisArrayResult {
 //
 
 #[derive(Serialize, Debug, Clone)]
-pub struct FormattedLesson{
+pub struct FormattedLesson {
     pub teacher: String,
     pub is_lb: bool,
-    pub start: u32,
-    pub length: u32,
-    pub day: u32,
+    pub start: u8,
+    pub length: u8,
+    pub day: u8,
     pub subject: String,
     pub subject_short: String,
     pub room: String,
@@ -310,7 +310,7 @@ pub struct Substitution {
 // Helper functions
 // 
 
-pub fn day_of_week(date: u32) -> u32 {
+pub fn day_of_week(date: u32) -> u8 {
     let mut y = date / 10000;
     let mut m = (date / 100) % 100;
     let d = date % 100;
@@ -323,5 +323,5 @@ pub fn day_of_week(date: u32) -> u32 {
     let k = y % 100;
     let j = y / 100;
     let h = (d + (13 * (m + 1)) / 5 + k + k / 4 + j / 4 + 5 * j) % 7;
-    (h + 5) % 7
+    ((h + 5) % 7 ) as u8
 }

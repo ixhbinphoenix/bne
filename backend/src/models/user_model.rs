@@ -2,7 +2,6 @@ use std::collections::BTreeMap;
 
 use actix_web::web::Data;
 use backend_derive::{Creatable, Patchable};
-use log::debug;
 use serde::{Serialize, Deserialize};
 use surrealdb::{sql::{Value, Object, thing}, Response};
 
@@ -29,7 +28,6 @@ impl TryFrom<Object> for User {
     type Error = Error;
 
     fn try_from(value: Object) -> Result<Self, Self::Error> {
-        debug!("Pre-conversion");
         let id: String = W(match value.get("id") {
             Some(n) => n.to_owned(),
             None => return Err(Error::ConversionError("id".to_owned()))

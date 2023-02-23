@@ -114,7 +114,7 @@ impl UntisClient {
     }
 
     async fn format_lessons(&mut self, mut lessons: Vec<PeriodObject>) -> Result<Vec<FormattedLesson>, Box<dyn std::error::Error>> {
-        let mut formated: Vec<FormattedLesson> = vec![];
+        let mut formatted: Vec<FormattedLesson> = vec![];
 
         lessons.sort_unstable_by_key(|les| les.date);
         let mut days: Vec<Vec<PeriodObject>> = vec![]; 
@@ -139,7 +139,7 @@ impl UntisClient {
         let d = &day;
         days.push(d.to_owned());
 
-        let mut skip: HashMap<u16, u32> = HashMap::new();
+        let mut skip: HashMap<u16, u8> = HashMap::new();
         let timegrid = self.get_timegrid_units().await?;
     
         for d in days {
@@ -203,10 +203,10 @@ impl UntisClient {
                     "".to_string()
                 };
                 
-                let mut formated_lesson = FormattedLesson {
+                let mut formatted_lesson = FormattedLesson {
                     teacher,
                     is_lb: false,
-                    start: u32::try_from(start)?,
+                    start: u8::try_from(start)?,
                     length: if lesson.su.len() > 0 && d.iter().any(|les| les.su.len() > 0 && les.su[0].id == lesson.su[0].id && (les.start_time == lesson.end_time || les.start_time == lesson.end_time + 5)) {
                         if d.iter().any(|les| les.su.len() > 0 && les.su[0].id == lesson.su[0].id && (les.end_time == lesson.start_time || les.end_time == lesson.start_time - 5)) {
                             3
@@ -215,7 +215,7 @@ impl UntisClient {
                             2
                         }
                     }else if (lesson.end_time - lesson.start_time) > 85{
-                        (((lesson.end_time - lesson.start_time) / 85) as f32).floor() as u32
+                        (((lesson.end_time - lesson.start_time) / 85) as f32).floor() as u8
                     }else{
                         1
                     },
@@ -247,15 +247,15 @@ impl UntisClient {
                         }
                     }
                 };
-                formated_lesson.is_lb = formated_lesson.length == 1;
-                if formated_lesson.length > 1 && lesson.su.len() > 0 {
-                    skip.insert(lesson.su[0].id, formated_lesson.length - 1);
+                formatted_lesson.is_lb = formatted_lesson.length == 1;
+                if formatted_lesson.length > 1 && lesson.su.len() > 0 {
+                    skip.insert(lesson.su[0].id, formatted_lesson.length - 1);
                 }
-                formated.push(formated_lesson);
+                formatted.push(formatted_lesson);
             }
         }
 
-        Ok(formated)
+        Ok(formatted)
     }
 
     pub async fn get_subjects(&mut self) -> Result<Vec<DetailedSubject>, Box<dyn std::error::Error>> {
