@@ -5,7 +5,7 @@ use reqwest::Error;
 
 use crate::api_wrapper::utils::UntisResponse;
 
-use super::utils::{self, LoginResults, TimetableParameter, UntisArrayResponse, PeriodObject, DetailedSubject, Schoolyear, Holidays, FormatedLesson, day_of_week, TimegridUnits};
+use super::utils::{self, LoginResults, TimetableParameter, UntisArrayResponse, PeriodObject, DetailedSubject, Schoolyear, Holidays, FormattedLesson, day_of_week, TimegridUnits, Substitution};
 
 #[derive(Clone)]
 pub struct UntisClient {
@@ -101,7 +101,7 @@ impl UntisClient {
         Ok(true)
     }
 
-    pub async fn get_timetable(&mut self, parameter: TimetableParameter) -> Result<Vec<FormatedLesson>, Box<dyn std::error::Error>> {
+    pub async fn get_timetable(&mut self, parameter: TimetableParameter) -> Result<Vec<FormattedLesson>, Box<dyn std::error::Error>> {
         let response = self.request(
             utils::Parameter::TimetableParameter(parameter), 
             "getTimetable".to_string()
@@ -113,8 +113,8 @@ impl UntisClient {
         Ok(self.format_lessons(json.result).await?)
     }
 
-    async fn format_lessons(&mut self, mut lessons: Vec<PeriodObject>) -> Result<Vec<FormatedLesson>, Box<dyn std::error::Error>> {
-        let mut formated: Vec<FormatedLesson> = vec![];
+    async fn format_lessons(&mut self, mut lessons: Vec<PeriodObject>) -> Result<Vec<FormattedLesson>, Box<dyn std::error::Error>> {
+        let mut formated: Vec<FormattedLesson> = vec![];
 
         lessons.sort_unstable_by_key(|les| les.date);
         let mut days: Vec<Vec<PeriodObject>> = vec![]; 
@@ -152,15 +152,14 @@ impl UntisClient {
                     }
                     continue;
                 }
-                let teacher = lesson.te[0].name.to_owned();
                 let day = day_of_week(lesson.date);
                 let start = timegrid[usize::try_from(day)?].time_units.iter().position(|unit| unit.start_time == lesson.start_time).unwrap() + 1;
                 let mut subject = "".to_string();
                 let mut subject_short = "".to_string();
-                match lesson.code {
+                match lesson.code.clone() {
                     Some(code) => {
                         if code == "irregular" {
-                            subject = match lesson.subst_text{
+                            subject = match lesson.subst_text.clone(){
                                 Some(text) => text,
                                 None => "Entfällt".to_string()
                             }
@@ -175,10 +174,36 @@ impl UntisClient {
                         subject_short = subject_short.split(" ").collect::<Vec<&str>>()[0].to_owned();
                     }
                 }
+
+                let teacher = if lesson.te.len() > 0 {
+                    match lesson.te[0].orgname.clone() {
+                        Some(orgname) => {
+                            orgname
+                        },
+                        None => {
+                            lesson.te[0].name.to_owned()
+                        }
+                    }
+                }
+                else{
+                    "".to_string()
+                };
                 
-                let room = lesson.ro[0].name.to_owned();
+                let room = if lesson.ro.len() > 0 {
+                    match lesson.ro[0].orgname.clone() {
+                        Some(orgname) => {
+                            orgname
+                        },
+                        None => {
+                            lesson.te[0].name.to_owned()
+                        }
+                    }
+                }
+                else {
+                    "".to_string()
+                };
                 
-                let mut formated_lesson = FormatedLesson {
+                let mut formated_lesson = FormattedLesson {
                     teacher,
                     is_lb: false,
                     start: u32::try_from(start)?,
@@ -197,7 +222,30 @@ impl UntisClient {
                     day,
                     subject,
                     subject_short,
-                    room
+                    room,
+                    substitution: Substitution{
+                        teacher: if lesson.te.len() > 0 && lesson.te[0].orgname.is_some() {
+                            Some(lesson.te[0].name.clone())
+                        }
+                        else {
+                            None
+                        },
+                        room: if lesson.ro.len() > 0 && lesson.ro[0].orgname.is_some() {
+                            Some(lesson.ro[0].name.clone())
+                        }
+                        else {
+                            None
+                        },
+                        substition_text: lesson.subst_text,
+                        cancelled: match lesson.code{
+                            Some(code) => {
+                                code == "cancelled".to_string()
+                            },
+                            None => {
+                                false
+                            }
+                        }
+                    }
                 };
                 formated_lesson.is_lb = formated_lesson.length == 1;
                 if formated_lesson.length > 1 && lesson.su.len() > 0 {

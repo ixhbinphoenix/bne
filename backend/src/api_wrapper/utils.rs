@@ -277,7 +277,7 @@ pub struct UntisArrayResponse<T> where T: ArrayResult {
 //
 
 #[derive(Serialize, Debug, Clone)]
-pub struct FormatedLesson{
+pub struct FormattedLesson{
     pub teacher: String,
     pub is_lb: bool,
     pub start: u32,
@@ -285,7 +285,16 @@ pub struct FormatedLesson{
     pub day: u32,
     pub subject: String,
     pub subject_short: String,
-    pub room: String
+    pub room: String,
+    pub substitution: Substitution
+}
+
+#[derive(Serialize, Debug, Clone)]
+pub struct Substitution {
+    pub teacher: Option<String>,
+    pub room: Option<String>,
+    pub substition_text: Option<String>,
+    pub cancelled: bool
 }
 
 //
