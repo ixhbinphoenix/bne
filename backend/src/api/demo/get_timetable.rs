@@ -24,7 +24,7 @@ pub async fn get_timetable(id: Option<Identity>) -> impl Responder {
                 subject: "Informatik".to_string(),
                 room: "O2-16NT".to_string(),
                 subject_short: "IF".to_string(),
-                substitution: Substitution::default_cancelled()
+                substitution: Some(Substitution::default_cancelled())
             }
         ]
     }).into()

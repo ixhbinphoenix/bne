@@ -175,34 +175,33 @@ impl UntisClient {
                         subject_short = subject_short.split(' ').collect::<Vec<&str>>()[0].to_owned();
                     }
                 }
+                let mut substituted = false;
 
                 let teacher = if !lesson.te.is_empty() {
                     match lesson.te[0].orgname.clone() {
                         Some(orgname) => {
+                            substituted = true;
                             orgname
                         },
                         None => {
                             lesson.te[0].name.to_owned()
                         }
                     }
-                }
-                else{
-                    "".to_string()
-                };
+                } else{ "".to_string() };
                 
                 let room = if !lesson.ro.is_empty() {
                     match lesson.ro[0].orgname.clone() {
                         Some(orgname) => {
+                            substituted = true;
                             orgname
                         },
                         None => {
                             lesson.te[0].name.to_owned()
                         }
                     }
-                }
-                else {
-                    "".to_string()
-                };
+                } else { "".to_string() };
+
+                if lesson.code == Some("cancelled".to_string()) || lesson.subst_text.is_some() { substituted = true; }
                 
                 let mut formatted_lesson = FormattedLesson {
                     teacher,
@@ -224,19 +223,13 @@ impl UntisClient {
                     subject,
                     subject_short,
                     room,
-                    substitution: Substitution{
+                    substitution: if substituted { Some(Substitution {
                         teacher: if !lesson.te.is_empty() && lesson.te[0].orgname.is_some() {
                             Some(lesson.te[0].name.clone())
-                        }
-                        else {
-                            None
-                        },
+                        } else { None },
                         room: if !lesson.ro.is_empty() && lesson.ro[0].orgname.is_some() {
                             Some(lesson.ro[0].name.clone())
-                        }
-                        else {
-                            None
-                        },
+                        } else { None },
                         substition_text: lesson.subst_text,
                         cancelled: match lesson.code{
                             Some(code) => {
@@ -246,7 +239,7 @@ impl UntisClient {
                                 false
                             }
                         }
-                    }
+                    })} else { None }
                 };
                 formatted_lesson.is_lb = formatted_lesson.length == 1;
                 if formatted_lesson.length > 1 && !lesson.su.is_empty() {

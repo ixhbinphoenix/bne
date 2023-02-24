@@ -269,7 +269,7 @@ pub struct FormattedLesson {
     pub subject: String,
     pub subject_short: String,
     pub room: String,
-    pub substitution: Substitution
+    pub substitution: Option<Substitution>
 }
 
 #[derive(Serialize, Debug, Clone, Default)]
