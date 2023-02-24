@@ -8,10 +8,10 @@ pub async fn check_session_get(id: Option<Identity>) -> impl Responder {
                 HttpResponse::Ok().body(format!("YEP {id}"))
             },
             Err(_) => {
-                HttpResponse::InternalServerError().body(format!("NOPE Server Error"))
+                HttpResponse::InternalServerError().body("NOPE Server Error".to_string())
             }
         }
     } else {
-        HttpResponse::Forbidden().body(format!("NOPE"))
+        HttpResponse::Forbidden().body("NOPE".to_string())
     }
 }

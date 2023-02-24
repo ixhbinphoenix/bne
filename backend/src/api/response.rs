@@ -31,9 +31,9 @@ impl<T> Response<T> {
     }
 }
 
-impl<T> Into<Json<Response<T>>> for Response<T> {
-    fn into(self) -> Json<Response<T>> {
-        Json(self)
+impl<T> From<Response<T>> for Json<Response<T>> {
+    fn from(val: Response<T>) -> Self {
+        Json(val)
     }
 }
 

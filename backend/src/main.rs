@@ -1,3 +1,4 @@
+#![allow(clippy::enum_variant_names)]
 mod utils;
 mod error;
 mod prelude;
@@ -37,6 +38,8 @@ async fn main() -> io::Result<()> {
 
     let cookie_key = if argv.contains_key("COOKIE_KEY") { Key::from(argv.get("COOKIE_KEY").unwrap().as_bytes()) } else { Key::generate() };
 
+    let port = if argv.contains_key("PORT") { argv.get("PORT").unwrap() } else { "8080" };
+
     HttpServer::new(move || {
         let logger = Logger::default();
         let json_config = web::JsonConfig::default()
@@ -68,6 +71,6 @@ async fn main() -> io::Result<()> {
                     .service(web::resource("/get_timetable").route(web::get().to(get_timetable)))
             )
     })
-    .bind_openssl("127.0.0.1:8080", builder)?
+    .bind_openssl(format!("127.0.0.1:{port}"), builder)?
     .run().await
 }

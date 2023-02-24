@@ -18,6 +18,7 @@ pub struct UntisClient {
     jsessionid: String
 }
 
+#[allow(dead_code)]
 impl UntisClient {
     async fn request(&mut self, params: utils::Parameter, method: String) -> Result<Response, Box<dyn std::error::Error>> {
         let body = utils::UntisBody {
@@ -110,7 +111,7 @@ impl UntisClient {
         let text = response.text().await?;
         let json: UntisArrayResponse<PeriodObject> = serde_json::from_str(&text)?;
 
-        Ok(self.format_lessons(json.result).await?)
+        self.format_lessons(json.result).await
     }
 
     async fn format_lessons(&mut self, mut lessons: Vec<PeriodObject>) -> Result<Vec<FormattedLesson>, Box<dyn std::error::Error>> {
@@ -145,7 +146,7 @@ impl UntisClient {
         for d in days {
             let clone = d.clone();
             for lesson in clone {
-                if lesson.su.len() > 0 && skip.contains_key(&lesson.su[0].id) && skip[&lesson.su[0].id] > 0 {
+                if !lesson.su.is_empty() && skip.contains_key(&lesson.su[0].id) && skip[&lesson.su[0].id] > 0 {
                     skip.entry(lesson.su[0].id).and_modify(|skips| *skips -= 1);
                     if skip[&lesson.su[0].id] == 0 {
                         skip.remove(&lesson.su[0].id);
@@ -171,11 +172,11 @@ impl UntisClient {
                     None => {
                         subject = lesson.su[0].name.to_owned();
                         subject_short = lesson.su[0].name.to_owned();
-                        subject_short = subject_short.split(" ").collect::<Vec<&str>>()[0].to_owned();
+                        subject_short = subject_short.split(' ').collect::<Vec<&str>>()[0].to_owned();
                     }
                 }
 
-                let teacher = if lesson.te.len() > 0 {
+                let teacher = if !lesson.te.is_empty() {
                     match lesson.te[0].orgname.clone() {
                         Some(orgname) => {
                             orgname
@@ -189,7 +190,7 @@ impl UntisClient {
                     "".to_string()
                 };
                 
-                let room = if lesson.ro.len() > 0 {
+                let room = if !lesson.ro.is_empty() {
                     match lesson.ro[0].orgname.clone() {
                         Some(orgname) => {
                             orgname
@@ -207,8 +208,8 @@ impl UntisClient {
                     teacher,
                     is_lb: false,
                     start: u8::try_from(start)?,
-                    length: if lesson.su.len() > 0 && d.iter().any(|les| les.su.len() > 0 && les.su[0].id == lesson.su[0].id && (les.start_time == lesson.end_time || les.start_time == lesson.end_time + 5)) {
-                        if d.iter().any(|les| les.su.len() > 0 && les.su[0].id == lesson.su[0].id && (les.end_time == lesson.start_time || les.end_time == lesson.start_time - 5)) {
+                    length: if !lesson.su.is_empty() && d.iter().any(|les| !les.su.is_empty() && les.su[0].id == lesson.su[0].id && (les.start_time == lesson.end_time || les.start_time == lesson.end_time + 5)) {
+                        if d.iter().any(|les| !les.su.is_empty() && les.su[0].id == lesson.su[0].id && (les.end_time == lesson.start_time || les.end_time == lesson.start_time - 5)) {
                             3
                         }
                         else{
@@ -224,13 +225,13 @@ impl UntisClient {
                     subject_short,
                     room,
                     substitution: Substitution{
-                        teacher: if lesson.te.len() > 0 && lesson.te[0].orgname.is_some() {
+                        teacher: if !lesson.te.is_empty() && lesson.te[0].orgname.is_some() {
                             Some(lesson.te[0].name.clone())
                         }
                         else {
                             None
                         },
-                        room: if lesson.ro.len() > 0 && lesson.ro[0].orgname.is_some() {
+                        room: if !lesson.ro.is_empty() && lesson.ro[0].orgname.is_some() {
                             Some(lesson.ro[0].name.clone())
                         }
                         else {
@@ -239,7 +240,7 @@ impl UntisClient {
                         substition_text: lesson.subst_text,
                         cancelled: match lesson.code{
                             Some(code) => {
-                                code == "cancelled".to_string()
+                                code == *"cancelled"
                             },
                             None => {
                                 false
@@ -248,7 +249,7 @@ impl UntisClient {
                     }
                 };
                 formatted_lesson.is_lb = formatted_lesson.length == 1;
-                if formatted_lesson.length > 1 && lesson.su.len() > 0 {
+                if formatted_lesson.length > 1 && !lesson.su.is_empty() {
                     skip.insert(lesson.su[0].id, formatted_lesson.length - 1);
                 }
                 formatted.push(formatted_lesson);

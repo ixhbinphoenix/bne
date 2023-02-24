@@ -16,7 +16,7 @@ pub struct RegisterData {
 pub async fn register_post(data: web::Json<RegisterData>, db: web::Data<SurrealDBRepo>, request: HttpRequest) -> Result<impl Responder> {
     if UserCRUD::get_from_username(db.clone(), &data.username).await.is_ok() {
         return Ok(HttpResponse::Forbidden()
-                  .body(format!("403 Forbidden\nUsername already taken!")))
+                  .body("403 Forbidden\nUsername already taken!".to_string()))
     }
     if let Err(e) = valid_password(&data.password) {
             return Err(Error::from(e).try_into()?);
@@ -30,7 +30,7 @@ pub async fn register_post(data: web::Json<RegisterData>, db: web::Data<SurrealD
         Err(e) => {
             error!("Error: Unknown error trying to hash password\n{}", e);
             return Ok(HttpResponse::Forbidden()
-                      .body(format!("500 Internal Server Error\nUnknown error trying to hash password")));
+                      .body("500 Internal Server Error\nUnknown error trying to hash password".to_string()));
         },
     };
 
@@ -48,9 +48,9 @@ pub async fn register_post(data: web::Json<RegisterData>, db: web::Data<SurrealD
         Err(e) => {
             error!("Error trying to log into Identity\n{}", e);
             return Ok(HttpResponse::InternalServerError()
-                      .body(format!("500 Internal Server Error\nError trying to login, please retry")))
+                      .body("500 Internal Server Error\nError trying to login, please retry".to_string()))
         },
     };
 
-    Ok(HttpResponse::Ok().body(format!("200 OK")))
+    Ok(HttpResponse::Ok().body("200 OK".to_string()))
 }

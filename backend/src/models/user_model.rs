@@ -68,6 +68,7 @@ impl From<UserPatch> for Value {
 
 pub struct UserCRUD;
 
+#[allow(dead_code)]
 impl UserCRUD {
     pub async fn init_table(db: SurrealDBRepo) -> Result<Vec<Response>, Error> {
         let sql = "DEFINE TABLE users SCHEMAFULL;\

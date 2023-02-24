@@ -16,7 +16,7 @@ pub struct LoginData {
 pub async fn login_post(data: web::Json<LoginData>, db: web::Data<SurrealDBRepo>, req: HttpRequest, id: Option<Identity>) -> Result<impl Responder> {
     if id.is_some() {
         return Ok(HttpResponse::Forbidden()
-                  .body(format!("403 Forbidden\nAlready logged in, log out first")))
+                  .body("403 Forbidden\nAlready logged in, log out first".to_string()))
     }
     let db_user: User = match UserCRUD::get_from_username(db, &data.username).await {
         Ok(n) => n,
@@ -24,12 +24,12 @@ pub async fn login_post(data: web::Json<LoginData>, db: web::Data<SurrealDBRepo>
             match e {
                 Error::ObjectNotFound(_) => {
                     return Ok(HttpResponse::Forbidden()
-                        .body(format!("403 Forbidden\nUsername or Password is not correct!")))
+                        .body("403 Forbidden\nUsername or Password is not correct!".to_string()))
                 }
                 _ => {
                     error!("Unknown error occured when trying to get user.\n{}", e);
                     return Ok(HttpResponse::InternalServerError()
-                        .body(format!("500 Internal Server error")))
+                        .body("500 Internal Server error".to_string()))
                 }
             }
         },
@@ -42,7 +42,7 @@ pub async fn login_post(data: web::Json<LoginData>, db: web::Data<SurrealDBRepo>
         Err(_) => {
             error!("Error: Stored hash is not a valid hash. User: {}", db_user.username);
             return Ok(HttpResponse::InternalServerError()
-                      .body(format!("500 Internal Server error")))
+                      .body("500 Internal Server error".to_string()))
         },
     };
 
@@ -55,13 +55,13 @@ pub async fn login_post(data: web::Json<LoginData>, db: web::Data<SurrealDBRepo>
                 Err(e) => {
                     error!("Error: Unknown error trying to login to Identity\n{}", e);
                     Ok(HttpResponse::InternalServerError()
-                       .body(format!("500 Internal Server error")))
+                       .body("500 Internal Server error".to_string()))
                 },
             }
         },
         Err(_) => {
             Ok(HttpResponse::Forbidden()
-                      .body(format!("403 Forbidden\nUsername or Password is not correct!")))
+                      .body("403 Forbidden\nUsername or Password is not correct!".to_string()))
         },
     }
 }
