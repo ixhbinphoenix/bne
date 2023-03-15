@@ -1,9 +1,9 @@
 #!/bin/sh
 
-if [ -z ${1} ]; then
+if [ -z "$1" ]; then
   SERVER="localhost"
 else
-  SERVER="${1}"
+  SERVER="$1"
 fi;
 
 # Generates a new SSL key and certificate bound to either localhost or a specified server and removes it's password
