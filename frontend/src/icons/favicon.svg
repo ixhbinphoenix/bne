@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg viewBox="50 50 300 300" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:bx="https://boxy-svg.com">
+  <defs>
+    <linearGradient id="gradient-0-0" gradientUnits="userSpaceOnUse" x1="171.269" y1="67.295" x2="171.269" y2="317.295" spreadMethod="pad" gradientTransform="matrix(-0.02597, -0.999663, 1.010176, -0.026246, 9.525938, 378.935477)" xlink:href="#gradient-0"/>
+    <linearGradient id="gradient-0" bx:pinned="true">
+      <stop offset="0" style="stop-color: rgb(198, 160, 246);"/>
+      <stop offset="0.5" style="stop-color: rgb(237, 135, 150);"/>
+      <stop offset="1" style="stop-color: rgb(238, 212, 159);"/>
+    </linearGradient>
+  </defs>
+  <g>
+    <circle cx="200" cy="200" r="125" stroke="url(#gradient-0-0)" stroke-width="15" fill="none">
+      <animateTransform attributeName="transform" attributeType="XML" type="rotate" from="0 200 200" to="360 200 200" dur="2.5s" repeatCount="indefinite"/>
+    </circle>
+  </g>
+</svg>

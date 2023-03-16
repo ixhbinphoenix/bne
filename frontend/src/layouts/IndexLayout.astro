@@ -2,12 +2,13 @@
 export interface Props {
   title: string
 }
-
+import favicon from "../icons/favicon.svg"
 const {title} = Astro.props;
 ---
 
 <html lang="de">
   <head>
+    <link rel="icon" href={favicon}>
     <meta charset="utf-8">
     <title>{title}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
