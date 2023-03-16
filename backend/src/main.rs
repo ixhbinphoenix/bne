@@ -8,6 +8,7 @@ mod api_wrapper;
 mod models;
 
 use std::{io::{self, BufReader}, env, collections::HashMap, fs};
+use actix_cors::Cors;
 use actix_identity::IdentityMiddleware;
 use actix_session::{SessionMiddleware, config::PersistentSession, storage::CookieSessionStore};
 use actix_web::{HttpServer, middleware::Logger, web::{self, Data}, HttpResponse, App, cookie::{Key, time::Duration}};
@@ -46,6 +47,12 @@ async fn main() -> io::Result<()> {
                 actix_web::error::InternalError::from_response(err, HttpResponse::Conflict().finish()).into()
             });
 
+        // This is not ok
+        let cors = Cors::default()
+            .allow_any_origin()
+            .allow_any_method()
+            .allow_any_header();
+
 
         App::new()
             .wrap(IdentityMiddleware::default())
@@ -58,6 +65,7 @@ async fn main() -> io::Result<()> {
                     .session_lifecycle(PersistentSession::default().session_ttl_extension_policy(actix_session::config::TtlExtensionPolicy::OnStateChanges).session_ttl(Duration::days(7)))
                     .build()
             )
+            .wrap(cors)
             .app_data(json_config)
             .app_data(Data::new(db_repo.clone()))
             .service(web::resource("/register").route(web::post().to(register_post)))
