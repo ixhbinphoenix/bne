@@ -7,7 +7,8 @@ mod api;
 mod api_wrapper;
 mod models;
 
-use std::{io, env, collections::HashMap};
+use std::{io::{self, BufReader}, env, collections::HashMap, fs};
+use actix_cors::Cors;
 use actix_identity::IdentityMiddleware;
 use actix_session::{SessionMiddleware, config::PersistentSession, storage::CookieSessionStore};
 use actix_web::{HttpServer, middleware::Logger, web::{self, Data}, HttpResponse, App, cookie::{Key, time::Duration}};
@@ -15,30 +16,27 @@ use api::{login::login_post, check_session::check_session_get, register::registe
 use database::surrealdb_repo::SurrealDBRepo;
 use dotenv::dotenv;
 use models::user_model::UserCRUD;
-use openssl::ssl::{SslAcceptor, SslMethod, SslFiletype};
+use rustls::{ServerConfig, Certificate, PrivateKey};
+use rustls_pemfile::{certs, pkcs8_private_keys};
 
 #[actix_web::main]
 async fn main() -> io::Result<()> {
     dotenv().ok();
-    let argv: HashMap<String, String> = env::vars().map(|(key, value)| (key, value)).collect();
+    let envv: HashMap<String, String> = env::vars().map(|(key, value)| (key, value)).collect();
     env_logger::init_from_env(env_logger::Env::new().default_filter_or("info"));
 
-    let mut builder = SslAcceptor::mozilla_intermediate(SslMethod::tls()).expect("SslAcceptor to build");
-    builder
-        .set_private_key_file("key.pem", SslFiletype::PEM)
-        .expect("Key to load");
-    builder.set_certificate_chain_file("cert.pem").expect("Certificate to load");
+    let config = load_rustls_config(); 
 
-    let db_location = if argv.contains_key("DB_LOCATION") { argv.get("DB_LOCATION").unwrap().clone() } else { "memory".to_string() };
-    let db_namespace = if argv.contains_key("DB_NAMESPACE") { argv.get("DB_NAMESPACE").unwrap().clone() } else { "test".to_string() };
-    let db_database = if argv.contains_key("DB_DATABASE") { argv.get("DB_DATABASE").unwrap().clone() } else { "test".to_string() };
+    let db_location = if envv.contains_key("DB_LOCATION") { envv.get("DB_LOCATION").unwrap().clone() } else { "memory".to_string() };
+    let db_namespace = if envv.contains_key("DB_NAMESPACE") { envv.get("DB_NAMESPACE").unwrap().clone() } else { "test".to_string() };
+    let db_database = if envv.contains_key("DB_DATABASE") { envv.get("DB_DATABASE").unwrap().clone() } else { "test".to_string() };
     let db_repo = SurrealDBRepo::init(db_location.clone(), db_namespace.clone(), db_database.clone()).await.expect("db-repo to connect");
 
     UserCRUD::init_table(db_repo.clone()).await.expect("table initilization to work");
 
-    let cookie_key = if argv.contains_key("COOKIE_KEY") { Key::from(argv.get("COOKIE_KEY").unwrap().as_bytes()) } else { Key::generate() };
+    let cookie_key = if envv.contains_key("COOKIE_KEY") { Key::from(envv.get("COOKIE_KEY").unwrap().as_bytes()) } else { Key::generate() };
 
-    let port = if argv.contains_key("PORT") { argv.get("PORT").unwrap() } else { "8080" };
+    let port = if envv.contains_key("PORT") { envv.get("PORT").unwrap() } else { "8080" };
 
     HttpServer::new(move || {
         let logger = Logger::default();
@@ -48,6 +46,12 @@ async fn main() -> io::Result<()> {
             .error_handler(|err, _req| {
                 actix_web::error::InternalError::from_response(err, HttpResponse::Conflict().finish()).into()
             });
+
+        // This is not ok
+        let cors = Cors::default()
+            .allow_any_origin()
+            .allow_any_method()
+            .allow_any_header();
 
 
         App::new()
@@ -61,6 +65,7 @@ async fn main() -> io::Result<()> {
                     .session_lifecycle(PersistentSession::default().session_ttl_extension_policy(actix_session::config::TtlExtensionPolicy::OnStateChanges).session_ttl(Duration::days(7)))
                     .build()
             )
+            .wrap(cors)
             .app_data(json_config)
             .app_data(Data::new(db_repo.clone()))
             .service(web::resource("/register").route(web::post().to(register_post)))
@@ -71,6 +76,27 @@ async fn main() -> io::Result<()> {
                     .service(web::resource("/get_timetable").route(web::get().to(get_timetable)))
             )
     })
-    .bind_openssl(format!("127.0.0.1:{port}"), builder)?
+    .bind_rustls(format!("127.0.0.1:{port}"), config)?
     .run().await
+}
+
+fn load_rustls_config() -> rustls::ServerConfig {
+    let config = ServerConfig::builder()
+        .with_safe_defaults()
+        .with_no_client_auth();
+
+    let cert_file = &mut BufReader::new(fs::File::open("cert.pem").expect("cert.pem to load"));
+    let key_file = &mut BufReader::new(fs::File::open("key.pem").expect("key.pem to load"));
+
+    let cert_chain = certs(cert_file).expect("certificate to load")
+        .into_iter().map(Certificate).collect();
+    let mut keys: Vec<PrivateKey> = pkcs8_private_keys(key_file).expect("key to load")
+        .into_iter().map(PrivateKey).collect();
+
+    if keys.is_empty() {
+        println!("Could not locate private keys");
+        std::process::exit(1);
+    }
+
+    config.with_single_cert(cert_chain, keys.remove(0)).unwrap()
 }
