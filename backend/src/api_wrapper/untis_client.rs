@@ -159,6 +159,7 @@ impl UntisClient {
                 let mut subject_short = "".to_string();
                 match lesson.code.clone() {
                     Some(code) => {
+                        
                         if code == "irregular" {
                             subject = match lesson.subst_text.clone(){
                                 Some(text) => text,
@@ -170,9 +171,40 @@ impl UntisClient {
                         }
                     },
                     None => {
-                        subject = lesson.su[0].name.to_owned();
-                        subject_short = lesson.su[0].name.to_owned();
-                        subject_short = subject_short.split(' ').collect::<Vec<&str>>()[0].to_owned();
+                        if lesson.su.len() == 0 {
+                            if lesson.activity_type.is_none(){
+                                match lesson.lstext {
+                                    Some(text) => {
+                                        subject = text.clone();
+                                        let mut split: Vec<&str> = text.split_whitespace().collect();
+                                        split.remove(0);
+                                        split.remove(0);
+                                        subject_short = split.join(" ");
+                                    }
+                                    None => {
+                                        subject = "N/A".to_string();
+                                        subject_short = "N/A".to_string();
+                                    }
+                                }
+                            }
+                            else{
+                                match lesson.lstext {
+                                    Some(text) => {
+                                        subject = text.clone();
+                                        subject_short = text.clone();
+                                    }
+                                    None => {
+                                        subject = "N/A".to_string();
+                                        subject_short = "N/A".to_string();
+                                    }
+                                }
+                            }
+                        }
+                        else{
+                            subject = lesson.su[0].name.to_owned();
+                            subject_short = lesson.su[0].name.to_owned();
+                            subject_short = subject_short.split(' ').collect::<Vec<&str>>()[0].to_owned();
+                        }
                     }
                 }
                 let mut substituted = false;
@@ -230,10 +262,17 @@ impl UntisClient {
                         room: if !lesson.ro.is_empty() && lesson.ro[0].orgname.is_some() {
                             Some(lesson.ro[0].name.clone())
                         } else { None },
-                        substition_text: lesson.subst_text,
+                        substition_text: lesson.subst_text.clone(),
                         cancelled: match lesson.code{
                             Some(code) => {
-                                code == *"cancelled"
+                                code == *"cancelled" || match lesson.subst_text{
+                                    Some(text) => {
+                                        text == "Vtr. ohne Lehrer".to_string()
+                                    }
+                                    None => {
+                                        false
+                                    }
+                                }
                             },
                             None => {
                                 false

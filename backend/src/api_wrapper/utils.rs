@@ -170,9 +170,12 @@ pub struct PeriodObject {
     pub te: Vec<Teacher>,
     pub su: Vec<Subject>,
     pub ro: Vec<Room>,
-    pub activity_type: String,
+    #[serde(default)]
+    pub activity_type: Option<String>,
     #[serde(default)]
     pub subst_text: Option<String>,
+    #[serde(default)]
+    pub lstext: Option<String>,
     #[serde(default)]
     pub code: Option<String>
 }
