@@ -9,7 +9,8 @@ export const testStudent: Array<TheScheduleObject>  = [
         day: 0,
         subject: "Religion",
         room: "O 1-13",
-        subjectShort: "ER"
+        subjectShort: "ER",
+        substitution: null
     },
     {
         teacher: "USTR",
@@ -19,7 +20,8 @@ export const testStudent: Array<TheScheduleObject>  = [
         day: 0,
         subject: "Geschichte",
         room: "O 2-07",
-        subjectShort: "GE"
+        subjectShort: "GE",
+        substitution: null
     },
     {
         teacher: "TKIN",
@@ -29,7 +31,8 @@ export const testStudent: Array<TheScheduleObject>  = [
         day: 0,
         subject: "Mathematik",
         room: "O 2-11",
-        subjectShort: "M"
+        subjectShort: "M",
+        substitution: null
     },
     {
         teacher: "USTR",
@@ -39,7 +42,8 @@ export const testStudent: Array<TheScheduleObject>  = [
         day: 0,
         subject: "Geschichte",
         room: "O 1-01",
-        subjectShort: "GE"
+        subjectShort: "GE",
+        substitution: null
     },
     {
         teacher: "FSPR",
@@ -49,7 +53,8 @@ export const testStudent: Array<TheScheduleObject>  = [
         day: 0,
         subject: "Musik",
         room: "O E-02",
-        subjectShort: "MU"
+        subjectShort: "MU",
+        substitution: null
     },
     {
         teacher: "PPOW",
@@ -59,7 +64,13 @@ export const testStudent: Array<TheScheduleObject>  = [
         day: 1,
         subject: "Informatik",
         room: "O 2-16",
-        subjectShort: "IF"
+        subjectShort: "IF",
+        substitution: {
+            teacher: null,
+            room: null,
+            subsitutionMessage: "Vtr. ohne Lehrer",
+            cancelled: true
+        }
     },
     {
         teacher: "FSMI",
@@ -69,7 +80,8 @@ export const testStudent: Array<TheScheduleObject>  = [
         day: 1,
         subject: "Religion",
         room: "O 2-01",
-        subjectShort: "ER"
+        subjectShort: "ER",
+        substitution: null
     },
     {
         teacher: "RKAR",
@@ -79,7 +91,8 @@ export const testStudent: Array<TheScheduleObject>  = [
         day: 2,
         subject: "Englisch",
         room: "O 2-11",
-        subjectShort: "E"
+        subjectShort: "E",
+        substitution: null
     },
     {
         teacher: "TKIN",
@@ -89,7 +102,8 @@ export const testStudent: Array<TheScheduleObject>  = [
         day: 2,
         subject: "Physik",
         room: "H PH",
-        subjectShort: "PH"
+        subjectShort: "PH",
+        substitution: null
     },
     {
         teacher: "MVEL",
@@ -99,7 +113,8 @@ export const testStudent: Array<TheScheduleObject>  = [
         day: 2,
         subject: "Chemie",
         room: "O 1-17",
-        subjectShort: "CH"
+        subjectShort: "CH",
+        substitution: null
     },
     {
         teacher: "PPOW",
@@ -109,7 +124,8 @@ export const testStudent: Array<TheScheduleObject>  = [
         day: 2,
         subject: "Informatik",
         room: "O 2-16",
-        subjectShort: "IF"
+        subjectShort: "IF",
+        substitution: null
     },
     {
         teacher: "JMUL",
@@ -119,7 +135,8 @@ export const testStudent: Array<TheScheduleObject>  = [
         day: 2,
         subject: "Latein",
         room: "O 1-02",
-        subjectShort: "L8"
+        subjectShort: "L8",
+        substitution: null
     },
     {
         teacher: "RSCH",
@@ -129,7 +146,8 @@ export const testStudent: Array<TheScheduleObject>  = [
         day: 2,
         subject: "Deutsch",
         room: "O 2-07",
-        subjectShort: "D"
+        subjectShort: "D",
+        substitution: null
     },
     {
         teacher: "RSCH",
@@ -139,7 +157,8 @@ export const testStudent: Array<TheScheduleObject>  = [
         day: 3,
         subject: "Deutsch",
         room: "O 2-11",
-        subjectShort: "D"
+        subjectShort: "D",
+        substitution: null
     },
     {
         teacher: "TKIN",
@@ -149,7 +168,8 @@ export const testStudent: Array<TheScheduleObject>  = [
         day: 3,
         subject: "Mathematik",
         room: "O 2-11",
-        subjectShort: "M"
+        subjectShort: "M",
+        substitution: null
     },
     {
         teacher: "JMUL",
@@ -159,7 +179,8 @@ export const testStudent: Array<TheScheduleObject>  = [
         day: 3,
         subject: "Latein",
         room: "---",
-        subjectShort: "L8"
+        subjectShort: "L8",
+        substitution: null
     },
     {
         teacher: "HKÜS",
@@ -169,7 +190,8 @@ export const testStudent: Array<TheScheduleObject>  = [
         day: 3,
         subject: "Sozialwissenschaft",
         room: "O 1-01",
-        subjectShort: "SW"
+        subjectShort: "SW",
+        substitution: null
     },
     {
         teacher: "TWAR",
@@ -179,7 +201,8 @@ export const testStudent: Array<TheScheduleObject>  = [
         day: 3,
         subject: "Sport",
         room: "O TH2",
-        subjectShort: "SP"
+        subjectShort: "SP",
+        substitution: null
     },
     {
         teacher: "HKUS",
@@ -189,7 +212,8 @@ export const testStudent: Array<TheScheduleObject>  = [
         day: 3,
         subject: "Sozialwissenschaft",
         room: "O E-01",
-        subjectShort: "SW"
+        subjectShort: "SW",
+        substitution: null
     },
     {
         teacher: "TKIN",
@@ -199,7 +223,8 @@ export const testStudent: Array<TheScheduleObject>  = [
         day: 4,
         subject: "Physik",
         room: "H PH",
-        subjectShort: "PH"
+        subjectShort: "PH",
+        substitution: null
     },
     {
         teacher: "FSPR",
@@ -209,7 +234,8 @@ export const testStudent: Array<TheScheduleObject>  = [
         day: 4,
         subject: "Musik",
         room: "O E-02",
-        subjectShort: "MU"
+        subjectShort: "MU",
+        substitution: null
     },
     {
         teacher: "RKAR",
@@ -219,7 +245,8 @@ export const testStudent: Array<TheScheduleObject>  = [
         day: 4,
         subject: "Englisch",
         room: "O 2-11",
-        subjectShort: "E"
+        subjectShort: "E",
+        substitution: null
     },
     {
         teacher: "MVEL",
@@ -229,6 +256,7 @@ export const testStudent: Array<TheScheduleObject>  = [
         day: 4,
         subject: "Chemie",
         room: "O 1-17",
-        subjectShort: "CH"
+        subjectShort: "CH",
+        substitution: null
     },
 ]

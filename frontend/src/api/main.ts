@@ -28,6 +28,12 @@ export interface TheScheduleObject {
     subject: string;
     subjectShort: string;
     room: string;
+    substitution: {
+        teacher: string | null,
+        room: string | null,
+        subsitutionMessage: string | null,
+        cancelled: boolean
+    } | null
 };
 export const SubjectColor: { [key: string]: string} =  {
     M: "#dba402",

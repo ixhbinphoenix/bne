@@ -60,12 +60,25 @@ export default function Stundenplan(): JSX.Element {
                         const objectStyle = {
                             backgroundColor: SubjectColor[lessons[k].subjectShort]
                         }
+                        let roomStyle = {
+                            textDecoration: "none",
+                        }
+                        let teacherStyle = {
+                            textDecoration: "none",
+                        }
+                        let substitutionRoomStyle = {
+                            display: "none"
+                        }
+                        let substitutionTeacherStyle = {
+                            display: "none"
+                        }
                         flexStyle = {
                             gridRowStart: lessons[k].starts.toString(),
                             gridRowEnd: "span " + lessons[k].length
                         }
-                        lessonElements.push(
-                            <div style={objectStyle} onClick={() => {
+                        if(!lessons[k].substitution) {
+                            lessonElements.push(
+                               <div style={objectStyle} onClick={() => {
                                 openPopup()
                                 setPopupContent(
                                 <div style={objectStyle}>
@@ -77,11 +90,44 @@ export default function Stundenplan(): JSX.Element {
                                 <p>{lessons[k].room}</p>
                                 <h2>{lessons[k].subjectShort}</h2>
                                 <p>{lessons[k].teacher}</p>
-                            </div>
-                        )
+                            </div> 
+                            )
+                        }
+                        else {
+                            if(lessons[k].substitution?.room) {
+                                roomStyle = { textDecoration: "line-through" }
+                                substitutionRoomStyle = { display: "block" }
+                            }
+                            if(lessons[k].substitution?.teacher) {
+                                teacherStyle = { textDecoration: "line-through" }
+                                substitutionTeacherStyle = { display: "block" }
+                            }
+                            if(lessons[k].substitution?.cancelled) {
+                                roomStyle = { textDecoration: "line-through" }
+                                teacherStyle = { textDecoration: "line-through" }
+                            }
+                            lessonElements.push(
+                                <div style={objectStyle} onClick={() => {
+                                    openPopup()
+                                    setPopupContent(
+                                    <div style={objectStyle}>
+                                        <p style={roomStyle}>{lessons[k].room}</p>
+                                        <p style={substitutionRoomStyle}>{lessons[k].substitution?.room}</p>
+                                        <h2>{lessons[k].subjectShort}</h2>
+                                        <p style={teacherStyle}>{lessons[k].teacher}</p>
+                                        <p style={substitutionTeacherStyle}>{lessons[k].substitution?.teacher}</p>
+                                    </div>)
+                             }}>
+                                    <p style={roomStyle}>{lessons[k].room}</p>
+                                    <p style={substitutionRoomStyle}>{lessons[k].substitution?.room}</p>
+                                    <h2>{lessons[k].subjectShort}</h2>
+                                    <p style={teacherStyle}>{lessons[k].teacher}</p>
+                                    <p style={substitutionTeacherStyle}>{lessons[k].substitution?.teacher}</p>
+                                </div> 
+                             )
+                        }
                     }
                 }
-
                 if(lessonElements.length) {
                     tableElements[i].push(
                     <div className="parent-flex" style={flexStyle}>
