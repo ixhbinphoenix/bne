@@ -49,10 +49,11 @@ async fn main() -> io::Result<()> {
 
         // This is not ok
         let cors = Cors::default()
-            .allow_any_origin()
+            .allowed_origin("http://localhost:3000")
+            .supports_credentials()
             .allow_any_method()
-            .allow_any_header();
-
+            .allow_any_header()
+            .max_age(3600);
 
         App::new()
             .wrap(IdentityMiddleware::default())
