@@ -3,6 +3,8 @@
 import type { TheScheduleObject } from "../../api/main";
 import { SubjectColor } from "../../api/main";
 import { fetchJSessionId } from "../../api/main";
+import { registerAccount } from "../../api/main";
+import { getTimetable } from "../../api/main";
 import Popup from "./Popup";
 import type { JSX } from "preact";
 import { testStudent } from "../../logs/testStudent";
@@ -43,6 +45,8 @@ export default function Stundenplan(): JSX.Element {
     const [popupStatus, setPopupStatus] = useState<boolean>(false);
     const [popupContent, setPopupContent] = useState<JSX.Element>()
     const openPopup = () => {
+        registerAccount("name", "1Passwort!")
+        getTimetable();
         setPopupStatus(true)
     }
     const addToDivs = (lessons: Array<TheScheduleObject>) => {

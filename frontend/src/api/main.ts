@@ -1,4 +1,6 @@
-export async function fetchJSessionId(username: string, password: string): Promise<{ status: string, result: string | null }> {
+type APIReturnValue = Promise<{ status: string, result: string | null }>;
+
+export async function fetchJSessionId(username: string, password: string): APIReturnValue {
     let resultRaw = await fetch('https://borys.webuntis.com/WebUntis/jsonrpc.do?school=ges-münster', {
         method: 'POST',
         body: JSON.stringify({
@@ -19,6 +21,41 @@ export async function fetchJSessionId(username: string, password: string): Promi
         result: null}
    }
 };
+export async function registerAccount(username: string, password: string) {
+    let result = await fetch('https://localhost:8080/register', {
+        method: 'POST',
+        headers: {
+            "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({
+            username: username,
+            password: password
+        })
+    })
+    console.log(await result.json())
+}
+export async function getTimetable() {
+    let resultRaw = await fetch('https://localhost:8080/demo/get_timetable', {
+        method: 'GET',
+        credentials: "include"
+    })
+    let resultClean = await resultRaw.json()
+    console.log(resultClean)
+    console.log(resultClean.body.code, resultClean.body.message)
+    try {
+        return {
+            status: resultClean.body.code,
+            result: resultClean.body.message
+        }
+    }
+    catch {
+        return {
+            status: "400",
+            result: "Bad Request"
+        }
+    }
+}
 export interface TheScheduleObject {
     teacher: string;
     lernbuero: boolean;
