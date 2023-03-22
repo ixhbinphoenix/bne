@@ -171,7 +171,7 @@ impl UntisClient {
                         }
                     },
                     None => {
-                        if lesson.su.len() == 0 {
+                        if lesson.su.is_empty() {
                             if lesson.activity_type.is_none(){
                                 match lesson.lstext {
                                     Some(text) => {
@@ -267,7 +267,7 @@ impl UntisClient {
                             Some(code) => {
                                 code == *"cancelled" || match lesson.subst_text{
                                     Some(text) => {
-                                        text == "Vtr. ohne Lehrer".to_string()
+                                        text == *"Vtr. ohne Lehrer"
                                     }
                                     None => {
                                         false
