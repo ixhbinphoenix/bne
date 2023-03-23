@@ -228,7 +228,7 @@ impl UntisClient {
                             orgname
                         },
                         None => {
-                            lesson.te[0].name.to_owned()
+                            lesson.ro[0].name.to_owned()
                         }
                     }
                 } else { "".to_string() };
