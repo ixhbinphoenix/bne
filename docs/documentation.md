@@ -20,6 +20,11 @@
 >>>1. Neue Ordnerstruktur: Aufteilung frontend / backend
 >>>2. Beginn API-Wrapperentwicklung
 >>>3. Beginn HTTP-Serverentwicklung mit actix und surrealDB
+>>
+>>09.02.23 : Zwischenstand
+>>>1. Erste Version des Plans, die echte Daten anzeigen kann.
+
+
 
 
 
