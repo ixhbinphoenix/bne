@@ -33,42 +33,75 @@ export async function registerAccount(username: string, password: string) {
             password: password
         })
     })
-    console.log(await result.json())
+    if(!result.body) {
+            console.error("No result body found!")
+            return "No result body found!"
+    }
+    let body: ReadableStream<Uint8Array> = await result.body
+    let stream = await readStream(body);
+    let requestResult = stream.split("\n")
+    return {
+        status: requestResult[0],
+        message: requestResult[1]
+    }
 }
-export async function getTimetable() {
+async function readStream(stream: ReadableStream<Uint8Array>) {
+    const textDecode = new TextDecoder()
+    const chunks = [];
+    const reader = stream.getReader()
+    while(true) {
+        const { done, value } = await reader.read()
+        if(done) {
+            break;
+        }
+        chunks.push(textDecode.decode(value))
+    }
+    return chunks.join("")
+}
+export async function getTimetable(): Promise<{lessons?: TheScheduleObject[], status: string, message?: string}> {
     let resultRaw = await fetch('https://localhost:8080/demo/get_timetable', {
         method: 'GET',
         credentials: "include"
     })
     let resultClean = await resultRaw.json()
-    console.log(resultClean)
+    console.log(resultClean.body.lessons)
     console.log(resultClean.body.code, resultClean.body.message)
     try {
-        return {
+        if(resultClean.body.lessons) {
+            return {
+                lessons: resultClean.body.lessons,
+                status: "200 OK",
+                message: undefined
+            }
+        }
+        else {
+            return {
+            lessons: undefined,
             status: resultClean.body.code,
-            result: resultClean.body.message
+            message: resultClean.body.message
+            }
         }
     }
     catch {
         return {
             status: "400",
-            result: "Bad Request"
+            message: "Bad Request"
         }
     }
 }
 export interface TheScheduleObject {
     teacher: string;
-    lernbuero: boolean;
-    starts: number;
+    is_lb: boolean;
+    start: number;
     length: number;
     day: number;
     subject: string;
-    subjectShort: string;
+    subject_short: string;
     room: string;
     substitution: {
         teacher: string | null,
         room: string | null,
-        subsitutionMessage: string | null,
+        subsitution_text: string | null,
         cancelled: boolean
     } | null
 };
@@ -87,8 +120,8 @@ export const SubjectColor: { [key: string]: string} =  {
     PH: "#43c95b",
     BI: "#00d226",
     L8: "#f87406",
-    N0: "#ff1717",
-    S0: "#ff1717",
+    N0: "#ff4d17",
+    S0: "#ff4d17",
     SW: "#212193",
     SP: "#4091e4",
     PA: "#ff5500",

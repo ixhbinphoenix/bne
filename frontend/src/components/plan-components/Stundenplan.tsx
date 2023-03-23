@@ -7,11 +7,11 @@ import { registerAccount } from "../../api/main";
 import { getTimetable } from "../../api/main";
 import Popup from "./Popup";
 import type { JSX } from "preact";
-import { testStudent } from "../../logs/testStudent";
 import "../../styles/Stundenplan.scss";
 import { useState, useEffect } from "preact/hooks";
 
 export default function Stundenplan(): JSX.Element {
+    let APIdata;
     useEffect(() => {
         fetchJSessionId("account", "password").then((sessionId) => {
             if(sessionId.result) {
@@ -21,7 +21,29 @@ export default function Stundenplan(): JSX.Element {
                 alert(sessionId.status)
             }
         })
+        
+        registerAccount("Account123456", "1Passwort!")
+
+        getTimetable().then(result => {
+            if(result.lessons) {
+                console.log("setting data")
+                APIdata = result.lessons
+                addToDivs(result.lessons)
+                const tableDaysTemp = []; 
+                for(let i: number = 0; i < 5; i++) {
+                    tableDaysTemp.push(
+                        <div className="table-day">
+                            {tableElements[i]}
+                        </div>
+                    )
+                }
+                setTableDays(tableDaysTemp)
+                console.log(tableDays)
+            }
+        })
+
     }, [])
+   
     const getJSessionIdCookie = () => {
         const storedJSessionId = document.cookie.match('(^|;)\\s*' + "JSESSIONID" + '\\s*=\\s*([^;]+)')?.pop() || ''
         if(storedJSessionId) {
@@ -45,11 +67,10 @@ export default function Stundenplan(): JSX.Element {
     const [popupStatus, setPopupStatus] = useState<boolean>(false);
     const [popupContent, setPopupContent] = useState<JSX.Element>()
     const openPopup = () => {
-        registerAccount("name", "1Passwort!")
-        getTimetable();
         setPopupStatus(true)
     }
-    const addToDivs = (lessons: Array<TheScheduleObject>) => {
+    const addToDivs = (lessons: TheScheduleObject[]) => {  
+        console.log(lessons)      
         for(let i: number = 0; i < 5; i++) {
             for(let j: number = 0; j < 10; j++) {
                 let lessonElements: Array<JSX.Element> = [];
@@ -60,9 +81,13 @@ export default function Stundenplan(): JSX.Element {
                 }
 
                 for(let k: number = 0; k < lessons.length; k++) {
-                    if(lessons[k].day == i && lessons[k].starts - 1 == j) {
+                    if(lessons[k].day == i && lessons[k].start - 1 == j) {
+                        let subjectType = lessons[k].subject;
+                        if(lessons[k].subject_short != "") {
+                            subjectType = lessons[k].subject_short
+                        }
                         const objectStyle = {
-                            backgroundColor: SubjectColor[lessons[k].subjectShort]
+                            backgroundColor: SubjectColor[lessons[k].subject_short]
                         }
                         let roomStyle = {
                             textDecoration: "none",
@@ -77,7 +102,7 @@ export default function Stundenplan(): JSX.Element {
                             display: "none"
                         }
                         flexStyle = {
-                            gridRowStart: lessons[k].starts.toString(),
+                            gridRowStart: lessons[k].start.toString(),
                             gridRowEnd: "span " + lessons[k].length
                         }
                         if(!lessons[k].substitution) {
@@ -87,24 +112,26 @@ export default function Stundenplan(): JSX.Element {
                                 setPopupContent(
                                 <div style={objectStyle}>
                                     <p>{lessons[k].room}</p>
-                                    <h2>{lessons[k].subjectShort}</h2>
+                                    <h2>{subjectType}</h2>
                                     <p>{lessons[k].teacher}</p>
                                 </div>)
                             }}>
                                 <p>{lessons[k].room}</p>
-                                <h2>{lessons[k].subjectShort}</h2>
+                                <h2>{subjectType}</h2>
                                 <p>{lessons[k].teacher}</p>
                             </div> 
                             )
                         }
                         else {
-                            if(lessons[k].substitution?.room) {
+                            if(lessons[k].substitution?.room && lessons[k].substitution?.room != "---") {
                                 roomStyle = { textDecoration: "line-through" }
                                 substitutionRoomStyle = { display: "block" }
                             }
                             if(lessons[k].substitution?.teacher) {
                                 teacherStyle = { textDecoration: "line-through" }
-                                substitutionTeacherStyle = { display: "block" }
+                                if(lessons[k].substitution?.teacher != "---") {
+                                    substitutionTeacherStyle = { display: "block" }
+                                }
                             }
                             if(lessons[k].substitution?.cancelled) {
                                 roomStyle = { textDecoration: "line-through" }
@@ -117,14 +144,14 @@ export default function Stundenplan(): JSX.Element {
                                     <div style={objectStyle}>
                                         <p style={roomStyle}>{lessons[k].room}</p>
                                         <p style={substitutionRoomStyle}>{lessons[k].substitution?.room}</p>
-                                        <h2>{lessons[k].subjectShort}</h2>
+                                        <h2>{subjectType}</h2>
                                         <p style={teacherStyle}>{lessons[k].teacher}</p>
                                         <p style={substitutionTeacherStyle}>{lessons[k].substitution?.teacher}</p>
                                     </div>)
-                             }}>
+                                    }}>
                                     <p style={roomStyle}>{lessons[k].room}</p>
                                     <p style={substitutionRoomStyle}>{lessons[k].substitution?.room}</p>
-                                    <h2>{lessons[k].subjectShort}</h2>
+                                    <h2>{subjectType}</h2>
                                     <p style={teacherStyle}>{lessons[k].teacher}</p>
                                     <p style={substitutionTeacherStyle}>{lessons[k].substitution?.teacher}</p>
                                 </div> 
@@ -142,16 +169,14 @@ export default function Stundenplan(): JSX.Element {
             }
         }
     }
-    addToDivs(testStudent);
-
-    const tableDays: Array<JSX.Element> = [];
-    for(let i: number = 0; i < 5; i++) {
-        tableDays.push(
-            <div className="table-day">
-                {tableElements[i]}
-            </div>
-        )
+    if(APIdata) {
+        console.log("data received")
+        addToDivs(APIdata)
     }
+    else {
+        console.log("no data")
+    }
+    const [tableDays, setTableDays] = useState<Array<JSX.Element>>([]);
     return(
         <div className="table-layout">
             <div className="table-top">
