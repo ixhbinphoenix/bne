@@ -26,6 +26,9 @@ pub enum Error {
     #[error("Object conversion failed at property {0}")]
     ConversionError(String),
 
+    #[error("Fetching from Untis failed")]
+    UntisError,
+
     #[error(transparent)]
     Password(#[from] PasswordError),
 

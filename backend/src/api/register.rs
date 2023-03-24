@@ -40,7 +40,7 @@ pub async fn register_post(data: web::Json<RegisterData>, db: web::Data<SurrealD
         password_hash
     };
 
-    let object = UserCRUD::create(db, "users", db_user).await?;
+    let object = UserCRUD::create(db, db_user).await?;
     let ret_user: User = object.try_into()?;
 
     match Identity::login(&request.extensions(), ret_user.id.expect("id to be check during conversion")) {

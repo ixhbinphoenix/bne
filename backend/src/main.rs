@@ -13,8 +13,10 @@ use actix_identity::IdentityMiddleware;
 use actix_session::{SessionMiddleware, config::PersistentSession, storage::CookieSessionStore};
 use actix_web::{HttpServer, middleware::Logger, web::{self, Data}, HttpResponse, App, cookie::{Key, time::Duration}};
 use api::{login::login_post, check_session::check_session_get, register::register_post, demo::get_timetable::get_timetable};
+use api_wrapper::untis_client::UntisClient;
 use database::surrealdb_repo::SurrealDBRepo;
 use dotenv::dotenv;
+use log::info;
 use models::user_model::UserCRUD;
 use rustls::{ServerConfig, Certificate, PrivateKey};
 use rustls_pemfile::{certs, pkcs8_private_keys};
@@ -23,16 +25,24 @@ use rustls_pemfile::{certs, pkcs8_private_keys};
 async fn main() -> io::Result<()> {
     dotenv().ok();
     let envv: HashMap<String, String> = env::vars().map(|(key, value)| (key, value)).collect();
-    env_logger::init_from_env(env_logger::Env::new().default_filter_or("info"));
+    if cfg!(debug_assertions) {
+        env_logger::init_from_env(env_logger::Env::new().default_filter_or("debug"));
+    } else {
+        env_logger::init_from_env(env_logger::Env::new().default_filter_or("info"));
+    }
 
     let config = load_rustls_config(); 
 
+    info!("Connecting database...");
     let db_location = if envv.contains_key("DB_LOCATION") { envv.get("DB_LOCATION").unwrap().clone() } else { "memory".to_string() };
     let db_namespace = if envv.contains_key("DB_NAMESPACE") { envv.get("DB_NAMESPACE").unwrap().clone() } else { "test".to_string() };
     let db_database = if envv.contains_key("DB_DATABASE") { envv.get("DB_DATABASE").unwrap().clone() } else { "test".to_string() };
     let db_repo = SurrealDBRepo::init(db_location.clone(), db_namespace.clone(), db_database.clone()).await.expect("db-repo to connect");
 
     UserCRUD::init_table(db_repo.clone()).await.expect("table initilization to work");
+
+    info!("Logging into Untis...");
+    let untis_client = UntisClient::init(envv.get("UNTIS_USER").unwrap().into(), envv.get("UNTIS_PASS").unwrap().into(), "borys".into(), envv.get("UNTIS_SCHOOL").unwrap().into(), envv.get("UNTIS_SUBDOMAIN").unwrap().into()).await.unwrap();
 
     let cookie_key = if envv.contains_key("COOKIE_KEY") { Key::from(envv.get("COOKIE_KEY").unwrap().as_bytes()) } else { Key::generate() };
 
@@ -69,6 +79,7 @@ async fn main() -> io::Result<()> {
             .wrap(cors)
             .app_data(json_config)
             .app_data(Data::new(db_repo.clone()))
+            .app_data(Data::new(untis_client.clone()))
             .service(web::resource("/register").route(web::post().to(register_post)))
             .service(web::resource("/login").route(web::post().to(login_post)))
             .service(web::resource("/check_session").route(web::get().to(check_session_get)))

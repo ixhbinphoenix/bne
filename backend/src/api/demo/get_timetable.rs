@@ -1,31 +1,39 @@
 use actix_identity::Identity;
-use actix_web::{Responder, web};
-use serde::Serialize;
+use actix_web::{Responder, web, Result};
+use serde::{Serialize, Deserialize};
 
-use crate::{api::response::Response, api_wrapper::utils::{FormattedLesson, Substitution}};
+use crate::{api::response::Response, api_wrapper::{utils::{FormattedLesson, TimetableParameter}, untis_client::UntisClient}, prelude::Error, utils::time::{format_for_untis, get_this_monday, get_this_friday}};
 
 #[derive(Serialize)]
 struct TimetableResponse {
     lessons: Vec<FormattedLesson>
 }
 
-pub async fn get_timetable(id: Option<Identity>) -> impl Responder {
+#[derive(Deserialize)]
+pub struct TimetableQuery {
+     from: Option<String>,
+     until: Option<String>
+}
+
+pub async fn get_timetable(id: Option<Identity>, untis: web::Data<UntisClient>, query: web::Query<TimetableQuery>) -> Result<impl Responder> {
     if id.is_none() {
-        return web::Json(Response::new_error(403, "Not logged in".to_string()));
+        return Ok(web::Json(Response::new_error(403, "Not logged in".to_string())));
     }
-    Response::new_success(TimetableResponse {
-        lessons: vec![
-            FormattedLesson {
-                teacher: "PPOW".to_string(),
-                is_lb: false,
-                start: 3,
-                length: 2,
-                day: 1,
-                subject: "Informatik".to_string(),
-                room: "O2-16NT".to_string(),
-                subject_short: "IF".to_string(),
-                substitution: Some(Substitution::default_cancelled())
-            }
-        ]
-    }).into()
+    let from = match query.from.clone() {
+        Some(from) => from,
+        None => { format_for_untis(get_this_monday()) }
+    };
+    let until = match query.until.clone() {
+        Some(until) => until,
+        None => { format_for_untis(get_this_friday()) }
+    };
+    let timetable = match untis.clone().get_ref().to_owned().get_timetable(TimetableParameter::default(&untis.clone(), from, until)).await {
+        Ok(timetable) => { timetable },
+        Err(_) => {
+            return Ok(Response::from(Error::UntisError).into());
+        },
+    };
+    Ok(Response::new_success(TimetableResponse {
+        lessons: timetable
+    }).into())
 }

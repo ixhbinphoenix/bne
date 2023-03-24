@@ -83,13 +83,13 @@ impl UserCRUD {
         }
     }
 
-    pub async fn create<T: Creatable>(db: Data<SurrealDBRepo>, tb: &str, data: T) -> Result<Object, Error> {
+    pub async fn create<T: Creatable>(db: Data<SurrealDBRepo>, data: T) -> Result<Object, Error> {
         let sql = "CREATE type::table($tb) CONTENT $data RETURN *;";
 
         let data: Object = W(data.into()).try_into()?;
 
         let vars: BTreeMap<String, Value> = map![
-            "tb".into() => tb.into(),
+            "tb".into() => "users".into(),
             "data".into() => data.into()
         ];
 

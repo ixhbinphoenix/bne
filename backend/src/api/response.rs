@@ -1,5 +1,7 @@
-use actix_web::web::Json;
+use actix_web::{web::Json, ResponseError as actixResponseError};
 use serde::Serialize;
+
+use crate::prelude::Error;
 
 #[derive(Serialize)]
 pub struct Response<T>{
@@ -16,6 +18,15 @@ impl<ResponseError> Response<ResponseError> {
                     code, message
                 }
             )
+        }
+    }
+}
+
+impl<ResponseError> From<Error> for Response<ResponseError> {
+    fn from(value: Error) -> Self {
+        Response {
+            success: false,
+            body: ResponseResult::Err(value.into())
         }
     }
 }
@@ -48,4 +59,13 @@ pub enum ResponseResult<T>{
 pub struct ResponseError {
     code: u16,
     message: String
+}
+
+impl From<Error> for ResponseError {
+    fn from(value: Error) -> Self {
+        Self {
+            code: value.status_code().into(),
+            message: value.to_string()
+        }
+    }
 }
