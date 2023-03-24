@@ -1,5 +1,8 @@
 ---
 import PlanLayout from "../layouts/PlanLayout.astro";
+import CookieBanner from "../components/CookieBanner";
 ---
 
-<PlanLayout title="Stundenplan"/>
+<PlanLayout title="Stundenplan">
+    <CookieBanner client:load></CookieBanner>
+</PlanLayout>

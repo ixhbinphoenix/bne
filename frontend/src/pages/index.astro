@@ -1,10 +1,12 @@
 ---
 import HomeTitleBar from "../components/HomeTitleBar.astro";
+import CookieBanner from "../components/CookieBanner";
 import IndexLayout from "../layouts/IndexLayout.astro";
 ---
 
 <IndexLayout title="TheSchedule">
   <HomeTitleBar/>
+  <CookieBanner client:load></CookieBanner>
   <div id="main-content">
     <div id="title-content">
       <h1 id="front-title">TheSchedule</h1>
