@@ -113,7 +113,7 @@ impl UserCRUD {
     pub async fn get_from_id(db: Data<SurrealDBRepo>, tid: &str) -> Result<Object, Error> {
         let sql = "SELECT * FROM $th;";
 
-        let vars: BTreeMap<String, Value> = map!["th".into() => thing(&tid)?.into()];
+        let vars: BTreeMap<String, Value> = map!["th".into() => thing(tid)?.into()];
 
         let res = db.ds.execute(sql, &db.ses, Some(vars), true).await?;
 
@@ -164,7 +164,7 @@ impl UserCRUD {
         let sql = "UPDATE $th MERGE $data RETURN *;";
 
         let vars = map![
-            "th".into() => thing(&tid)?.into(),
+            "th".into() => thing(tid)?.into(),
             "data".into() => data.into()
         ];
         
@@ -180,7 +180,7 @@ impl UserCRUD {
     pub async fn delete(db: Data<SurrealDBRepo>, tid: &str) -> Result<String, Error> {
         let sql = "DELETE $th RETURN *;";
 
-        let vars = map!["th".into() => thing(&tid)?.into()];
+        let vars = map!["th".into() => thing(tid)?.into()];
 
         let res = db.ds.execute(sql, &db.ses, Some(vars), false).await?;
 

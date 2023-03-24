@@ -12,7 +12,7 @@ use actix_cors::Cors;
 use actix_identity::IdentityMiddleware;
 use actix_session::{SessionMiddleware, config::PersistentSession, storage::CookieSessionStore};
 use actix_web::{HttpServer, middleware::Logger, web::{self, Data}, HttpResponse, App, cookie::{Key, time::Duration}};
-use api::{login::login_post, check_session::check_session_get, register::register_post, demo::get_timetable::get_timetable};
+use api::{login::login_post, check_session::check_session_get, register::register_post, get_timetable::get_timetable};
 use database::surrealdb_repo::SurrealDBRepo;
 use dotenv::dotenv;
 use log::info;
