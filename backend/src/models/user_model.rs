@@ -11,6 +11,7 @@ use crate::{utils::macros::map, database::surrealdb_repo::{Creatable, Patchable,
 pub struct User {
     pub id: Option<String>,
     pub username: String,
+    pub person_id: i64,
     pub password_hash: String
 }
 
@@ -19,6 +20,7 @@ impl From<User> for Value {
         map![
             "id".into() => value.id.into(),
             "username".into() => value.username.into(),
+            "person_id".into() => value.person_id.into(),
             "password_hash".into() => value.password_hash.into()
         ].into()
     }
@@ -36,6 +38,10 @@ impl TryFrom<Object> for User {
             Some(n) => n.to_owned(),
             None => return Err(Error::ConversionError("username".to_owned()))
         }).try_into()?;
+        let person_id: i64 = W(match value.get("person_id") {
+            Some(n) => n.to_owned(),
+            None => return Err(Error::ConversionError("person_id".to_owned()))
+        }).try_into()?;
         let password_hash: String = W(match value.get("password_hash") {
             Some(n) => n.to_owned(),
             None => return Err(Error::ConversionError("password_hash".to_owned()))
@@ -44,6 +50,7 @@ impl TryFrom<Object> for User {
         Ok(User {
             id: Some(id),
             username,
+            person_id,
             password_hash
         })
     }
@@ -52,6 +59,7 @@ impl TryFrom<Object> for User {
 #[derive(Debug, Serialize, Deserialize, Patchable)]
 pub struct UserPatch {
     pub username: Option<String>,
+    pub person_id: Option<String>,
     pub password_hash: Option<String>
 }
 
@@ -73,6 +81,8 @@ impl UserCRUD {
     pub async fn init_table(db: SurrealDBRepo) -> Result<Vec<Response>, Error> {
         let sql = "DEFINE TABLE users SCHEMAFULL;\
                    DEFINE FIELD username ON users TYPE string;\
+                   DEFINE FIELD person_id ON users TYPE number;\
+                   DEFINE INDEX person_id_index ON TABLE users COLUMNS person_id UNIQUE;\
                    DEFINE FIELD password_hash ON users TYPE string;";
         
         match db.ds.execute(sql, &db.ses, None, false).await {
@@ -103,13 +113,30 @@ impl UserCRUD {
     pub async fn get_from_id(db: Data<SurrealDBRepo>, tid: &str) -> Result<Object, Error> {
         let sql = "SELECT * FROM $th;";
 
-        let tid = format!("users:{tid}");
-
         let vars: BTreeMap<String, Value> = map!["th".into() => thing(&tid)?.into()];
 
         let res = db.ds.execute(sql, &db.ses, Some(vars), true).await?;
 
         let first_res = res.into_iter().next().expect("to get a response");
+
+        W(first_res.result?.first()).try_into()
+    }
+
+    pub async fn get_from_person_id(db: Data<SurrealDBRepo>, person_id: i64) -> Result<Object, Error> {
+        let sql = "SELECT * FROM users WHERE personid=$personid";
+
+        let vars: BTreeMap<String, Value> = map![
+            "person_id".into() => person_id.to_string().into()
+        ];
+
+        let res = db.ds.execute(sql, &db.ses, Some(vars), true).await?;
+
+        let first_res = match res.into_iter().next() {
+            Some(r) => r,
+            None => {
+                return Err(Error::ObjectNotFound(person_id.to_string()));
+            }
+        };
 
         W(first_res.result?.first()).try_into()
     }
@@ -136,8 +163,6 @@ impl UserCRUD {
     pub async fn update<T: Patchable>(db: Data<SurrealDBRepo>, tid: &str, data: T) -> Result<Object, Error> {
         let sql = "UPDATE $th MERGE $data RETURN *;";
 
-        let tid = format!("users:{tid}");
-
         let vars = map![
             "th".into() => thing(&tid)?.into(),
             "data".into() => data.into()
@@ -155,8 +180,6 @@ impl UserCRUD {
     pub async fn delete(db: Data<SurrealDBRepo>, tid: &str) -> Result<String, Error> {
         let sql = "DELETE $th RETURN *;";
 
-        let tid = format!("users:{tid}");
-
         let vars = map!["th".into() => thing(&tid)?.into()];
 
         let res = db.ds.execute(sql, &db.ses, Some(vars), false).await?;
@@ -165,7 +188,7 @@ impl UserCRUD {
 
         first_res.result?;
 
-        Ok(tid)
+        Ok(tid.to_string())
     }
 }
 

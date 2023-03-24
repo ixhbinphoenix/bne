@@ -10,7 +10,8 @@ use crate::{database::surrealdb_repo::SurrealDBRepo, models::user_model::{UserCR
 #[derive(Deserialize)]
 pub struct RegisterData {
     username: String,
-    password: String
+    password: String,
+    person_id: i64
 }
 
 pub async fn register_post(data: web::Json<RegisterData>, db: web::Data<SurrealDBRepo>, request: HttpRequest) -> Result<impl Responder> {
@@ -37,6 +38,7 @@ pub async fn register_post(data: web::Json<RegisterData>, db: web::Data<SurrealD
     let db_user = User {
         id: None,
         username: data.username.clone(),
+        person_id: data.person_id,
         password_hash
     };
 

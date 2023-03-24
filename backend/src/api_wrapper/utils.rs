@@ -70,7 +70,7 @@ pub struct TimetableParameter {
 }
 
 impl TimetableParameter {
-    pub fn default(client: &actix_web::web::Data<UntisClient>, start_date: String, end_date: String) -> Self {
+    pub fn default(client: UntisClient, start_date: String, end_date: String) -> Self {
         TimetableParameter { 
             options: TimetableOptions {
                 element: TimetableElement {

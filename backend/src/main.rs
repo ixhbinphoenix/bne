@@ -13,13 +13,18 @@ use actix_identity::IdentityMiddleware;
 use actix_session::{SessionMiddleware, config::PersistentSession, storage::CookieSessionStore};
 use actix_web::{HttpServer, middleware::Logger, web::{self, Data}, HttpResponse, App, cookie::{Key, time::Duration}};
 use api::{login::login_post, check_session::check_session_get, register::register_post, demo::get_timetable::get_timetable};
-use api_wrapper::untis_client::UntisClient;
 use database::surrealdb_repo::SurrealDBRepo;
 use dotenv::dotenv;
 use log::info;
 use models::user_model::UserCRUD;
 use rustls::{ServerConfig, Certificate, PrivateKey};
 use rustls_pemfile::{certs, pkcs8_private_keys};
+
+#[derive(Clone)]
+pub struct GlobalUntisData {
+    school: String,
+    subdomain: String
+}
 
 #[actix_web::main]
 async fn main() -> io::Result<()> {
@@ -41,8 +46,12 @@ async fn main() -> io::Result<()> {
 
     UserCRUD::init_table(db_repo.clone()).await.expect("table initilization to work");
 
-    info!("Logging into Untis...");
-    let untis_client = UntisClient::init(envv.get("UNTIS_USER").unwrap().into(), envv.get("UNTIS_PASS").unwrap().into(), "borys".into(), envv.get("UNTIS_SCHOOL").unwrap().into(), envv.get("UNTIS_SUBDOMAIN").unwrap().into()).await.unwrap();
+    let school = if envv.contains_key("UNTIS_SCHOOL") { envv.get("UNTIS_SCHOOL").unwrap().clone() } else { panic!("UNTIS_SCHOOL not defined in .env") };
+    let subdomain = if envv.contains_key("UNTIS_SUBDOMAIN") { envv.get("UNTIS_SUBDOMAIN").unwrap().clone() } else { panic!("UNTIS_SUBDOMAIN not defined in .env") };
+    let untis_data = GlobalUntisData {
+        school,
+        subdomain
+    };
 
     let cookie_key = if envv.contains_key("COOKIE_KEY") { Key::from(envv.get("COOKIE_KEY").unwrap().as_bytes()) } else { Key::generate() };
 
@@ -54,7 +63,7 @@ async fn main() -> io::Result<()> {
             .limit(65536) // Fun fact: This is enough to fit the entire Bee movie script which
                           // means it's probably way too much
             .error_handler(|err, _req| {
-                actix_web::error::InternalError::from_response(err, HttpResponse::Conflict().finish()).into()
+                actix_web::error::InternalError::from_response(err, HttpResponse::BadRequest().finish()).into()
             });
 
         // This is not ok
@@ -70,7 +79,7 @@ async fn main() -> io::Result<()> {
             .wrap(logger)
             .wrap(
                 SessionMiddleware::builder(CookieSessionStore::default(), cookie_key.clone())
-                    .cookie_same_site(actix_web::cookie::SameSite::Strict)
+                    .cookie_same_site(actix_web::cookie::SameSite::None)
                     .cookie_secure(true)
                     .cookie_http_only(true)
                     .session_lifecycle(PersistentSession::default().session_ttl_extension_policy(actix_session::config::TtlExtensionPolicy::OnStateChanges).session_ttl(Duration::days(7)))
@@ -79,7 +88,7 @@ async fn main() -> io::Result<()> {
             .wrap(cors)
             .app_data(json_config)
             .app_data(Data::new(db_repo.clone()))
-            .app_data(Data::new(untis_client.clone()))
+            .app_data(Data::new(untis_data.clone()))
             .service(web::resource("/register").route(web::post().to(register_post)))
             .service(web::resource("/login").route(web::post().to(login_post)))
             .service(web::resource("/check_session").route(web::get().to(check_session_get)))
