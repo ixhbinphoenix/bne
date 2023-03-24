@@ -257,7 +257,11 @@ impl UntisClient {
                     room,
                     substitution: if substituted { Some(Substitution {
                         teacher: if !lesson.te.is_empty() && lesson.te[0].orgname.is_some() {
-                            Some(lesson.te[0].name.clone())
+                            if lesson.te[0].name.clone() == "---" {
+                                None
+                            } else {
+                                Some(lesson.te[0].name.clone())
+                            }
                         } else { None },
                         room: if !lesson.ro.is_empty() && lesson.ro[0].orgname.is_some() {
                             Some(lesson.ro[0].name.clone())
