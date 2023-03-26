@@ -1,10 +1,7 @@
 /* @jsxImportSource preact */
 
 import type { TheScheduleObject } from "../../api/main";
-import { SubjectColor } from "../../api/main";
-import { fetchJSessionId } from "../../api/main";
-import { registerAccount } from "../../api/main";
-import { getTimetable } from "../../api/main";
+import { SubjectColor, fetchJSessionId, registerAccount, getTimetable } from "../../api/main";
 import Popup from "./Popup";
 import type { JSX } from "preact";
 import "../../styles/Stundenplan.scss";
@@ -69,8 +66,7 @@ export default function Stundenplan(): JSX.Element {
     const openPopup = () => {
         setPopupStatus(true)
     }
-    const addToDivs = (lessons: TheScheduleObject[]) => {  
-        console.log(lessons)      
+    const addToDivs = (lessons: TheScheduleObject[]) => {      
         for(let i: number = 0; i < 5; i++) {
             for(let j: number = 0; j < 10; j++) {
                 let lessonElements: Array<JSX.Element> = [];
@@ -129,7 +125,7 @@ export default function Stundenplan(): JSX.Element {
                             }
                             if(lessons[k].substitution?.teacher) {
                                 teacherStyle = { textDecoration: "line-through" }
-                                if(lessons[k].substitution?.teacher != "---") {
+                                if(lessons[k].substitution?.teacher) {
                                     substitutionTeacherStyle = { display: "block" }
                                 }
                             }
@@ -170,11 +166,7 @@ export default function Stundenplan(): JSX.Element {
         }
     }
     if(APIdata) {
-        console.log("data received")
         addToDivs(APIdata)
-    }
-    else {
-        console.log("no data")
     }
     const [tableDays, setTableDays] = useState<Array<JSX.Element>>([]);
     return(

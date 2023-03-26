@@ -64,8 +64,6 @@ export async function getTimetable(): Promise<{lessons?: TheScheduleObject[], st
         credentials: "include"
     })
     let resultClean = await resultRaw.json()
-    console.log(resultClean.body.lessons)
-    console.log(resultClean.body.code, resultClean.body.message)
     try {
         if(resultClean.body.lessons) {
             return {
@@ -74,12 +72,10 @@ export async function getTimetable(): Promise<{lessons?: TheScheduleObject[], st
                 message: undefined
             }
         }
-        else {
-            return {
+        return {
             lessons: undefined,
             status: resultClean.body.code,
             message: resultClean.body.message
-            }
         }
     }
     catch {
