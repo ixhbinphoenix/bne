@@ -1,1 +1,5 @@
 target/
+cert.pem
+key.pem
+test.db/
+.env
