@@ -1,21 +1,31 @@
 ---
-
+import logo from "../icons/logo-animated-no-bg.svg"
 ---
 
 <div id="titlebar">
-  <h1 id="titlebar-title">TheSchedule</h1>
+  <img src={logo} alt="error" class="logo">
   <a href="/login" id="login-button-link"><button id="login-button">Sign up</button></a>
 </div>
 
 <style lang="scss">
   #titlebar {
+    position: relative;
     display: flex;
+    width: 100%;
     border-bottom: 0.5vh solid #181926;
-    width: 100vw;
     background-color: #1e2030;
     margin-top: 0;
-    height: 100%;
     padding-top: 1px;
+
+    &> .logo {
+      margin-left: .5%;
+      height: 100%;
+      position: absolute;
+      user-select: none;
+      -webkit-user-drag: none;
+      -moz-user-select: none;
+      cursor: pointer;
+    }
   }
   #titlebar-title {
     margin-left: 5vw;
