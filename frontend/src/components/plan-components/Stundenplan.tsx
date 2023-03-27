@@ -10,16 +10,15 @@ import { useState, useEffect } from "preact/hooks";
 export default function Stundenplan(): JSX.Element {
     let APIdata;
     useEffect(() => {
-        fetchJSessionId("account", "password").then((sessionId) => {
-            if(sessionId.result) {
-                document.cookie = `JSESSIONID=${sessionId.result}; max-age=600; secure; samesite=strict`
+        fetchJSessionId("account", "password").then((result) => {
+            if(result.JSessionId && result.personId) {
+                document.cookie = `JSESSIONID=${result.JSessionId}; max-age=600; secure; samesite=strict`
+                registerAccount("Account", "1Passwort!", result.personId)
             }
             else {
-                alert(sessionId.status)
+                alert(result.status)
             }
         })
-        
-        registerAccount("Account123456", "1Passwort!")
 
         getTimetable().then(result => {
             if(result.lessons) {
@@ -48,13 +47,13 @@ export default function Stundenplan(): JSX.Element {
             return storedJSessionId
         }
         else {
-            fetchJSessionId("", "").then((sessionId) => {
-                if(sessionId.result) {
-                    document.cookie = `JSESSIONID=${sessionId.result}; max-age=600; secure; samesite=strict`
-                    return sessionId.result
+            fetchJSessionId("", "").then((result) => {
+                if(result.JSessionId) {
+                    document.cookie = `JSESSIONID=${result.JSessionId}; max-age=600; secure; samesite=strict`
+                    return result.JSessionId
                 }
                 else {
-                    alert(sessionId.status)
+                    alert(result.status)
                     return false
                 }
             })

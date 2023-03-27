@@ -1,6 +1,6 @@
 type APIReturnValue = Promise<{ status: string, result: string | null }>;
 
-export async function fetchJSessionId(username: string, password: string): APIReturnValue {
+export async function fetchJSessionId(username: string, password: string): Promise<{ status: string, JSessionId: string | null, personId: number | null}> {
     let resultRaw = await fetch('https://borys.webuntis.com/WebUntis/jsonrpc.do?school=ges-münster', {
         method: 'POST',
         body: JSON.stringify({
@@ -14,11 +14,15 @@ export async function fetchJSessionId(username: string, password: string): APIRe
     try {
     return {
         status: '200 Ok',
-        result: resultClean.result.sessionId};
+        JSessionId: resultClean.result.sessionId,
+        personId: resultClean.result.personId
+    };
    } catch {
     return {
         status: '401 Unauthorized\nFalsche Logindaten',
-        result: null}
+        JSessionId: null,
+        personId: null
+    }
    }
 };
 export async function loginAccount(username: string, password: string) {
@@ -33,7 +37,7 @@ export async function loginAccount(username: string, password: string) {
         })
     })
 }
-export async function registerAccount(username: string, password: string) {
+export async function registerAccount(username: string, password: string, personId: number) {
     let result = await fetch('https://localhost:8080/register', {
         method: 'POST',
         headers: {
@@ -42,7 +46,8 @@ export async function registerAccount(username: string, password: string) {
         credentials: "include",
         body: JSON.stringify({
             username: username,
-            password: password
+            password: password,
+            person_id: personId
         })
     })
     if(!result.body) {
