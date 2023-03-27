@@ -1,0 +1,76 @@
+.form-container {
+    color: #b8c0e0;
+    font-size: 1.3rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    align-content: stretch;
+
+    &>.description {
+        display: flex;
+        align-items: flex-end;
+        justify-content: center;
+        flex-direction: column;
+        
+
+        &>.title {
+            margin: 0px;
+            font-size: 7.5rem;
+            background: rgb(198,160,246);
+            background: linear-gradient(90deg, rgba(198,160,246,1) 0%, rgba(237,135,150,1) 50%, rgba(238,212,159,1) 100%); 
+            background-size: 250%;
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        &>.subtitle {
+            margin-bottom: 15%
+        }
+    }
+    &>.login-switch{
+        position: relative;
+        display: inline-block;
+        
+        &> button {
+            background-color: transparent;
+            outline: none;
+            border: none;
+            color: #b8c0e0;
+            font-size: 1.5rem;
+            margin: .5%;
+        }
+        &>.underline {
+            position: absolute;
+            width: 15%;
+            height: 5%;
+            background-color: #5974e2;
+            transition: all 0.3s ease;
+        }
+    }
+
+    &>.login-box-container {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        
+        &> p {
+            font-weight: bolder;
+        }
+
+        &>input {
+            background-color: transparent;
+            padding: .5%;
+            font-size: 2rem;
+            margin: 1.5%;
+            outline: none;
+            border: 2px solid;
+            border-image: linear-gradient(90deg, rgba(198,160,246,1) 0%, rgba(237,135,150,1) 50%, rgba(238,212,159,1) 100%) 1;
+            transition: border-color 0.25s ease;
+        }
+        &>input:focus {
+            border-image: none;
+            border-color: #5974e2;
+        }
+    }
+}
