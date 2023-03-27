@@ -21,6 +21,18 @@ export async function fetchJSessionId(username: string, password: string): APIRe
         result: null}
    }
 };
+export async function loginAccount(username: string, password: string) {
+    let result = await fetch("https://localhost:8080/login", {
+        method: 'POST',
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            username: username,
+            password: password
+        })
+    })
+}
 export async function registerAccount(username: string, password: string) {
     let result = await fetch('https://localhost:8080/register', {
         method: 'POST',
@@ -59,7 +71,7 @@ async function readStream(stream: ReadableStream<Uint8Array>) {
     return chunks.join("")
 }
 export async function getTimetable(): Promise<{lessons?: TheScheduleObject[], status: string, message?: string}> {
-    let resultRaw = await fetch('https://localhost:8080/demo/get_timetable', {
+    let resultRaw = await fetch('https://localhost:8080/get_timetable', {
         method: 'GET',
         credentials: "include"
     })
