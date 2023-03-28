@@ -1,5 +1,8 @@
 ---
 import PlanLayout from "../layouts/PlanLayout.astro";
+import Sidebar from "../components/Sidebar";
 ---
 
-<PlanLayout title="Stundenplan"/>
+<PlanLayout title="Stundenplan">
+  <Sidebar client:load/>
+</PlanLayout>

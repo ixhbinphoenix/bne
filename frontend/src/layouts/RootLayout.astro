@@ -1,0 +1,22 @@
+---
+import CookieBanner from "../components/CookieBanner";
+import favicon from "../icons/favicon.svg";
+export interface Props {
+  title: String
+}
+
+const {title} = Astro.props;
+---
+
+<html lang="de">
+  <head>
+    <link rel="icon" href={favicon}>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width; initial_scale=1"> 
+    <title>{title}</title>
+  </head>
+  <body>
+    <CookieBanner client:load/>
+    <slot></slot>
+  </body>
+</html>

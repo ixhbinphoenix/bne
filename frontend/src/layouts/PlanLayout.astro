@@ -1,5 +1,6 @@
 ---
 import Sidebar from '../components/Sidebar';
+import RootLayout from './RootLayout.astro';
 export interface Props {
   title: string
 }
@@ -7,13 +8,6 @@ export interface Props {
 const {title} = Astro.props;
 ---
 
-<html lang="de">
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{title}</title>
-  </head>
-  <body>
-    <Sidebar client:load/>
-  </body>
-</html>
+<RootLayout title={title}>
+  <slot/>
+</RootLayout>
