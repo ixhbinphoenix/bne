@@ -1,8 +1,12 @@
 ---
+import LoginBox from "../components/LoginBox.astro";
+import ModalButton from "../components/ModalButton.astro";
 import LoginLayout from "../layouts/LoginLayout.astro";
-import CookieBanner from "../components/CookieBanner";
 ---
 
 <LoginLayout title="Login">
-    <CookieBanner client:load></CookieBanner>
+  <div id="login-page">
+    <LoginBox></LoginBox>
+    <ModalButton id="submit">Login</ModalButton>
+  </div>
 </LoginLayout>

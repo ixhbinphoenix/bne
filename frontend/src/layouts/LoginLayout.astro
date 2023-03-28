@@ -1,6 +1,5 @@
 ---
-import ModalButton from '../components/ModalButton.astro';
-import LoginBox from '../components/LoginBox.astro';
+import RootLayout from './RootLayout.astro';
 
 export interface Props {
   title: string
@@ -9,44 +8,38 @@ export interface Props {
 const {title} = Astro.props;
 ---
 
-<html>
-    <head>
-        <title>{title}</title>
-    </head>
-    <body style="margin: 0px;">
-        <slot></slot>
-        <div id="login-page">
-            <LoginBox></LoginBox>
-            <ModalButton id="submit">Login</ModalButton>
-        </div>
-    </body>
-    <style>
-        html {
-            position: absolute;
-            height: 100%;
-            width: 100%;
-            background-image: linear-gradient(#181926, #363a4f);
-        }
-        body {
-            font-family: Verdana, Geneva, Tahoma, sans-serif;
-            width: 100%;
-            height: 100%;
-        }
-        #login-page {
-            position: relative;
-            height: 100%;
-            width: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-        }
-    </style>
-    <script>
-        const username: HTMLInputElement = document.getElementById("username") as HTMLInputElement
-        const password: HTMLInputElement = document.getElementById("password") as HTMLInputElement
-        document.getElementById("submit")!.addEventListener('click', () => {
-            alert(username.value + " " + password.value)
-        })
-    </script>
-</html>
+<RootLayout title={title}>
+  <slot/>
+</RootLayout>
+
+<style lang="scss">
+    html {
+        position: absolute;
+        height: 100%;
+        width: 100%;
+        background-image: linear-gradient(#181926, #363a4f);
+    }
+    body {
+        font-family: Verdana, Geneva, Tahoma, sans-serif;
+        width: 100%;
+        height: 100%;
+        margin: 0px;
+    }
+    #login-page {
+        position: relative;
+        height: 100%;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+    }
+</style>
+
+<script>
+    const username: HTMLInputElement = document.getElementById("username") as HTMLInputElement
+    const password: HTMLInputElement = document.getElementById("password") as HTMLInputElement
+    document.getElementById("submit")!.addEventListener('click', () => {
+        alert(username.value + " " + password.value)
+    })
+</script>

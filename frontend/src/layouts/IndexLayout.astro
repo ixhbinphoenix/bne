@@ -1,22 +1,16 @@
 ---
+import RootLayout from './RootLayout.astro';
+
 export interface Props {
   title: string
 }
-import favicon from "../icons/favicon.svg"
+
 const {title} = Astro.props;
 ---
 
-<html lang="de">
-  <head>
-    <link rel="icon" href={favicon}>
-    <meta charset="utf-8">
-    <title>{title}</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-  </head>
-  <body>
-    <slot />
-  </body>
-</html>
+<RootLayout title={title}>
+  <slot></slot>
+</RootLayout>
 
 <style lang="scss">
   html {
