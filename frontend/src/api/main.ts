@@ -1,6 +1,6 @@
 type APIReturnValue = Promise<{ status: string, result: string | null }>;
 
-export async function fetchJSessionId(username: string, password: string): Promise<{ status: string, JSessionId: string | null, personId: number | null}> {
+export async function fetchJSessionId(username: string | null, password: string | null): Promise<{ status: string, JSessionId: string | null, personId: number | null}> {
     let resultRaw = await fetch('https://borys.webuntis.com/WebUntis/jsonrpc.do?school=ges-münster', {
         method: 'POST',
         body: JSON.stringify({
@@ -25,6 +25,25 @@ export async function fetchJSessionId(username: string, password: string): Promi
     }
    }
 };
+export function saveUntisCredentials(username: string, password: string) {
+    localStorage.setItem("untis_username", username);
+    localStorage.setItem("untis_password", password);
+}
+export function getLocalUntisCredentials() {
+    const username = localStorage.getItem("untis_username")
+    const password = localStorage.getItem("untis_password")
+
+    return {username: username, password: password}
+}
+export function verifyPassword(password: string): boolean {
+    const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+])(?=.*[^\da-zA-Z]).{8,}$/;
+    
+    if (regex.test(password)) {
+      return true;
+    } else {
+      return false
+    }
+}
 export async function loginAccount(username: string, password: string) {
     let result = await fetch("https://localhost:8080/login", {
         method: 'POST',

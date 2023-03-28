@@ -10,7 +10,7 @@ import { useState, useEffect } from "preact/hooks";
 export default function Stundenplan(): JSX.Element {
     let APIdata;
     useEffect(() => {
-        fetchJSessionId("account", "password").then((result) => {
+        fetchJSessionId(localStorage.getItem("untis_username"), localStorage.getItem("untis_password")).then((result) => {
             if(result.JSessionId && result.personId) {
                 document.cookie = `JSESSIONID=${result.JSessionId}; max-age=600; secure; samesite=strict`
                 registerAccount("Account", "1Passwort!", result.personId)

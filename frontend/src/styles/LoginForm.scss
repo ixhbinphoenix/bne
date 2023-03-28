@@ -3,7 +3,7 @@
     font-size: 1.3rem;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    justify-content: space-evenly;
     flex-wrap: wrap;
     align-content: stretch;
 
@@ -16,7 +16,7 @@
 
         &>.title {
             margin: 0px;
-            font-size: 7.5rem;
+            font-size: 6rem;
             background: rgb(198,160,246);
             background: linear-gradient(90deg, rgba(198,160,246,1) 0%, rgba(237,135,150,1) 50%, rgba(238,212,159,1) 100%); 
             background-size: 250%;
@@ -25,52 +25,95 @@
             -webkit-text-fill-color: transparent;
         }
         &>.subtitle {
-            margin-bottom: 15%
+            margin-bottom: 6%
         }
     }
-    &>.login-switch{
-        position: relative;
-        display: inline-block;
-        
-        &> button {
-            background-color: transparent;
-            outline: none;
-            border: none;
-            color: #b8c0e0;
-            font-size: 1.5rem;
-            margin: .5%;
-        }
-        &>.underline {
-            position: absolute;
-            width: 15%;
-            height: 5%;
-            background-color: #5974e2;
-            transition: all 0.3s ease;
-        }
-    }
-
+    
     &>.login-box-container {
         display: flex;
         flex-direction: column;
         align-items: stretch;
         
-        &> p {
+        &>.login-switch{
+            position: relative;
+            display: inline-block;
+            margin-bottom: 1%;
+            &> button {
+                cursor: pointer;
+                background-color: transparent;
+                outline: none;
+                border: none;
+                color: #b8c0e0;
+                font-size: 1.5rem;
+                margin: .5%;
+            }
+            &>.underline {
+                position: absolute;
+                width: 20%;
+                height: 5%;
+                background-color: #5974e2;
+                transition: all 0.3s ease;
+            }
+        }
+        &>.password-notice {
+            white-space: pre-line;
+            margin-top: 1%;
+            color: #ff4d17;
+            font-size: 0.95rem;
+            text-align: center;
+        }
+        &> form {
+            display: flex;
+            flex-direction: column;
+            &> p {
             font-weight: bolder;
-        }
+            }
 
-        &>input {
-            background-color: transparent;
-            padding: .5%;
-            font-size: 2rem;
-            margin: 1.5%;
-            outline: none;
-            border: 2px solid;
-            border-image: linear-gradient(90deg, rgba(198,160,246,1) 0%, rgba(237,135,150,1) 50%, rgba(238,212,159,1) 100%) 1;
-            transition: border-color 0.25s ease;
-        }
-        &>input:focus {
-            border-image: none;
-            border-color: #5974e2;
-        }
+            &>.untis-box {
+                display: none;
+                transition: all 0.25s ease;
+            }
+            &>input {
+                color:#b8c0e0;
+                background-color: transparent;
+                padding: 1%;
+                font-size: 2rem;
+                margin: 1.5%;
+                outline: none;
+                border: 2px solid;
+                border-image: linear-gradient(90deg, rgba(198,160,246,1) 0%, rgba(237,135,150,1) 50%, rgba(238,212,159,1) 100%) 1;
+            }
+            &>input:focus {
+                border-image: none;
+                border-color: #5974e2;
+            }
+            &>.button-container {
+                display: flex;
+                justify-content: center;
+                &>input {
+                    color:#b8c0e0;
+                    background-color: transparent;
+                    padding: 1.25%;
+                    font-size: 2rem;
+                    margin: 1.5%;
+                    outline: none;
+                    border: 2px solid;
+                    border-image: linear-gradient(90deg, rgba(198,160,246,1) 0%, rgba(237,135,150,1) 50%, rgba(238,212,159,1) 100%) 1;
+                }
+                &>#submit-button {
+                    cursor: pointer;
+                    width: min-content;
+                    
+                }
+                &>#submit-button:hover {
+                    background-color: #5974e2;
+                    border-image: none;
+                    border-color: #5974e2;
+                }
+                &>#submit-button:active {
+                    transform: translateY(3px);
+                }
+            }
+        }    
     }
 }
