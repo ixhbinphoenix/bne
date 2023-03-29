@@ -1,11 +1,9 @@
 .form-container {
     color: #b8c0e0;
-    font-size: 1.3rem;
+    font-size: clamp(14px, 4rem, 5.5vh);
     display: flex;
     flex-direction: column;
     justify-content: space-evenly;
-    flex-wrap: wrap;
-    align-content: stretch;
 
     &>.description {
         display: flex;
@@ -16,7 +14,6 @@
 
         &>.title {
             margin: 0px;
-            font-size: 6rem;
             background: rgb(198,160,246);
             background: linear-gradient(90deg, rgba(198,160,246,1) 0%, rgba(237,135,150,1) 50%, rgba(238,212,159,1) 100%); 
             background-size: 250%;
@@ -25,6 +22,7 @@
             -webkit-text-fill-color: transparent;
         }
         &>.subtitle {
+            font-size: clamp(10px, 1.75rem, 2vh);
             margin-bottom: 6%
         }
     }
@@ -44,8 +42,8 @@
                 outline: none;
                 border: none;
                 color: #b8c0e0;
-                font-size: 1.5rem;
-                margin: .5%;
+                font-size: clamp(15px, 2.5rem, 3vh);
+                margin: 1.5%;
             }
             &>.underline {
                 position: absolute;
@@ -55,29 +53,32 @@
                 transition: all 0.3s ease;
             }
         }
-        &>.password-notice {
-            white-space: pre-line;
-            margin-top: 1%;
-            color: #ff4d17;
-            font-size: 0.95rem;
-            text-align: center;
-        }
+        
         &> form {
             display: flex;
             flex-direction: column;
-            &> p {
-            font-weight: bolder;
-            }
 
+            &>.password-notice {
+                max-width: 90%;
+                margin: 1% 0px;
+                white-space: pre-line;
+                color: #ff4d17;
+                text-align: center;
+                &> p {
+                    font-size: clamp(10px, 1.75rem, 1.5vh);
+                    margin: 0px;
+                    opacity: 0;
+                }
+            }
             &>.untis-box {
-                display: none;
-                transition: all 0.25s ease;
+                opacity: 0;
+                transition: opacity 0.25s ease;
             }
             &>input {
                 color:#b8c0e0;
                 background-color: transparent;
                 padding: 1%;
-                font-size: 2rem;
+                font-size: clamp(15px, 3rem, 3vh);
                 margin: 1.5%;
                 outline: none;
                 border: 2px solid;
@@ -94,7 +95,7 @@
                     color:#b8c0e0;
                     background-color: transparent;
                     padding: 1.25%;
-                    font-size: 2rem;
+                    font-size: clamp(15px, 3rem, 3vh);
                     margin: 1.5%;
                     outline: none;
                     border: 2px solid;
