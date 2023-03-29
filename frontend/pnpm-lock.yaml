@@ -3,10 +3,8 @@ lockfileVersion: 5.4
 specifiers:
   '@astrojs/preact': ^1.2.0
   '@astrojs/vercel': ^2.3.4
-  '@types/aes-js': ^3.1.1
   '@types/crypto-js': ^4.1.1
   '@types/node': ^18.15.11
-  aes-js: ^3.1.2
   astro: ^1.6.9
   crypto-js: ^4.1.1
   preact: ^10.6.5
@@ -15,13 +13,11 @@ specifiers:
 dependencies:
   '@astrojs/preact': 1.2.0_preact@10.11.3
   '@astrojs/vercel': 2.3.4
-  aes-js: 3.1.2
   astro: 1.6.9_j2yf6de4udyvkvhv3ekpqwbeya
   crypto-js: 4.1.1
   preact: 10.11.3
 
 devDependencies:
-  '@types/aes-js': 3.1.1
   '@types/crypto-js': 4.1.1
   '@types/node': 18.15.11
   sass: 1.56.1
@@ -564,10 +560,6 @@ packages:
       '@types/estree': 1.0.0
     dev: false
 
-  /@types/aes-js/3.1.1:
-    resolution: {integrity: sha512-SDSGgXT3LRCH6qMWk8OHT1vLSVNuHNvCpKCx2/TYtQMbMGGgxJC9fspwSkQjqzRagrWnCrxuLL3jMNXLXHHvSw==}
-    dev: true
-
   /@types/babel__core/7.1.20:
     resolution: {integrity: sha512-PVb6Bg2QuscZ30FvOU7z4guG6c926D9YRvOxEaelzndpMsvP+YM74Q/dAFASpg2l6+XLalxSGxcq/lrgYWZtyQ==}
     dependencies:
@@ -719,10 +711,6 @@ packages:
     resolution: {integrity: sha512-7zFpHzhnqYKrkYdUjF1HI1bzd0VygEGX8lFk4k5zVMqHEoES+P+7TKI+EvLO9WVMJ8eekdO0aDEK044xTXwPPA==}
     engines: {node: '>=0.4.0'}
     hasBin: true
-    dev: false
-
-  /aes-js/3.1.2:
-    resolution: {integrity: sha512-e5pEa2kBnBOgR4Y/p20pskXI74UEz7de8ZGVo58asOtvSVG5YAbJeELPZxOmt+Bnz3rX753YKhfIn4X4l1PPRQ==}
     dev: false
 
   /agent-base/6.0.2:
