@@ -32,8 +32,12 @@ export function saveUntisCredentials(username: string, password: string) {
 export function getLocalUntisCredentials() {
     const username = localStorage.getItem("untis_username")
     const password = localStorage.getItem("untis_password")
-
-    return {username: username, password: password}
+    if(username && password) {
+        return {username: username, password: password}
+    }
+    else {
+        return null
+    }
 }
 export function verifyPassword(password: string): boolean {
     const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+])(?=.*[^\da-zA-Z]).{8,}$/;
@@ -43,6 +47,16 @@ export function verifyPassword(password: string): boolean {
     } else {
       return false
     }
+}
+export function verifyEmail(email: string): boolean {
+    const regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
+    if(regex.test(email)) {
+        return true;
+    } else {
+        return false;
+    }
+
 }
 export async function loginAccount(username: string, password: string) {
     let result = await fetch("https://localhost:8080/login", {
@@ -119,6 +133,29 @@ export async function getTimetable(): Promise<{lessons?: TheScheduleObject[], st
             status: "400",
             message: "Bad Request"
         }
+    }
+}
+async function checkSessionId() {
+    let result = await fetch('https://localhost:8080/check_session', {
+        method: "GET",
+        credentials: "include"
+    })
+    return result.status
+}
+export function verifySession() {
+    if(getLocalUntisCredentials()) {
+        checkSessionId().then((status) => {
+            if(status == 200) {
+                return true
+            }
+            else {
+                return false
+            }
+        })
+    }
+    else {
+        console.log("nope")
+        return false
     }
 }
 export interface TheScheduleObject {

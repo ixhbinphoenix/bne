@@ -1,7 +1,7 @@
 /* @jsxImportSource preact */
 
 import type { TheScheduleObject } from "../../api/main";
-import { SubjectColor, fetchJSessionId, registerAccount, getTimetable } from "../../api/main";
+import { SubjectColor, fetchJSessionId, getTimetable, verifySession } from "../../api/main";
 import Popup from "./Popup";
 import type { JSX } from "preact";
 import "../../styles/Stundenplan.scss";
@@ -10,12 +10,14 @@ import { useState, useEffect } from "preact/hooks";
 export default function Stundenplan(): JSX.Element {
     let APIdata;
     useEffect(() => {
+        if(!verifySession()) {
+            window.location.href = "/login" //bye bye go back to lobby
+        }
         fetchJSessionId(localStorage.getItem("untis_username"), localStorage.getItem("untis_password")).then((result) => {
             if(result.JSessionId && result.personId) {
                 document.cookie = `JSESSIONID=${result.JSessionId}; max-age=600; secure; samesite=strict`
-                registerAccount("Account", "1Passwort!", result.personId)
             }
-            else {
+            else { 
                 alert(result.status)
             }
         })

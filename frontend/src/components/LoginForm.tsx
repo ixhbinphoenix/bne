@@ -3,7 +3,7 @@
 import "../styles/LoginForm.scss"
 import type { JSX } from "preact"
 import { useEffect, useState } from "preact/hooks"
-import { verifyPassword, registerAccount, loginAccount, fetchJSessionId, saveUntisCredentials } from "../api/main";
+import { verifyPassword, verifyEmail, registerAccount, loginAccount, fetchJSessionId, saveUntisCredentials } from "../api/main";
 
 export default function LoginForm(): JSX.Element  {
     const [activeButton, setActiveButton] = useState<number>(1);
@@ -64,8 +64,13 @@ export default function LoginForm(): JSX.Element  {
                     setPassword(event.target[1].value)
                     setUntisUsername(event.target[2].value)
                     setUntisPassword(event.target[3].value)
-                    if(!verifyPassword(event.target[1].value)) {
+                    if(!verifyEmail(event.target[0].value)) {
+                        showPasswordNotice(<p style={{opacity: "100"}}>Bitte gib eine gültige Mailadresse ein</p>)
+                        return
+                    }
+                    else if(!verifyPassword(event.target[1].value)) {
                         showPasswordNotice(<p style={{opacity: "100"}}>Dein Passwort muss mindestens 8 Zeichen lang sein <br/> und aus Groß-, Kleinbuchstaben, Zahlen und Sonderzeichen bestehen</p>)
+                        return
                     }
                     else {
                         showPasswordNotice(<p style={{opacity: "0"}}>A</p>)
@@ -74,6 +79,7 @@ export default function LoginForm(): JSX.Element  {
                             if(result.JSessionId && result.personId) {
                                 document.cookie = `JSESSIONID=${result.JSessionId}; max-age=600; secure; samesite=strict`
                                 registerAccount("Account", "1Passwort!", result.personId)
+                                window.location.href = "/stundenplan"
                             }
                             else {
                                 showPasswordNotice(<p style={{opacity: "100"}}>Deine Untiszugangsdaten sind nicht korrekt</p>)
@@ -102,7 +108,7 @@ export default function LoginForm(): JSX.Element  {
                     <button id="register" style={buttonStyle2}onClick={() => {handleButtonClick(2)}}>Registrieren</button>
                 </div>
                 <form onSubmit={handleSubmit}>
-                    <input type="username" placeholder="Nutzername" className="input-box" />
+                    <input type="username" placeholder="Mailadresse" className="input-box" />
                     <input type="password" placeholder="Passwort" className="input-box" />
                     <div className="password-notice">{notice}</div>
                     <input id="untis-username" type="username" placeholder="Units-Nutzername" className="input-box untis-box" style={untisBoxStyle}/>
