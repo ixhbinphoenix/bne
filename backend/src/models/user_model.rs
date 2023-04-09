@@ -147,7 +147,13 @@ impl UserCRUD {
             }
         };
 
-        W(first_res.result?.first()).try_into()
+        let result = first_res.result?.first();
+
+        if result.is_none() {
+            return Err(Error::ObjectNotFound(person_id.to_string()))
+        }
+
+        W(result).try_into()
     }
 
     pub async fn get_from_username(db: Data<SurrealDBRepo>, username: &str) -> Result<Object, Error> {
@@ -166,7 +172,13 @@ impl UserCRUD {
             },
         };
 
-        W(first_res.result?.first()).try_into()
+        let result = first_res.result?.first();
+
+        if result.is_none() {
+            return Err(Error::ObjectNotFound(username.to_owned()))
+        }
+        
+        W(result).try_into()
     }
 
     pub async fn update<T: Patchable>(db: Data<SurrealDBRepo>, tid: &str, data: T) -> Result<Object, Error> {
