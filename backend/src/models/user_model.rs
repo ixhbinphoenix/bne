@@ -12,7 +12,8 @@ pub struct User {
     pub id: Option<String>,
     pub username: String,
     pub person_id: i64,
-    pub password_hash: String
+    pub password_hash: String,
+    pub untis_cypher: String
 }
 
 impl From<User> for Value {
@@ -21,7 +22,8 @@ impl From<User> for Value {
             "id".into() => value.id.into(),
             "username".into() => value.username.into(),
             "person_id".into() => value.person_id.into(),
-            "password_hash".into() => value.password_hash.into()
+            "password_hash".into() => value.password_hash.into(),
+            "untis_cypher".into() => value.untis_cypher.into(),
         ].into()
     }
 }
@@ -46,12 +48,17 @@ impl TryFrom<Object> for User {
             Some(n) => n.to_owned(),
             None => return Err(Error::ConversionError("password_hash".to_owned()))
         }).try_into()?;
+        let untis_cypher: String = W(match value.get("untis_cypher") {
+            Some(n) => n.to_owned(),
+            None => return Err(Error::ConversionError("untis_cypher".to_owned()))
+        }).try_into()?;
 
         Ok(User {
             id: Some(id),
             username,
             person_id,
-            password_hash
+            password_hash,
+            untis_cypher,
         })
     }
 }
@@ -60,7 +67,8 @@ impl TryFrom<Object> for User {
 pub struct UserPatch {
     pub username: Option<String>,
     pub person_id: Option<String>,
-    pub password_hash: Option<String>
+    pub password_hash: Option<String>,
+    pub untis_cypher: Option<String>,
 }
 
 impl From<UserPatch> for Value {
@@ -83,7 +91,8 @@ impl UserCRUD {
                    DEFINE FIELD username ON users TYPE string;\
                    DEFINE FIELD person_id ON users TYPE number;\
                    DEFINE INDEX person_id_index ON TABLE users COLUMNS person_id UNIQUE;\
-                   DEFINE FIELD password_hash ON users TYPE string;";
+                   DEFINE FIELD password_hash ON users TYPE string;\
+                   DEFINE FIELD untis_cypher ON users TYPE string;";
         
         match db.ds.execute(sql, &db.ses, None, false).await {
             Ok(n) => Ok(n),
