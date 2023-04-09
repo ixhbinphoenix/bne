@@ -92,10 +92,7 @@ async fn main() -> io::Result<()> {
             .service(web::resource("/register").route(web::post().to(register_post)))
             .service(web::resource("/login").route(web::post().to(login_post)))
             .service(web::resource("/check_session").route(web::get().to(check_session_get)))
-            .service(
-                web::scope("/demo")
-                    .service(web::resource("/get_timetable").route(web::get().to(get_timetable)))
-            )
+            .service(web::resource("/get_timetable").route(web::get().to(get_timetable)))
     })
     .bind_rustls(format!("127.0.0.1:{port}"), config)?
     .run().await
