@@ -3,13 +3,16 @@
 import "../styles/LoginForm.scss"
 import type { JSX } from "preact"
 import { useEffect, useState } from "preact/hooks"
-import { verifyPassword, verifyEmail, registerAccount, loginAccount, fetchJSessionId, saveUntisCredentials } from "../api/main";
+import { verifyPassword, verifyEmail, registerAccount, loginAccount } from "../api/theBackend";
+import { fetchJSessionId, getLocalUntisCredentials, saveUntisCredentials } from "../api/untisAPI";
+import { generateKey, passwordDecrypt, passwordEncrypt } from "../api/encryption";
+import { get } from "http";
 
 export default function LoginForm(): JSX.Element  {
     const [activeButton, setActiveButton] = useState<number>(1);
     const [buttonStyle1, setButtonStyle1] = useState({borderBottom: "2px solid #5974e2"})
     const [buttonStyle2, setButtonStyle2] = useState({})
-    const [password, setPassword] = useState(""), [username, setUsername] = useState(""), [untisPassword, setUntisPassword] = useState(""), [untisUsername, setUntisUsername] = useState("")
+    let password: string, username: string, untisPassword: string, untisUsername: string, personId: number;
     const [untisBoxStyle, setUntiBoxStyle] = useState({})
     const [notice, showPasswordNotice] = useState(<p style={{opacity: "0"}}>A</p>)
 
@@ -36,22 +39,19 @@ export default function LoginForm(): JSX.Element  {
         event.preventDefault()
         if(event.target) {
             if(activeButton == 1) {
-                console.log(event.target[0].value, event.target[1].value)
                 if(event.target[0].value && event.target[1].value) {
-                    setUsername(event.target[0].value)
-                    setPassword(event.target[1].value)
+                    username = event.target[0].value
+                    password = event.target[1].value
                     showPasswordNotice(<p style={{opacity: "0"}}>A</p>)
+                    sendLogin()
                     fetchJSessionId(localStorage.getItem("untis_username"), localStorage.getItem("untis_password")).then((result) => {
                         if(result.JSessionId && result.personId) {
-                            document.cookie = `JSESSIONID=${result.JSessionId}; max-age=600; secure; samesite=strict`
-                            registerAccount("Account", "1Passwort!", result.personId)
+                            document.cookie = `JSESSIONID=${result.JSessionId}; max-age=600; secure; samesite=none`
                         }
                         else {
                             alert(result.status)
                         }
-                    })
-                    loginAccount(username, password)
-                        
+                    })                       
                 }
                 else {
                     showPasswordNotice(<p style={{opacity: "100"}}>Bitte fülle alle Felder aus</p>)
@@ -60,26 +60,26 @@ export default function LoginForm(): JSX.Element  {
             if(activeButton == 2) {
                 if(event.target[0].value && event.target[1].value && event.target[2].value && event.target[3].value) {
                     console.log("success")
-                    setUsername(event.target[0].value)
-                    setPassword(event.target[1].value)
-                    setUntisUsername(event.target[2].value)
-                    setUntisPassword(event.target[3].value)
-                    if(!verifyEmail(event.target[0].value)) {
+                    username = event.target[0].value
+                    password = event.target[1].value
+                    untisUsername = event.target[2].value
+                    untisPassword = event.target[3].value
+                    if(!verifyEmail(username)) {
                         showPasswordNotice(<p style={{opacity: "100"}}>Bitte gib eine gültige Mailadresse ein</p>)
                         return
                     }
-                    else if(!verifyPassword(event.target[1].value)) {
+                    else if(!verifyPassword(password)) {
                         showPasswordNotice(<p style={{opacity: "100"}}>Dein Passwort muss mindestens 8 Zeichen lang sein <br/> und aus Groß-, Kleinbuchstaben, Zahlen und Sonderzeichen bestehen</p>)
                         return
                     }
                     else {
                         showPasswordNotice(<p style={{opacity: "0"}}>A</p>)
                         saveUntisCredentials(event.target[2].value, event.target[3].value)
-                        fetchJSessionId(event.target[2].value, event.target[3].value).then((result) => {
+                        fetchJSessionId(untisUsername, untisPassword).then((result) => {
                             if(result.JSessionId && result.personId) {
-                                document.cookie = `JSESSIONID=${result.JSessionId}; max-age=600; secure; samesite=strict`
-                                registerAccount("Account", "1Passwort!", result.personId)
-                                window.location.href = "/stundenplan"
+                                personId = result.personId;
+                                document.cookie = `JSESSIONID=${result.JSessionId}; max-age=600; secure; samesite=none`
+                                sendRegister()
                             }
                             else {
                                 showPasswordNotice(<p style={{opacity: "100"}}>Deine Untiszugangsdaten sind nicht korrekt</p>)
@@ -94,7 +94,36 @@ export default function LoginForm(): JSX.Element  {
             }
         }
     }
-    const sendRequest = () => {
+    const sendRegister = () => {
+        const key = generateKey(password)
+        const untisCredentials = JSON.stringify({username: untisUsername, password: untisPassword})
+        const untisCredentialsEncrtypted = passwordEncrypt(key, untisCredentials).toString()
+
+        registerAccount(username, password, personId, untisCredentialsEncrtypted).then((result) => {
+            console.log(result.status)
+            if(result.status == "200 OK") {
+                window.location.href = "/stundenplan"
+            }
+        })
+    }
+    const sendLogin = () => {
+        const key = generateKey(password)
+        loginAccount(username, password).then((result) => {
+            console.log(result)
+            if(result.status == 200) {
+                const untisCredentialsDecrypted = JSON.parse(passwordDecrypt(key, result.cypher))
+                console.log(untisCredentialsDecrypted)
+                saveUntisCredentials(untisCredentialsDecrypted.username, untisCredentialsDecrypted.password)
+                fetchJSessionId(getLocalUntisCredentials().username, getLocalUntisCredentials().password).then((result) => {
+                    if(result.status == "200 Ok") {
+                        window.location.href = "/stundenplan"
+                    }
+                })
+            }
+            else {
+                showPasswordNotice(<p style={{opacity: "100"}}>{result.message}</p>)
+            }
+        })
     }
     return(
         <div className="form-container">

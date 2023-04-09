@@ -48,15 +48,3 @@ export function passwordDecrypt(key: string, encryptedText: string): string {
 
     return enc.Utf8.stringify(decrypted);
 }
-
-/**
- * 
- * @param password Password to hash
- * @returns Hashed password
- */
-
-export function hashPassword(password: string) {
-    const hash = SHA512(password)
-    
-    return hash.toString()
-}
