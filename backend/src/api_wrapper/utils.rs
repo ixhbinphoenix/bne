@@ -63,7 +63,7 @@ pub struct DateOptions {
 /// Timetable
 /// 
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct TimetableParameter {
     pub options: TimetableOptions
@@ -96,7 +96,7 @@ impl TimetableParameter {
     }
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct TimetableOptions {
     pub element: TimetableElement,
@@ -115,7 +115,7 @@ pub struct TimetableOptions {
     pub teacher_fields: Vec<String>,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct TimetableElement {
     pub id: u16,
@@ -216,9 +216,10 @@ pub struct Schoolyear{
 pub struct Holidays {
     pub id: u16,
     pub name: String,
-    pub longname: String,
-    pub start_date: u16,
-    pub end_date: u16
+    #[serde(default)]
+    pub longname: Option<String>,
+    pub start_date: i64,
+    pub end_date: i64
 }
 
 ///

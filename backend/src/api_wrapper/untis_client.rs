@@ -1,5 +1,6 @@
 use std::collections::HashMap;
 
+use chrono::{NaiveDate, Days};
 use reqwest::{Client, Response};
 use reqwest::Error;
 
@@ -104,23 +105,88 @@ impl UntisClient {
 
     pub async fn get_timetable(&mut self, parameter: TimetableParameter) -> Result<Vec<FormattedLesson>, Box<dyn std::error::Error>> {
         let response = self.request(
-            utils::Parameter::TimetableParameter(parameter), 
+            utils::Parameter::TimetableParameter(parameter.clone()), 
             "getTimetable".to_string()
         ).await?;
 
         let text = response.text().await?;
         let json: UntisArrayResponse<PeriodObject> = serde_json::from_str(&text)?;
 
-        self.format_lessons(json.result).await
+        self.format_lessons(json.result, parameter.options.start_date.parse::<u32>()?, parameter.options.end_date.parse::<u32>()?).await
     }
 
-    async fn format_lessons(&mut self, mut lessons: Vec<PeriodObject>) -> Result<Vec<FormattedLesson>, Box<dyn std::error::Error>> {
+    async fn format_lessons(&mut self, mut lessons: Vec<PeriodObject>, start_date: u32, end_date: u32) -> Result<Vec<FormattedLesson>, Box<dyn std::error::Error>> {
+        println!("{:#?}", start_date);
         let mut formatted: Vec<FormattedLesson> = vec![];
+        println!("still working");
+        let all_holidays = self.get_holidays().await?;
+        println!("{:#?}", all_holidays);
+        let holidays = all_holidays.iter().filter(|&holiday| holiday.start_date <= i64::from(start_date) && holiday.end_date >= i64::from(start_date) || holiday.start_date <= i64::from(end_date) && holiday.end_date >= i64::from(end_date));
+        
+        let mut period_holidays: Vec<PeriodObject> = vec![];
+
+        for holiday in holidays {
+            
+            println!("1: {:#?}", holiday);
+
+            let start = NaiveDate::parse_from_str(&start_date.to_string(), "%Y%m%d")?;
+            let end = NaiveDate::parse_from_str(&end_date.to_string(), "%Y%m%d")?;
+
+            let length = end - start;
+            
+            println!("2: {:#?}", length.num_days());
+            
+            for i in 0..length.num_days()-1{
+                match start.checked_add_days(Days::new(i as u64)){
+                    Some(date) => {
+                        if NaiveDate::parse_from_str(&holiday.start_date.to_string(), "%Y%m%d")? > date {
+                            continue;
+                        }
+                        if NaiveDate::parse_from_str(&holiday.end_date.to_string(), "%Y%m%d")? < date {
+                            break;
+                        }
+                        period_holidays.push(
+                            PeriodObject {
+                                id: 0,
+                                date: date.format("%Y%m%d").to_string().parse::<u32>()?,
+                                start_time: 755,
+                                end_time: 1625,
+                                kl: vec![],
+                                te: vec![], 
+                                su: vec![],
+                                ro: vec![],
+                                activity_type: None,
+                                subst_text: None,
+                                lstext: Some(match holiday.longname.clone(){
+                                    Some(longname) => {
+                                        longname
+                                    }
+                                    None => {
+                                        holiday.name.clone()
+                                    }
+                                }),
+                                code: None
+                            }
+                            
+                        )
+                    }
+                    None => {
+                        
+                    }
+                }
+                
+            }
+            
+        }
+
+        println!("2: {:#?}", period_holidays);
+
+        lessons.append(&mut period_holidays);
 
         lessons.sort_unstable_by_key(|les| les.date);
         let mut days: Vec<Vec<PeriodObject>> = vec![]; 
 
-        let mut date = lessons[0].date;
+        let mut date = start_date;
         let mut day: Vec<PeriodObject> = vec![];
 
         for l in lessons {
@@ -177,8 +243,10 @@ impl UntisClient {
                                     Some(text) => {
                                         subject = text.clone();
                                         let mut split: Vec<&str> = text.split_whitespace().collect();
-                                        split.remove(0);
-                                        split.remove(0);
+                                        if split.len() >= 2 {
+                                            split.remove(0);
+                                            split.remove(0);
+                                        }
                                         subject_short = split.join(" ");
                                     }
                                     None => {
