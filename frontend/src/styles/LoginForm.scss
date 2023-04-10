@@ -59,7 +59,6 @@
             flex-direction: column;
 
             &>.password-notice {
-                max-width: 90%;
                 margin: 1% 0px;
                 white-space: pre-line;
                 color: #ff4d17;
@@ -79,7 +78,7 @@
                 background-color: transparent;
                 padding: 1%;
                 font-size: clamp(15px, 3rem, 3vh);
-                margin: 1.5%;
+                margin: 1.5% 0px;
                 outline: none;
                 border: 2px solid;
                 border-image: linear-gradient(90deg, rgba(198,160,246,1) 0%, rgba(237,135,150,1) 50%, rgba(238,212,159,1) 100%) 1;

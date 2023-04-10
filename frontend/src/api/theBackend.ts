@@ -21,66 +21,82 @@ export function verifyEmail(email: string): boolean {
 
 }
 export async function loginAccount(username: string, password: string) {
-    let result = await fetch("https://localhost:8080/login", {
-        method: 'POST',
-        headers: {
-            "Content-Type": "application/json",
-        },
-        credentials: "include",
-        body: JSON.stringify({
-            username: username,
-            password: password
+    try {
+        let result = await fetch("https://localhost:8080/login", {
+            method: 'POST',
+            headers: {
+                "Content-Type": "application/json",
+            },
+            credentials: "include",
+            body: JSON.stringify({
+                username: username,
+                password: password
+            })
         })
-    })
-    if(!result.body) {
-        return {
-            status: 400,
-            message: "No result body found"
-        }
-    }
-    let body: ReadableStream<Uint8Array> = await result.body
-    let stream = await readStream(body);
-    let cleanBody = JSON.parse(stream)
-    if(cleanBody.success) {
-        return  {
-            status: 200,
-            cypher: cleanBody.body.untis_cypher
-        }
-    }
-    else {
-        return {
-            status: 403,
-            message: cleanBody.body.message
-        }
-    }
-}
-export async function registerAccount(username: string, hashedPassword: string, personId: number, untisCredentialsEncrypted: string) {
-    let result = await fetch('https://localhost:8080/register', {
-        method: 'POST',
-        headers: {
-            "Content-Type": "application/json",
-        },
-        credentials: "include",
-        body: JSON.stringify({
-            username: username,
-            password: hashedPassword,
-            person_id: personId,
-            untis_cypher: untisCredentialsEncrypted
-        })
-    })
-    if(!result.body) {
-            console.error("No result body found!")
+        if(!result.body) {
             return {
                 status: 400,
                 message: "No result body found"
             }
+        }
+        let body: ReadableStream<Uint8Array> = await result.body
+        let stream = await readStream(body);
+        let cleanBody = JSON.parse(stream)
+        if(cleanBody.success) {
+            return  {
+                status: 200,
+                cypher: cleanBody.body.untis_cypher
+            }
+        }
+        else {
+            return {
+                status: 403,
+                message: cleanBody.body.message
+            }
+        }
     }
-    let body: ReadableStream<Uint8Array> = await result.body
-    let stream = await readStream(body);
-    let requestResult = stream.split("\n")
-    return {
-        status: requestResult[0],
-        message: requestResult[1]
+    catch (error) {
+        return {
+            status: 500, 
+            message: "Server connection failed"
+        }
+    }
+}
+export async function registerAccount(username: string, hashedPassword: string, personId: number, untisCredentialsEncrypted: string) {
+    try {    
+        let result = await fetch('https://localhost:8080/register', {
+            method: 'POST',
+            headers: {
+                "Content-Type": "application/json",
+            },
+            credentials: "include",
+            body: JSON.stringify({
+                username: username,
+                password: hashedPassword,
+                person_id: personId,
+                untis_cypher: untisCredentialsEncrypted
+            })
+        })
+        if(!result.body) {
+                console.error("No result body found!")
+                return {
+                    status: 400,
+                    message: "No result body found"
+                }
+        }
+        let body: ReadableStream<Uint8Array> = await result.body
+        let stream = await readStream(body);
+        let requestResult = stream.split("\n")
+        return {
+            status: requestResult[0],
+            message: requestResult[1]
+        }
+    }
+    catch {
+        return {
+            status: 500,
+            message: "Server connection failed"
+        }
     }
 }
 async function readStream(stream: ReadableStream<Uint8Array>) {
@@ -96,39 +112,53 @@ async function readStream(stream: ReadableStream<Uint8Array>) {
     }
     return chunks.join("")
 }
-export async function getTimetable(): Promise<{lessons?: TheScheduleObject[], status: string, message?: string}> {
-    let resultRaw = await fetch('https://localhost:8080/demo/get_timetable', {
-        method: 'GET',
-        credentials: "include"
-    })
-    let resultClean = await resultRaw.json()
+export async function getTimetable(monday: string, friday: string): Promise<{lessons?: TheScheduleObject[], status: number, message?: string}> {
     try {
-        if(resultClean.body.lessons) {
+        const searchQuery = `?from=${monday}&until=${friday}`
+        let resultRaw = await fetch('https://localhost:8080/get_timetable' + searchQuery, {
+            method: 'GET',
+            credentials: "include"
+        })
+        let resultClean = await resultRaw.json()
+        try {
+            if(resultClean.body.lessons) {
+                return {
+                    lessons: resultClean.body.lessons,
+                    status: 200,
+                    message: undefined
+                }
+            }
             return {
-                lessons: resultClean.body.lessons,
-                status: "200 OK",
-                message: undefined
+                lessons: undefined,
+                status: resultClean.body.code,
+                message: resultClean.body.message
             }
         }
-        return {
-            lessons: undefined,
-            status: resultClean.body.code,
-            message: resultClean.body.message
+        catch {
+            return {
+                status: 400,
+                message: "Bad Request"
+            }
         }
     }
     catch {
         return {
-            status: "400",
-            message: "Bad Request"
+            status: 500,
+            message: "Server connection failed"
         }
     }
 }
-async function checkSessionId() {
-    let result = await fetch('https://localhost:8080/check_session', {
-        method: "GET",
-        credentials: "include"
-    })
-    return result.status
+async function checkSessionId(): Promise<number> {
+    try {
+        let result = await fetch('https://localhost:8080/check_session', {
+            method: "GET",
+            credentials: "include"
+        })
+        return result.status
+    }
+    catch  {
+        return 500
+    }
 }
 export async function verifySession() {
     if(getLocalUntisCredentials()) {

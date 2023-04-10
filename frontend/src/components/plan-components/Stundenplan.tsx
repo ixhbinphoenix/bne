@@ -8,9 +8,12 @@ import Popup from "./Popup";
 import type { JSX } from "preact"; 
 import "../../styles/Stundenplan.scss";
 import { useState, useEffect } from "preact/hooks";
+import { getMondayAndFridayDates, shiftForward, shiftBackward } from "../../api/dateHandling";
 
 export default function Stundenplan(): JSX.Element {
-    let APIdata;
+
+    let currentWeek = getMondayAndFridayDates()
+
     useEffect(() => {
         verifySession().then((status) => {
             if(!status) {
@@ -26,10 +29,8 @@ export default function Stundenplan(): JSX.Element {
             }
         })
 
-        getTimetable().then(result => {
+        getTimetable(currentWeek.currentMonday, currentWeek.currentFriday).then(result => {
             if(result.lessons) {
-                console.log("setting data")
-                APIdata = result.lessons
                 addToDivs(result.lessons)
                 const tableDaysTemp = []; 
                 for(let i: number = 0; i < 5; i++) {
@@ -40,12 +41,54 @@ export default function Stundenplan(): JSX.Element {
                     )
                 }
                 setTableDays(tableDaysTemp)
-                console.log(tableDays)
             }
         })
 
     }, [])
    
+    const nextWeek = () => {
+        currentWeek = shiftForward(currentWeek.currentMonday, currentWeek.currentFriday)
+
+        getTimetable(currentWeek.currentMonday, currentWeek.currentFriday).then(result => {
+            if(result.lessons) {
+                console.log("setting data")
+                console.log(result.lessons)
+                addToDivs(result.lessons)
+                const tableDaysTemp = []; 
+                for(let i: number = 0; i < 5; i++) {
+                    tableDaysTemp.push(
+                        <div className="table-day">
+                            {tableElements[i]}
+                        </div>
+                    )
+                }
+                setTableDays(tableDaysTemp)
+                console.log(tableDaysTemp)
+            }
+        })
+    }
+    const previousWeek = () => {
+        currentWeek = shiftBackward(currentWeek.currentMonday, currentWeek.currentFriday)
+
+        getTimetable(currentWeek.currentMonday, currentWeek.currentFriday).then(result => {
+            if(result.lessons) {
+                console.log("setting data")
+                console.log(result.lessons)
+                addToDivs(result.lessons)
+                const tableDaysTemp = []; 
+                for(let i: number = 0; i < 5; i++) {
+                    tableDaysTemp.push(
+                        <div className="table-day">
+                            {tableElements[i]}
+                        </div>
+                    )
+                }
+                setTableDays(tableDaysTemp)
+                console.log(tableDaysTemp)
+            }
+        })
+    }
+
     const getJSessionIdCookie = () => {
         const storedJSessionId = document.cookie.match('(^|;)\\s*' + "JSESSIONID" + '\\s*=\\s*([^;]+)')?.pop() || ''
         if(storedJSessionId) {
@@ -169,9 +212,6 @@ export default function Stundenplan(): JSX.Element {
                 }
             }
         }
-    }
-    if(APIdata) {
-        addToDivs(APIdata)
     }
     const [tableDays, setTableDays] = useState<Array<JSX.Element>>([]);
     return(

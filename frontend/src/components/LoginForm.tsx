@@ -1,12 +1,11 @@
 /* @jsxImportSource preact */
 
-import "../styles/LoginForm.scss"
-import type { JSX } from "preact"
-import { useEffect, useState } from "preact/hooks"
+import "../styles/LoginForm.scss";
+import type { JSX } from "preact";
+import { useEffect, useState } from "preact/hooks";
 import { verifyPassword, verifyEmail, registerAccount, loginAccount } from "../api/theBackend";
 import { fetchJSessionId, getLocalUntisCredentials, saveUntisCredentials } from "../api/untisAPI";
 import { generateKey, passwordDecrypt, passwordEncrypt } from "../api/encryption";
-import { get } from "http";
 
 export default function LoginForm(): JSX.Element  {
     const [activeButton, setActiveButton] = useState<number>(1);
@@ -16,7 +15,6 @@ export default function LoginForm(): JSX.Element  {
     const [untisBoxStyle, setUntiBoxStyle] = useState({})
     const [notice, showPasswordNotice] = useState(<p style={{opacity: "0"}}>A</p>)
 
-    
     useEffect(() => {
         if(activeButton == 2) {
             setButtonStyle2({borderBottom: "2px solid #5974e2"})
