@@ -28,8 +28,7 @@ export function shiftForward(monday: string, friday: string): { currentMonday: s
     const currentFriday: string = `${nextFridayDate.getFullYear()}${(nextFridayDate.getMonth() + 1).toString().padStart(2, '0')}${nextFridayDate.getDate().toString().padStart(2, '0')}`;
   
     return { currentMonday, currentFriday};
-  }
-  
+}
 export function shiftBackward(monday: string, friday: string): { currentMonday: string, currentFriday: string } {
     const mondayDate: Date = new Date(Number(monday.slice(0, 4)), Number(monday.slice(4, 6)) - 1, Number(monday.slice(6)));
     const fridayDate: Date = new Date(Number(friday.slice(0, 4)), Number(friday.slice(4, 6)) - 1, Number(friday.slice(6)));
@@ -40,7 +39,20 @@ export function shiftBackward(monday: string, friday: string): { currentMonday: 
     const currentMonday: string = `${prevMondayDate.getFullYear()}${(prevMondayDate.getMonth() + 1).toString().padStart(2, '0')}${prevMondayDate.getDate().toString().padStart(2, '0')}`;
     const currentFriday: string = `${prevFridayDate.getFullYear()}${(prevFridayDate.getMonth() + 1).toString().padStart(2, '0')}${prevFridayDate.getDate().toString().padStart(2, '0')}`;
   
-    console.log(currentMonday, currentFriday)
     return { currentMonday, currentFriday};
-  }
+}
+export function getWeekDays(monday: string): string[] {
+  const days: string[] = [];
+  const mondayDate = new Date(Number(monday.slice(0, 4)), Number(monday.slice(4, 6)) - 1, Number(monday.slice(6)));
+  const monthNames = ['Jan.', 'Feb.', 'Mär.', 'Apr.', 'Mai', 'Jun.', 'Jul.', 'Aug.', 'Sep.', 'Okt.', 'Nov.', 'Dez.'];
   
+  // Add dates from Monday to Friday to the array
+  for (let i = 0; i < 5; i++) {
+    const currentDate = new Date(mondayDate.getTime() + i * 24 * 60 * 60 * 1000);
+    const dayString = currentDate.getDate().toString().padStart(2, '0');
+    const monthString = monthNames[currentDate.getMonth()];
+    const currentDateString = `${dayString}. ${monthString}`;
+    days.push(currentDateString);
+  }
+  return days;
+}
