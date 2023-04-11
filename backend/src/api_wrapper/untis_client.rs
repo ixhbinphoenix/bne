@@ -136,7 +136,7 @@ impl UntisClient {
             
             println!("2: {:#?}", length.num_days());
             
-            for i in 0..length.num_days()-1{
+            for i in 0..=length.num_days(){
                 match start.checked_add_days(Days::new(i as u64)){
                     Some(date) => {
                         if NaiveDate::parse_from_str(&holiday.start_date.to_string(), "%Y%m%d")? > date {

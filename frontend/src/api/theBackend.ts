@@ -1,4 +1,4 @@
-import { getLocalUntisCredentials } from "./untisAPI";
+import { getLocalUntisCredentials, fetchJSessionId } from "./untisAPI";
 import type { TheScheduleObject } from "./main";
 
 export function verifyPassword(password: string): boolean {
@@ -114,6 +114,14 @@ async function readStream(stream: ReadableStream<Uint8Array>) {
 }
 export async function getTimetable(monday: string, friday: string): Promise<{lessons?: TheScheduleObject[], status: number, message?: string}> {
     try {
+        const storedJSessionId = document.cookie.match('(^|;)\\s*' + "JSESSIONID" + '\\s*=\\s*([^;]+)')?.pop() || ''
+        if(!storedJSessionId) {
+            fetchJSessionId(localStorage.getItem("untis_username"), localStorage.getItem("untis_password")).then((result) => {
+                if(result.JSessionId) {
+                    document.cookie = `JSESSIONID=${result.JSessionId}; max-age=600; secure; samesite=none`
+                }
+            })
+        }
         const searchQuery = `?from=${monday}&until=${friday}`
         let resultRaw = await fetch('https://localhost:8080/get_timetable' + searchQuery, {
             method: 'GET',

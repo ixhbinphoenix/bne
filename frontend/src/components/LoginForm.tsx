@@ -3,8 +3,8 @@
 import "../styles/LoginForm.scss";
 import type { JSX } from "preact";
 import { useEffect, useState } from "preact/hooks";
-import { verifyPassword, verifyEmail, registerAccount, loginAccount } from "../api/theBackend";
-import { fetchJSessionId, getLocalUntisCredentials, saveUntisCredentials } from "../api/untisAPI";
+import { verifyPassword, verifyEmail, registerAccount, loginAccount, verifySession } from "../api/theBackend";
+import { fetchJSessionId, getLocalUntisCredentials, saveUntisCredentials,  } from "../api/untisAPI";
 import { generateKey, passwordDecrypt, passwordEncrypt } from "../api/encryption";
 
 export default function LoginForm(): JSX.Element  {
@@ -14,6 +14,10 @@ export default function LoginForm(): JSX.Element  {
     let password: string, username: string, untisPassword: string, untisUsername: string, personId: number;
     const [untisBoxStyle, setUntiBoxStyle] = useState({})
     const [notice, showPasswordNotice] = useState(<p style={{opacity: "0"}}>A</p>)
+
+    verifySession().then( (session) => {
+        if(session) {window.location.href = "/stundenplan"}
+    })
 
     useEffect(() => {
         if(activeButton == 2) {
@@ -29,7 +33,6 @@ export default function LoginForm(): JSX.Element  {
             setUntiBoxStyle({opacity: "0"})
         }
     }, [activeButton])
-
     const handleButtonClick = (buttonId: number) => {
         setActiveButton(buttonId)
     }

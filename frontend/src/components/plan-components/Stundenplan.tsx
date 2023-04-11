@@ -32,6 +32,7 @@ export default function Stundenplan(): JSX.Element {
         getTimetable(currentWeek.currentMonday, currentWeek.currentFriday).then(result => {
             if(result.lessons) {
                 addToDivs(result.lessons)
+                console.log(result.lessons)
                 const tableDaysTemp = []; 
                 for(let i: number = 0; i < 5; i++) {
                     tableDaysTemp.push(
