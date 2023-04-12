@@ -52,13 +52,32 @@ h1 {
     font-size: clamp(.85rem, .95vw, 25px);
 }
 @media only screen and (max-width: 675px) {
-    .sidebar{
-        display: none;
+    .content {
+        flex-direction: column-reverse;
+    }
+    .sidebar {
+        padding: 2.5vh 2px 2.5vh 2px;
+        border-top: 0.5vh solid #181926;
+        flex-flow: column wrap;
+        display: flex;
+        align-items: center;
+        justify-content: space-evenly;
+        background-color: #1e2030;
+        font-size: clamp(.85rem, .95vw, 25px);
+        flex-direction: row;
+        height: max-content;
+        width: 100%;
     }
 }
 .sidebar-element { 
     cursor: pointer;
     text-align: center;
+}
+.sidebar-element:active {
+    color: rgb(228, 64, 64)
+}
+.active {
+    color: rgb(228, 64, 64) 
 }
 p {
     margin: 0px;
