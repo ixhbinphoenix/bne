@@ -32,7 +32,6 @@ export default function Stundenplan(): JSX.Element {
         getTimetable(currentWeek.currentMonday, currentWeek.currentFriday).then(result => {
             if(result.lessons) {
                 addToDivs(result.lessons)
-                console.log(result.lessons)
                 const tableDaysTemp = []; 
                 for(let i: number = 0; i < 5; i++) {
                     tableDaysTemp.push(
@@ -65,7 +64,7 @@ export default function Stundenplan(): JSX.Element {
                 setTableDays(tableDaysTemp)
             }
         })
-        setCurrentWeek(shiftForward(currentWeek.currentMonday, currentWeek.currentFriday))
+        setCurrentWeek(week)
     }
     const previousWeek = () => {
         let week = shiftBackward(currentWeek.currentMonday, currentWeek.currentFriday);
@@ -84,15 +83,13 @@ export default function Stundenplan(): JSX.Element {
                 setTableDays(tableDaysTemp)
             }
         })
-        setCurrentWeek(shiftBackward(currentWeek.currentMonday, currentWeek.currentFriday))
+        setCurrentWeek(week)
     }
     const goToCurrentWeek = () => {
         setCurrentWeek(getMondayAndFridayDates())
 
         getTimetable(currentWeek.currentMonday, currentWeek.currentFriday).then(result => {
             if(result.lessons) {
-                console.log("setting data")
-                console.log(result.lessons)
                 addToDivs(result.lessons)
                 const tableDaysTemp = []; 
                 for(let i: number = 0; i < 5; i++) {
@@ -103,18 +100,16 @@ export default function Stundenplan(): JSX.Element {
                     )
                 }
                 setTableDays(tableDaysTemp)
-                console.log(tableDaysTemp)
             }
         })
     }
     const getJSessionIdCookie = () => {
         const storedJSessionId = document.cookie.match('(^|;)\\s*' + "JSESSIONID" + '\\s*=\\s*([^;]+)')?.pop() || ''
         if(storedJSessionId) {
-            console.log(storedJSessionId)
             return storedJSessionId
         }
         else {
-            fetchJSessionId("", "").then((result) => {
+            fetchJSessionId(localStorage.getItem("units_username"), localStorage.getItem("untis_password")).then((result) => {
                 if(result.JSessionId) {
                     document.cookie = `JSESSIONID=${result.JSessionId}; max-age=600; secure; samesite=strict`
                     return result.JSessionId

@@ -116,25 +116,17 @@ impl UntisClient {
     }
 
     async fn format_lessons(&mut self, mut lessons: Vec<PeriodObject>, start_date: u32, end_date: u32) -> Result<Vec<FormattedLesson>, Box<dyn std::error::Error>> {
-        println!("{:#?}", start_date);
         let mut formatted: Vec<FormattedLesson> = vec![];
-        println!("still working");
         let all_holidays = self.get_holidays().await?;
-        println!("{:#?}", all_holidays);
         let holidays = all_holidays.iter().filter(|&holiday| holiday.start_date <= i64::from(start_date) && holiday.end_date >= i64::from(start_date) || holiday.start_date <= i64::from(end_date) && holiday.end_date >= i64::from(end_date));
         
         let mut period_holidays: Vec<PeriodObject> = vec![];
 
         for holiday in holidays {
-            
-            println!("1: {:#?}", holiday);
-
             let start = NaiveDate::parse_from_str(&start_date.to_string(), "%Y%m%d")?;
             let end = NaiveDate::parse_from_str(&end_date.to_string(), "%Y%m%d")?;
 
             let length = end - start;
-            
-            println!("2: {:#?}", length.num_days());
             
             for i in 0..=length.num_days(){
                 match start.checked_add_days(Days::new(i as u64)){
@@ -170,17 +162,10 @@ impl UntisClient {
                             
                         )
                     }
-                    None => {
-                        
-                    }
+                    None => {}
                 }
-                
             }
-            
         }
-
-        println!("2: {:#?}", period_holidays);
-
         lessons.append(&mut period_holidays);
 
         lessons.sort_unstable_by_key(|les| les.date);

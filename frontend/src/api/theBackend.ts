@@ -4,21 +4,12 @@ import type { TheScheduleObject } from "./main";
 export function verifyPassword(password: string): boolean {
     const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^a-zA-Z\d]).{8,}$/;
 
-    if (regex.test(password)) {
-      return true;
-    } else {
-      return false
-    }
+    return regex.test(password)
 }
 export function verifyEmail(email: string): boolean {
     const regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-
-    if(regex.test(email)) {
-        return true;
-    } else {
-        return false;
-    }
-
+    
+    return regex.test(email)
 }
 export async function loginAccount(username: string, password: string) {
     try {
@@ -78,7 +69,6 @@ export async function registerAccount(username: string, hashedPassword: string, 
             })
         })
         if(!result.body) {
-                console.error("No result body found!")
                 return {
                     status: 400,
                     message: "No result body found"
@@ -120,6 +110,7 @@ export async function getTimetable(monday: string, friday: string): Promise<{les
                 if(result.JSessionId) {
                     document.cookie = `JSESSIONID=${result.JSessionId}; max-age=600; secure; samesite=none`
                 }
+                
             })
         }
         const searchQuery = `?from=${monday}&until=${friday}`
@@ -171,12 +162,7 @@ async function checkSessionId(): Promise<number> {
 export async function verifySession() {
     if(getLocalUntisCredentials()) {
         const status = await checkSessionId()
-        if(status == 200) {
-            return true
-        }
-        else {
-            return false
-        } 
+        return status == 200 
         }
     else {
         return false

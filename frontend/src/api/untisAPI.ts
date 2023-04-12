@@ -1,4 +1,4 @@
-export async function fetchJSessionId(username: string | null, password: string | null): Promise<{ status: string, JSessionId: string | null, personId: number | null}> {
+export async function fetchJSessionId(username: string | null, password: string | null): Promise<{ status: number, JSessionId: string | null, personId: number | null}> {
     let resultRaw = await fetch('https://borys.webuntis.com/WebUntis/jsonrpc.do?school=ges-münster', {
         method: 'POST',
         body: JSON.stringify({
@@ -11,13 +11,13 @@ export async function fetchJSessionId(username: string | null, password: string 
    let resultClean = await resultRaw.json()
     try {
     return {
-        status: '200 Ok',
+        status: 200,
         JSessionId: resultClean.result.sessionId,
         personId: resultClean.result.personId
     };
    } catch {
     return {
-        status: '401 Unauthorized\nFalsche Logindaten',
+        status: 401,
         JSessionId: null,
         personId: null
     }

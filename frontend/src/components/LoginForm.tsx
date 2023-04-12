@@ -8,7 +8,7 @@ import { fetchJSessionId, getLocalUntisCredentials, saveUntisCredentials,  } fro
 import { generateKey, passwordDecrypt, passwordEncrypt } from "../api/encryption";
 
 export default function LoginForm(): JSX.Element  {
-    const [activeButton, setActiveButton] = useState<number>(1);
+    const [isLogin, setIsLogin] = useState<boolean>(true);
     const [buttonStyle1, setButtonStyle1] = useState({borderBottom: "2px solid #5974e2"})
     const [buttonStyle2, setButtonStyle2] = useState({})
     let password: string, username: string, untisPassword: string, untisUsername: string, personId: number;
@@ -20,7 +20,7 @@ export default function LoginForm(): JSX.Element  {
     })
 
     useEffect(() => {
-        if(activeButton == 2) {
+        if(!isLogin) {
             setButtonStyle2({borderBottom: "2px solid #5974e2"})
             setButtonStyle1({borderBottom: "none"})
             showPasswordNotice(<p style={{opacity: "0"}}>A</p>)
@@ -32,14 +32,14 @@ export default function LoginForm(): JSX.Element  {
             showPasswordNotice(<p style={{opacity: "0"}}>A</p>)
             setUntiBoxStyle({opacity: "0"})
         }
-    }, [activeButton])
+    }, [isLogin])
     const handleButtonClick = (buttonId: number) => {
-        setActiveButton(buttonId)
+        setIsLogin(buttonId == 1)
     }
     const handleSubmit = (event: any) => {
         event.preventDefault()
         if(event.target) {
-            if(activeButton == 1) {
+            if(isLogin) {
                 if(event.target[0].value && event.target[1].value) {
                     username = event.target[0].value
                     password = event.target[1].value
@@ -58,9 +58,8 @@ export default function LoginForm(): JSX.Element  {
                     showPasswordNotice(<p style={{opacity: "100"}}>Bitte fülle alle Felder aus</p>)
                 }
             }
-            if(activeButton == 2) {
+            if(!isLogin) {
                 if(event.target[0].value && event.target[1].value && event.target[2].value && event.target[3].value) {
-                    console.log("success")
                     username = event.target[0].value
                     password = event.target[1].value
                     untisUsername = event.target[2].value
@@ -101,7 +100,6 @@ export default function LoginForm(): JSX.Element  {
         const untisCredentialsEncrtypted = passwordEncrypt(key, untisCredentials).toString()
 
         registerAccount(username, password, personId, untisCredentialsEncrtypted).then((result) => {
-            console.log(result.status)
             if(result.status == "200 OK") {
                 window.location.href = "/stundenplan"
             }
@@ -110,13 +108,11 @@ export default function LoginForm(): JSX.Element  {
     const sendLogin = () => {
         const key = generateKey(password)
         loginAccount(username, password).then((result) => {
-            console.log(result)
             if(result.status == 200) {
                 const untisCredentialsDecrypted = JSON.parse(passwordDecrypt(key, result.cypher))
-                console.log(untisCredentialsDecrypted)
                 saveUntisCredentials(untisCredentialsDecrypted.username, untisCredentialsDecrypted.password)
                 fetchJSessionId(getLocalUntisCredentials().username, getLocalUntisCredentials().password).then((result) => {
-                    if(result.status == "200 Ok") {
+                    if(result.status == 200) {
                         window.location.href = "/stundenplan"
                     }
                 })
