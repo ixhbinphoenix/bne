@@ -23,13 +23,32 @@
 >>
 >>09.02.23 : Zwischenstand
 >>>1. Erste Version des Plans, die echte Daten anzeigen kann.
-
-
-
-
-
-
-
+>>
+>>24.03.23 : Vorläufige Fertigstellung Serverentwicklung
+>>>1. Server kann Anfragen bearbeiten
+>>>2. API-Wrapper kann Daten von Untis abfragen und formatieren
+>>>3. Server kann Datenbank verwalten
+>>>4. Datenbank kann eigene Accounts erstellen und verwalten
+>>
+>>27.03.23 : Beginn Entwicklung Login und Session Validierung
+>>>1. Neue Login Seite
+>>>2. Session überprüfen
+>>
+>>28.03.23 : Cookie-Banner
+>>>1. Cookie-Banner mit vorläufigem Inhalt ***[NFY]***
+>>
+>>29.03.23 : Clientside Verschlüsselung
+>>>1. Untis-Daten werden mit Nutzerpasswort verschlüsselt und an Server gesendet
+>>>2. Eigenes Accountpasswort wird an Server geschickt und unwiderruflich verschlüsselt
+>>>3. Untis-Daten werden bei Login abgerufen und entschlüsselt + gespeichert
+>>
+>>10.04.23 : Navigation
+>>>1. Nutzer kann durch verschiedene Wochen navigieren
+>>
+>>12.04.23 : Vorläufige Fertistellung Login und Session Validierung
+>>>1. Nutzeraccounts können über die Loginpage erstellt werden
+>>>2. Bestehende Accounts können sich erneut einloggen
+>>>3. Untis-Daten werden überprüft und sicher gespeichert
 
 
 
