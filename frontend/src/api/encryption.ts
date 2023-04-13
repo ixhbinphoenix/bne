@@ -1,4 +1,5 @@
-import { PBKDF2, enc, AES, lib, SHA512 } from "crypto-js";
+import { PBKDF2, enc, lib } from "crypto-js";
+import CryptoJS from "crypto-js";
 
 const salt = "";
 const iterations = 40000;
@@ -29,7 +30,7 @@ export function generateKey(password: string): string {
  */
 
 export function passwordEncrypt(key: string, plainText: string): lib.CipherParams {
-    const encrypted = AES.encrypt(plainText, key);
+    const encrypted = CryptoJS.AES.encrypt(plainText, key);
     return encrypted;
 }
 
@@ -44,7 +45,7 @@ export function passwordEncrypt(key: string, plainText: string): lib.CipherParam
  */
 
 export function passwordDecrypt(key: string, encryptedText: string): string {
-    const decrypted = AES.decrypt(encryptedText, key);
+    const decrypted = CryptoJS.AES.decrypt(encryptedText, key);
 
     return enc.Utf8.stringify(decrypted);
 }
