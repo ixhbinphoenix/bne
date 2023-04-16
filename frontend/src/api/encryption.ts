@@ -1,4 +1,3 @@
-import { PBKDF2, enc, lib } from "crypto-js";
 import CryptoJS from "crypto-js";
 
 const salt = "";
@@ -12,8 +11,8 @@ const iterations = 40000;
  */
 
 export function generateKey(password: string): string {
-    const key = PBKDF2(password, salt, { keySize: 8, iterations: iterations})
-    return key.toString(enc.Hex);
+    const key = CryptoJS.PBKDF2(password, salt, { keySize: 8, iterations: iterations})
+    return key.toString(CryptoJS.enc.Hex);
 }
 
 /**
@@ -29,7 +28,7 @@ export function generateKey(password: string): string {
  * ```
  */
 
-export function passwordEncrypt(key: string, plainText: string): lib.CipherParams {
+export function passwordEncrypt(key: string, plainText: string): CryptoJS.lib.CipherParams {
     const encrypted = CryptoJS.AES.encrypt(plainText, key);
     return encrypted;
 }
@@ -47,5 +46,5 @@ export function passwordEncrypt(key: string, plainText: string): lib.CipherParam
 export function passwordDecrypt(key: string, encryptedText: string): string {
     const decrypted = CryptoJS.AES.decrypt(encryptedText, key);
 
-    return enc.Utf8.stringify(decrypted);
+    return CryptoJS.enc.Utf8.stringify(decrypted);
 }
