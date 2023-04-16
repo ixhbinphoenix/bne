@@ -160,13 +160,16 @@ export default function Stundenplan(): JSX.Element {
                         let substitutionTeacherStyle = {
                             display: "none"
                         }
+                        let substitutionTextStyle = {
+                            display: "none"
+                        }
                         flexStyle = {
                             gridRowStart: lessons[k].start.toString(),
                             gridRowEnd: "span " + lessons[k].length
                         }
                         if(!lessons[k].substitution) {
                             lessonElements.push(
-                               <div style={objectStyle} onClick={() => {
+                            <div style={objectStyle} onClick={() => {
                                 openPopup()
                                 setPopupContent(
                                 <div style={objectStyle}>
@@ -186,28 +189,36 @@ export default function Stundenplan(): JSX.Element {
                                 roomStyle = { textDecoration: "line-through" }
                                 substitutionRoomStyle = { display: "block" }
                             }
-                            if(lessons[k].substitution?.teacher) {
+                            if(lessons[k].substitution?.room == "---") {
+                                roomStyle = { textDecoration: "line-through" }
+                            }
+                            if(lessons[k].substitution?.teacher && lessons[k].substitution?.teacher != "---") {
                                 teacherStyle = { textDecoration: "line-through" }
-                                if(lessons[k].substitution?.teacher) {
-                                    substitutionTeacherStyle = { display: "block" }
-                                }
+                                substitutionTeacherStyle = { display: "block" }
+                            }
+                            if(lessons[k].substitution?.teacher == "---") {
+                                teacherStyle = { textDecoration: "line-through" }
                             }
                             if(lessons[k].substitution?.cancelled) {
                                 roomStyle = { textDecoration: "line-through" }
                                 teacherStyle = { textDecoration: "line-through" }
                             }
+                            if(lessons[k].substitution?.substitution_text) {
+                                substitutionTextStyle = { display: "block" }
+                            }
                             lessonElements.push(
                                 <div style={objectStyle} onClick={() => {
                                     openPopup()
                                     setPopupContent(
-                                    <div style={objectStyle}>
-                                        <p style={roomStyle}>{lessons[k].room}</p>
-                                        <p style={substitutionRoomStyle}>{lessons[k].substitution?.room}</p>
-                                        <h2>{subjectType}</h2>
-                                        <p style={teacherStyle}>{lessons[k].teacher}</p>
-                                        <p style={substitutionTeacherStyle}>{lessons[k].substitution?.teacher}</p>
-                                    </div>)
-                                    }}>
+                                        <div style={objectStyle}>
+                                            <p style={roomStyle}>{lessons[k].room}</p>
+                                            <p style={substitutionRoomStyle}>{lessons[k].substitution?.room}</p>
+                                            <h2>{subjectType}</h2>
+                                            <strong style={substitutionTextStyle}>{lessons[k].substitution?.substitution_text}</strong>
+                                            <p style={teacherStyle}>{lessons[k].teacher}</p>
+                                            <p style={substitutionTeacherStyle}>{lessons[k].substitution?.teacher}</p>
+                                        </div>
+                                    )}}>
                                     <p style={roomStyle}>{lessons[k].room}</p>
                                     <p style={substitutionRoomStyle}>{lessons[k].substitution?.room}</p>
                                     <h2>{subjectType}</h2>

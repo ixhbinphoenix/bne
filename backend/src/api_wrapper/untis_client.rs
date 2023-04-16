@@ -309,17 +309,21 @@ impl UntisClient {
                     subject_short,
                     room,
                     substitution: if substituted { Some(Substitution {
-                        teacher: if !lesson.te.is_empty() && lesson.te[0].orgname.is_some() {
-                            if lesson.te[0].name.clone() == "---" {
-                                None
-                            } else {
+                        teacher: if !lesson.te.is_empty() {
+                            if lesson.te[0].orgname.is_some() {
                                 Some(lesson.te[0].name.clone())
+                            } else { 
+                                None
                             }
                         } else { None },
-                        room: if !lesson.ro.is_empty() && lesson.ro[0].orgname.is_some() {
-                            Some(lesson.ro[0].name.clone())
+                        room: if !lesson.ro.is_empty() {
+                            if lesson.ro[0].orgname.is_some() {
+                                Some(lesson.ro[0].name.clone())
+                            } else { 
+                                None
+                            }
                         } else { None },
-                        substition_text: lesson.subst_text.clone(),
+                        substitution_text: lesson.subst_text.clone(),
                         cancelled: match lesson.code{
                             Some(code) => {
                                 code == *"cancelled" || match lesson.subst_text{
