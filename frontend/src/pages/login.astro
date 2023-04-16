@@ -1,12 +1,8 @@
 ---
-import LoginBox from "../components/LoginBox.astro";
-import ModalButton from "../components/ModalButton.astro";
 import LoginLayout from "../layouts/LoginLayout.astro";
+import LoginForm from "../components/LoginForm";
 ---
 
 <LoginLayout title="Login">
-  <div id="login-page">
-    <LoginBox></LoginBox>
-    <ModalButton id="submit">Login</ModalButton>
-  </div>
+    <LoginForm client:load />
 </LoginLayout>

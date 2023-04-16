@@ -17,5 +17,8 @@ package-lock.json
 .env
 .env.production
 
+#vercel
+.vercel
+
 # macOS-specific files
 .DS_Store

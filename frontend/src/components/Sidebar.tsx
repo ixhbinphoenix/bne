@@ -9,6 +9,14 @@ export default function Sidebar(): JSX.Element {
 
     const [activePage, setActivePage] = useState("stundenplan")
 
+    const highlightButton = (button: string) => {
+        const buttons = document.getElementsByClassName("sidebar-element")
+        for(let i = 0; i < buttons.length; i++) {
+            buttons[i].classList.remove("active")
+        }
+        document.getElementById(button)?.classList.add("active")
+    }
+
     return(
         <div class="background">
             <div class="title">
@@ -16,10 +24,10 @@ export default function Sidebar(): JSX.Element {
             </div>
             <div class="content">
                 <div class="sidebar">
-                    <button class="sidebar-element" onClick={() => setActivePage("stundenplan")}>Stundenplan</button>
-                    <button class="sidebar-element" onClick={() => setActivePage("lernbueros")}>Lernbüros</button>
-                    <button class="sidebar-element" onClick={() => setActivePage("fehler")}>Fehler</button>
-                    <button class="sidebar-element" onClick={() => setActivePage("kontakt")}>Kontakt</button>
+                    <button class="sidebar-element active" id="stundenplan" onClick={() => {setActivePage("stundenplan"); highlightButton("stundenplan")}}>Stundenplan</button>
+                    <button class="sidebar-element" id="lernbueros" onClick={() => {setActivePage("lernbueros"); highlightButton("lernbueros")}}>Lernbüros</button>
+                    <button class="sidebar-element" id="fehler" onClick={() => {setActivePage("fehler"); highlightButton("fehler")}}>Fehler</button>
+                    <button class="sidebar-element" id="kontakt" onClick={() => {setActivePage("kontakt"); highlightButton("kontakt")}}>Kontakt</button>
                 </div>
                 <Plan activePage={activePage}></Plan>
             </div>
