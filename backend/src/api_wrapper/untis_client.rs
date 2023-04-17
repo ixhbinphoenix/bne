@@ -208,6 +208,13 @@ impl UntisClient {
                 let start = timegrid[usize::try_from(day)?].time_units.iter().position(|unit| unit.start_time == lesson.start_time).unwrap() + 1;
                 let mut subject = "".to_string();
                 let mut subject_short = "".to_string();
+                
+                if lesson.su.len() > 0 {
+                    subject = lesson.su[0].name.to_owned();
+                    subject_short = lesson.su[0].name.to_owned();
+                    subject_short = subject_short.split(' ').collect::<Vec<&str>>()[0].to_owned();
+                }
+
                 match lesson.code.clone() {
                     Some(code) => {
                         
@@ -249,11 +256,6 @@ impl UntisClient {
                                     }
                                 }
                             }
-                        }
-                        else{
-                            subject = lesson.su[0].name.to_owned();
-                            subject_short = lesson.su[0].name.to_owned();
-                            subject_short = subject_short.split(' ').collect::<Vec<&str>>()[0].to_owned();
                         }
                     }
                 }
