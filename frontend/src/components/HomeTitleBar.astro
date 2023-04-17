@@ -3,46 +3,39 @@ import logo from "../icons/logo-animated-no-bg.svg"
 ---
 
 <div id="titlebar">
-  <img src={logo} alt="error" class="logo">
+  <img src={logo} alt="logo" class="logo">
   <a href="/login" id="login-button-link"><button id="login-button">Sign up</button></a>
 </div>
 
 <style lang="scss">
   #titlebar {
+    height: 6vmin;
     position: relative;
     display: flex;
     width: 100%;
     border-bottom: 0.5vh solid #181926;
     background-color: #1e2030;
     margin-top: 0;
-    padding-top: 1px;
-
+    align-items: center;
+    justify-content: space-between;
+    
     &> .logo {
       margin-left: .5%;
       height: 100%;
-      position: absolute;
       user-select: none;
       -webkit-user-drag: none;
       -moz-user-select: none;
       cursor: pointer;
     }
   }
-  #titlebar-title {
-    margin-left: 5vw;
-    font-family: Verdana, Geneva, Tahoma, sans-serif;
-    font-size: 2rem;
-    background: rgb(198,160,246);
-    background: linear-gradient(90deg, rgb(198, 160, 246) 0%, rgb(237, 135, 150) 50%, rgb(238, 212, 159) 100%); 
-    background-size: 250%;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-  }
   #login-button-link {
+    margin-right: 1.5%;
     &>#login-button {
+      white-space: nowrap;
+      font-size: 1.25vmin;
       align-self: center;
       border-radius: 15px;
-      font-size: 1.2rem;
-      padding: 10px;
+      padding: 10%;
       border: 3px solid #cad3f5;
       background-color: #1e2030;
       color: #cad3f5;
@@ -56,9 +49,5 @@ import logo from "../icons/logo-animated-no-bg.svg"
         transform: translateY(2px);
       }
     }
-    margin-left: auto;
-    margin-right: 4vw;
-    margin-top: 1.5vh;
-    margin-bottom: 1vh;
   }
 </style>
