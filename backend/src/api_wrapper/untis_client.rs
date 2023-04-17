@@ -217,9 +217,6 @@ impl UntisClient {
                                 None => "Entfällt".to_string()
                             }
                         }
-                        else if code == "cancelled"{
-                            continue;
-                        }
                     },
                     None => {
                         if lesson.su.is_empty() {
