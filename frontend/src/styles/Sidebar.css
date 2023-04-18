@@ -13,7 +13,7 @@ body {
     margin: 0px;
     padding: 0px;
     font-size: calc(1rem + .5vw);
-    font-family: Verdana, Geneva, Tahoma, sans-serif;  
+    font-family: Inter, sans-serif;  
 }
 .title {
     height: min(14.5vw, 14.5%);
