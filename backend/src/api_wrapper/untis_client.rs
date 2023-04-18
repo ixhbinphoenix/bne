@@ -118,7 +118,7 @@ impl UntisClient {
     async fn format_lessons(&mut self, mut lessons: Vec<PeriodObject>, start_date: u32, end_date: u32) -> Result<Vec<FormattedLesson>, Box<dyn std::error::Error>> {
         let mut formatted: Vec<FormattedLesson> = vec![];
         let all_holidays = self.get_holidays().await?;
-        let holidays = all_holidays.iter().filter(|&holiday| holiday.start_date <= i64::from(start_date) && holiday.end_date >= i64::from(start_date) || holiday.start_date <= i64::from(end_date) && holiday.end_date >= i64::from(end_date));
+        let holidays = all_holidays.iter().filter(|&holiday| holiday.start_date <= i64::from(start_date) && holiday.end_date >= i64::from(start_date) || holiday.start_date <= i64::from(end_date) && holiday.end_date >= i64::from(start_date));
         
         let mut period_holidays: Vec<PeriodObject> = vec![];
 
