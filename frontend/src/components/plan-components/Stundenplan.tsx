@@ -8,11 +8,23 @@ import Popup from "./Popup";
 import type { JSX } from "preact"; 
 import "../../styles/Stundenplan.scss";
 import { useState, useEffect } from "preact/hooks";
-import { getMondayAndFridayDates, shiftForward, shiftBackward, getWeekDays } from "../../api/dateHandling";
+import { getMondayAndFridayDates, shiftForward, shiftBackward, getWeekDays, getCurrentDay, getCurrentLesson } from "../../api/dateHandling";
 
 export default function Stundenplan(): JSX.Element {
 
     const [currentWeek, setCurrentWeek] = useState(getMondayAndFridayDates())
+    
+    let dateStyle: Array<JSX.CSSProperties> = [{}, {}, {}, {}, {}, {}, {}]
+
+    let newDateStyle: Array<JSX.CSSProperties> = [...dateStyle];
+    newDateStyle[getCurrentDay()] = {color: "rgb(228, 64, 64)"};
+    dateStyle = newDateStyle;
+
+    let lessonStyle: Array<JSX.CSSProperties> = [{}, {}, {}, {}, {}, {}, {}, {}, {}, {}];
+
+    let newLessonStyle: Array<JSX.CSSProperties> = [...lessonStyle];
+    newLessonStyle[getCurrentLesson()] =  {color: "rgb(228, 64, 64)"};
+    lessonStyle = newLessonStyle;
 
     useEffect(() => {
         verifySession().then((status) => {
@@ -243,20 +255,20 @@ export default function Stundenplan(): JSX.Element {
     return(
         <div className="table-layout">
             <div className="table-top">
-                <span className="day">{currentDates[0]}<br/>Mo.</span>
-                <span className="day">{currentDates[1]}<br/>Di.</span>
-                <span className="day">{currentDates[2]}<br/>Mi.</span>
-                <span className="day">{currentDates[3]}<br/>Do.</span>
-                <span className="day">{currentDates[4]}<br/>Fr.</span>
+                <span className="day" style={dateStyle[1]}>{currentDates[0]}<br/>Mo.</span>
+                <span className="day" style={dateStyle[2]}>{currentDates[1]}<br/>Di.</span>
+                <span className="day" style={dateStyle[3]}>{currentDates[2]}<br/>Mi.</span>
+                <span className="day" style={dateStyle[4]}>{currentDates[3]}<br/>Do.</span>
+                <span className="day" style={dateStyle[5]}>{currentDates[4]}<br/>Fr.</span>
             </div>
             <div className="table-body">
                 <div className="table-sidebar-left">
-                    <span>
+                    <span style={lessonStyle[0]}>
                         <div>07:55</div>
                         1
                         <div>08:40</div>
                     </span>
-                    <span>
+                    <span style={lessonStyle[2]}>
                         <div>
                             08:40
                         </div>
@@ -265,7 +277,7 @@ export default function Stundenplan(): JSX.Element {
                             09:25
                         </div>
                     </span>
-                    <span>
+                    <span style={lessonStyle[3]}>
                         <div>
                             09:45
                         </div>
@@ -274,7 +286,7 @@ export default function Stundenplan(): JSX.Element {
                             10:30
                         </div>
                     </span>
-                    <span>
+                    <span style={lessonStyle[4]}>
                         <div>
                             10:30
                         </div>
@@ -283,7 +295,7 @@ export default function Stundenplan(): JSX.Element {
                             11:15
                         </div>
                     </span>
-                    <span>
+                    <span style={lessonStyle[5]}>
                         <div>
                             11:35
                         </div>
@@ -292,7 +304,7 @@ export default function Stundenplan(): JSX.Element {
                             12:20
                         </div>
                     </span>
-                    <span>
+                    <span style={lessonStyle[6]}>
                         <div>
                             12:20
                         </div>
@@ -301,7 +313,7 @@ export default function Stundenplan(): JSX.Element {
                             13:05
                         </div>
                     </span>
-                    <span>
+                    <span style={lessonStyle[7]}>
                         <div>
                             13:15
                         </div>
@@ -310,7 +322,7 @@ export default function Stundenplan(): JSX.Element {
                             14:00
                         </div>
                     </span>
-                    <span>
+                    <span style={lessonStyle[8]}>
                         <div>
                             14:05
                         </div>
@@ -319,7 +331,7 @@ export default function Stundenplan(): JSX.Element {
                             14:50
                         </div>
                     </span>
-                    <span>
+                    <span style={lessonStyle[9]}>
                         <div>
                             14:50
                         </div>    
@@ -328,7 +340,7 @@ export default function Stundenplan(): JSX.Element {
                             15:35
                         </div>
                     </span>
-                    <span>
+                    <span style={lessonStyle[10]}>
                         <div>
                             15:40
                         </div>

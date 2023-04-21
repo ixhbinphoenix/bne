@@ -61,3 +61,38 @@ export function getWeekDays(monday: string): string[] {
   }
   return days;
 }
+export function getCurrentDay(): number {
+  const today = new Date();
+  return today.getDay();
+}
+export function getCurrentLesson(): number {
+  const currentTime = new Date();
+
+  const hours = {
+    1: { start: '07:55', end: '08:39' },
+    2: { start: '08:40', end: '09:25' },
+    3: { start: '09:45', end: '10:29' },
+    4: { start: '10:30', end: '11:15' },
+    5: { start: '11:35', end: '12:19' },
+    6: { start: '12:20', end: '13:05' },
+    7: { start: '13:15', end: '14:00' },
+    8: { start: '14:05', end: '14:49' },
+    9: { start: '14:50', end: '15:35' },
+    10: { start: '15:40', end: '16:25' },
+  };
+
+  let currentHourNumber = 11;
+  for (const [hourNumber, hour] of Object.entries(hours)) {
+    const [startHour, startMinute] = hour.start.split(":");
+    const [endHour, endMinute] = hour.end.split(":");
+    const start = new Date(currentTime.getFullYear(), currentTime.getMonth(), currentTime.getDate(), parseInt(startHour), parseInt(startMinute), 0, 0);
+    const end = new Date(currentTime.getFullYear(), currentTime.getMonth(), currentTime.getDate(), parseInt(endHour), parseInt(endMinute), 0, 0);
+
+
+    if (currentTime >= start && currentTime < end) {
+      return parseInt(hourNumber);
+    }
+  }
+
+  return currentHourNumber;
+}
