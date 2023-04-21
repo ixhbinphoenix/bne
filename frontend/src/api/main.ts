@@ -10,7 +10,7 @@ export interface TheScheduleObject {
     substitution: {
         teacher: string | null,
         room: string | null,
-        subsitution_text: string | null,
+        substitution_text: string | null,
         cancelled: boolean
     } | null
 };
