@@ -8,7 +8,8 @@
     "start": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "format": "prettier -w --plugin-search-dir=. ."
   },
   "dependencies": {
     "@astrojs/preact": "^1.2.0",
@@ -21,6 +22,8 @@
   "devDependencies": {
     "@types/crypto-js": "^4.1.1",
     "@types/node": "^18.15.11",
+    "prettier": "^2.8.8",
+    "prettier-plugin-astro": "^0.8.0",
     "sass": "^1.56.1"
   }
 }
