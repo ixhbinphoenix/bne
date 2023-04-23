@@ -129,40 +129,37 @@ impl UntisClient {
             let length = end - start;
             
             for i in 0..=length.num_days(){
-                match start.checked_add_days(Days::new(i as u64)){
-                    Some(date) => {
-                        if NaiveDate::parse_from_str(&holiday.start_date.to_string(), "%Y%m%d")? > date {
-                            continue;
-                        }
-                        if NaiveDate::parse_from_str(&holiday.end_date.to_string(), "%Y%m%d")? < date {
-                            break;
-                        }
-                        period_holidays.push(
-                            PeriodObject {
-                                id: 0,
-                                date: date.format("%Y%m%d").to_string().parse::<u32>()?,
-                                start_time: 755,
-                                end_time: 1625,
-                                kl: vec![],
-                                te: vec![], 
-                                su: vec![],
-                                ro: vec![],
-                                activity_type: None,
-                                subst_text: None,
-                                lstext: Some(match holiday.longname.clone(){
-                                    Some(longname) => {
-                                        longname
-                                    }
-                                    None => {
-                                        holiday.name.clone()
-                                    }
-                                }),
-                                code: None
-                            }
-                            
-                        )
+                if let Some(date) = start.checked_add_days(Days::new(i as u64)) {
+                    if NaiveDate::parse_from_str(&holiday.start_date.to_string(), "%Y%m%d")? > date {
+                        continue;
                     }
-                    None => {}
+                    if NaiveDate::parse_from_str(&holiday.end_date.to_string(), "%Y%m%d")? < date {
+                        break;
+                    }
+                    period_holidays.push(
+                        PeriodObject {
+                            id: 0,
+                            date: date.format("%Y%m%d").to_string().parse::<u32>()?,
+                            start_time: 755,
+                            end_time: 1625,
+                            kl: vec![],
+                            te: vec![], 
+                            su: vec![],
+                            ro: vec![],
+                            activity_type: None,
+                            subst_text: None,
+                            lstext: Some(match holiday.longname.clone(){
+                                Some(longname) => {
+                                    longname
+                                }
+                                None => {
+                                    holiday.name.clone()
+                                }
+                            }),
+                            code: None
+                        }
+
+                    )
                 }
             }
         }
