@@ -1,0 +1,4 @@
+fn_args_layout = "Compressed"
+tab_spaces = 4
+hard_tabs = "false"
+trailing_semicolon = false
