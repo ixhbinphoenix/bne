@@ -1,0 +1,21 @@
+---
+import RootLayout from './RootLayout.astro';
+import '../styles/StaticContent.scss';
+import logo from "../icons/logo-animated-no-bg.svg";
+export interface Props {
+  content: {title: string}
+}
+
+const {content} = Astro.props;
+---
+
+<RootLayout title={content.title}>
+    <div class="title-bar">
+        <a href="/"><img src={logo} alt="logo"></a>
+        <h1>{content.title}</h1>
+        <h2>TheSchedule</h2>
+    </div>
+    <div class="container">
+      <slot/>
+    </div>
+</RootLayout>
