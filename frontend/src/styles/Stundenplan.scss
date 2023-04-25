@@ -20,10 +20,13 @@
         height: var(--spacing-top);
         width: calc(100% - var(--spacing-left));
         
-        .day {
+        &>span {
             text-align: center;
             width: 20%;
             font-size: clamp(.55rem, 125%, 1vh);
+        }
+        &>span.highlighted {
+            color: rgb(228, 64, 64);
         }
     }
     .table-body {
@@ -40,6 +43,9 @@
         align-items: center;
         justify-content: space-around;
 
+            &>span.highlighted {
+                color:rgb(228, 64, 64);
+            }
             span {
                 text-align: center;
 
