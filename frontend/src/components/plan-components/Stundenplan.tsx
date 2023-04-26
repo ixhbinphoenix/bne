@@ -32,27 +32,27 @@ export default function Stundenplan(): JSX.Element {
         fetchJSessionId(localStorage.getItem("untis_username"), localStorage.getItem("untis_password")).then((result) => {
             if(result.JSessionId && result.personId) {
                 document.cookie = `JSESSIONID=${result.JSessionId}; max-age=600; secure; samesite=none`
+
+                setCurrentDates(getWeekDays(currentWeek.currentMonday))
+                getTimetable(currentWeek.currentMonday, currentWeek.currentFriday).then(result => {
+                    if(result.lessons) {
+                        addToDivs(result.lessons)
+                        const tableDaysTemp = []; 
+                        for(let i: number = 0; i < 5; i++) {
+                            tableDaysTemp.push(
+                                <div className="table-day">
+                                    {tableElements[i]}
+                                </div>
+                            )
+                        }
+                    setTableDays(tableDaysTemp)
+                    }
+                })
             }
             else { 
-                alert(result.status)
+                window.location.href = "/login"
             }
         })
-        setCurrentDates(getWeekDays(currentWeek.currentMonday))
-        getTimetable(currentWeek.currentMonday, currentWeek.currentFriday).then(result => {
-            if(result.lessons) {
-                addToDivs(result.lessons)
-                const tableDaysTemp = []; 
-                for(let i: number = 0; i < 5; i++) {
-                    tableDaysTemp.push(
-                        <div className="table-day">
-                            {tableElements[i]}
-                        </div>
-                    )
-                }
-                setTableDays(tableDaysTemp)
-            }
-        })
-
     }, [])
    
     const nextWeek = () => {
