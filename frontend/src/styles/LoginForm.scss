@@ -42,7 +42,7 @@
                 outline: none;
                 border: none;
                 color: #b8c0e0;
-                font-size: clamp(15px, 2.5rem, 3vh);
+                font-size: clamp(15px, 2.5vmin, 3vh);
                 margin: 1.5%;
             }
             &>.underline {
@@ -99,18 +99,14 @@
                     margin: 1.5%;
                     outline: none;
                     border: 2px solid #5974e2;
-                }
-                &>#submit-button {
                     cursor: pointer;
-                    width: min-content;
-                }
-                &>#submit-button:hover {
-                    background-color: #5974e2;
-                    border-image: none;
-                    border-color: #5974e2;
-                }
-                &>#submit-button:active {
-                    transform: translateY(3px);
+
+                    &:hover {
+                        background-color: #5974e2;
+                    }
+                    &:active {
+                        background-color: #5974e2;
+                    }
                 }
             }
         }    

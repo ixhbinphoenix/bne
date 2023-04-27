@@ -10,7 +10,7 @@ import GenericButton from "../components/generics/GenericButton.astro"
 
 <style lang="scss">
   #titlebar {
-    height: 6vmin;
+    height: 5vh;
     position: relative;
     display: flex;
     width: 100%;
@@ -29,24 +29,7 @@ import GenericButton from "../components/generics/GenericButton.astro"
       cursor: pointer;
     }
   }
-  #titlebar-title {
-    margin-left: 5vw;
-    font-size: 2rem;
-    background: rgb(198,160,246);
-    background: linear-gradient(90deg, rgb(198, 160, 246) 0%, rgb(237, 135, 150) 50%, rgb(238, 212, 159) 100%); 
-    background-size: 250%;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-  }
   #login-button-link {
-    
-    &> button {
-      size: 3px;
-    }
-
-    margin-left: auto;
-    margin-right: 4vw;
-    margin-top: 1.5vh;
-    margin-bottom: 1vh;
+    margin-right: min(28px, 2%);
   }
 </style>

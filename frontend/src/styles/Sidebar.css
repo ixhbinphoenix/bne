@@ -20,7 +20,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: #24273a;
+    background-color:#1e2030;
     border-bottom: 0.5vh solid #181926;
 }
 h1 {
@@ -47,7 +47,7 @@ h1 {
     height: 100%;
     min-width: 5%;
     width: 15%;
-    background-color: #1e2030;
+    background-color: #24273a;
     font-size: clamp(.85rem, .95vw, 25px);
 }
 @media only screen and (max-width: 675px) {
@@ -61,8 +61,7 @@ h1 {
         display: flex;
         align-items: center;
         justify-content: space-evenly;
-        background-color: #1e2030;
-        font-size: clamp(.85rem, .95vw, 25px);
+        font-size: clamp(.85rem, 1vw, 25px);
         flex-direction: row;
         height: max-content;
         width: 100%;
