@@ -7,6 +7,7 @@ export interface Props {
 const {title} = Astro.props;
 ---
 
+<meta name="theme-color" content="#24273a">
 <RootLayout title={title}>
   <slot/>
 </RootLayout>
@@ -16,7 +17,7 @@ const {title} = Astro.props;
         position: absolute;
         height: 100%;
         width: 100%;
-        background-color: #181926, 
+        background-color: #24273a;
     }
     body {
         font-family: Inter, sans-serif;
