@@ -280,7 +280,7 @@ pub struct FormattedLesson {
 pub struct Substitution {
     pub teacher: Option<String>,
     pub room: Option<String>,
-    pub substition_text: Option<String>,
+    pub substitution_text: Option<String>,
     pub cancelled: bool
 }
 
@@ -290,7 +290,7 @@ impl Substitution {
         Self {
             teacher: None,
             room: None,
-            substition_text: Some("Vtr. ohne Lehrer".to_string()),
+            substitution_text: Some("Vtr. ohne Lehrer".to_string()),
             cancelled: true
         }
     }

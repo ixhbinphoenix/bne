@@ -22,12 +22,7 @@
             flex-direction: column;
             justify-content: space-around;
 
-            &> p {
-                text-align: center;
-            }
-            &> h2 {
-                text-align: center;
-            }
+            text-align: center;
         }
     }
 }

@@ -118,7 +118,7 @@ impl UntisClient {
     async fn format_lessons(&mut self, mut lessons: Vec<PeriodObject>, start_date: u32, end_date: u32) -> Result<Vec<FormattedLesson>, Box<dyn std::error::Error>> {
         let mut formatted: Vec<FormattedLesson> = vec![];
         let all_holidays = self.get_holidays().await?;
-        let holidays = all_holidays.iter().filter(|&holiday| holiday.start_date <= i64::from(start_date) && holiday.end_date >= i64::from(start_date) || holiday.start_date <= i64::from(end_date) && holiday.end_date >= i64::from(end_date));
+        let holidays = all_holidays.iter().filter(|&holiday| holiday.start_date <= i64::from(start_date) && holiday.end_date >= i64::from(start_date) || holiday.start_date <= i64::from(end_date) && holiday.end_date >= i64::from(start_date));
         
         let mut period_holidays: Vec<PeriodObject> = vec![];
 
@@ -208,6 +208,13 @@ impl UntisClient {
                 let start = timegrid[usize::try_from(day)?].time_units.iter().position(|unit| unit.start_time == lesson.start_time).unwrap() + 1;
                 let mut subject = "".to_string();
                 let mut subject_short = "".to_string();
+                
+                if lesson.su.len() > 0 {
+                    subject = lesson.su[0].name.to_owned();
+                    subject_short = lesson.su[0].name.to_owned();
+                    subject_short = subject_short.split(' ').collect::<Vec<&str>>()[0].to_owned();
+                }
+
                 match lesson.code.clone() {
                     Some(code) => {
                         
@@ -216,9 +223,6 @@ impl UntisClient {
                                 Some(text) => text,
                                 None => "Entfällt".to_string()
                             }
-                        }
-                        else if code == "cancelled"{
-                            continue;
                         }
                     },
                     None => {
@@ -252,11 +256,6 @@ impl UntisClient {
                                     }
                                 }
                             }
-                        }
-                        else{
-                            subject = lesson.su[0].name.to_owned();
-                            subject_short = lesson.su[0].name.to_owned();
-                            subject_short = subject_short.split(' ').collect::<Vec<&str>>()[0].to_owned();
                         }
                     }
                 }
@@ -309,17 +308,21 @@ impl UntisClient {
                     subject_short,
                     room,
                     substitution: if substituted { Some(Substitution {
-                        teacher: if !lesson.te.is_empty() && lesson.te[0].orgname.is_some() {
-                            if lesson.te[0].name.clone() == "---" {
-                                None
-                            } else {
+                        teacher: if !lesson.te.is_empty() {
+                            if lesson.te[0].orgname.is_some() {
                                 Some(lesson.te[0].name.clone())
+                            } else { 
+                                None
                             }
                         } else { None },
-                        room: if !lesson.ro.is_empty() && lesson.ro[0].orgname.is_some() {
-                            Some(lesson.ro[0].name.clone())
+                        room: if !lesson.ro.is_empty() {
+                            if lesson.ro[0].orgname.is_some() {
+                                Some(lesson.ro[0].name.clone())
+                            } else { 
+                                None
+                            }
                         } else { None },
-                        substition_text: lesson.subst_text.clone(),
+                        substitution_text: lesson.subst_text.clone(),
                         cancelled: match lesson.code{
                             Some(code) => {
                                 code == *"cancelled" || match lesson.subst_text{
