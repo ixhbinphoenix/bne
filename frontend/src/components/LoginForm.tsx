@@ -134,7 +134,7 @@ export default function LoginForm(): JSX.Element  {
                     <button id="register" style={buttonStyle2}onClick={() => {handleButtonClick(2)}}>Registrieren</button>
                 </div>
                 <form onSubmit={handleSubmit}>
-                    <input type="username" placeholder="Mailadresse" className="input-box" />
+                    <input type="username" placeholder="Mailadresse" className="input-box" autocomplete="email"/>
                     <input type="password" placeholder="Passwort" className="input-box" />
                     <div className="password-notice">{notice}</div>
                     <input id="untis-username" type="username" placeholder="Units-Nutzername" className="input-box untis-box" style={untisBoxStyle}/>

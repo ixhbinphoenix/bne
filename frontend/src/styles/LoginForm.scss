@@ -1,9 +1,7 @@
 .form-container {
+    margin-left: 2.5%;
+    margin-right: 2.5%;
     color: #b8c0e0;
-    font-size: clamp(14px, 4rem, 5.5vh);
-    display: flex;
-    flex-direction: column;
-    justify-content: space-evenly;
 
     &>.description {
         display: flex;
@@ -11,8 +9,9 @@
         justify-content: center;
         flex-direction: column;
         
-
+        
         &>.title {
+            font-size: clamp(14px, 12vmin, 120px);
             margin: 0px;
             background: rgb(198,160,246);
             background: linear-gradient(90deg, rgba(198,160,246,1) 0%, rgba(237,135,150,1) 50%, rgba(238,212,159,1) 100%); 
@@ -22,8 +21,9 @@
             -webkit-text-fill-color: transparent;
         }
         &>.subtitle {
-            font-size: clamp(10px, 1.75rem, 2vh);
-            margin-bottom: 6%
+            font-size: clamp(5px, 2.5vmin, 25px);
+            margin-bottom: 6%;
+            text-align: end;
         }
     }
     
@@ -103,7 +103,6 @@
                 &>#submit-button {
                     cursor: pointer;
                     width: min-content;
-                    
                 }
                 &>#submit-button:hover {
                     background-color: #5974e2;
