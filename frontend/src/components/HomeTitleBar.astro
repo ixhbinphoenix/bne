@@ -1,9 +1,9 @@
 ---
-import logo from "../icons/logo-animated-no-bg.svg"
+import logo from "../icons/logo-animated-no-bg.svg";
 ---
 
 <div id="titlebar">
-  <img src={logo} alt="logo" class="logo">
+  <img src={logo} alt="logo" class="logo" />
   <a href="/login" id="login-button-link"><button id="login-button">Sign up</button></a>
 </div>
 
@@ -18,9 +18,9 @@ import logo from "../icons/logo-animated-no-bg.svg"
     margin-top: 0;
     align-items: center;
     justify-content: space-between;
-    
-    &> .logo {
-      margin-left: .5%;
+
+    & > .logo {
+      margin-left: 0.5%;
       height: 100%;
       user-select: none;
       -webkit-user-drag: none;
@@ -30,7 +30,7 @@ import logo from "../icons/logo-animated-no-bg.svg"
   }
   #login-button-link {
     margin-right: 1.5%;
-    &>#login-button {
+    & > #login-button {
       white-space: nowrap;
       font-size: 1.25vmin;
       align-self: center;
