@@ -25,6 +25,8 @@ use models::user_model::UserCRUD;
 use rustls::{Certificate, PrivateKey, ServerConfig};
 use rustls_pemfile::{certs, pkcs8_private_keys};
 
+use crate::utils::env::{get_env, get_env_or};
+
 #[derive(Clone)]
 pub struct GlobalUntisData {
     school: String,
@@ -44,37 +46,20 @@ async fn main() -> io::Result<()> {
     let config = load_rustls_config();
 
     info!("Connecting database...");
-    let db_location = if envv.contains_key("DB_LOCATION") {
-        envv.get("DB_LOCATION").unwrap().clone()
-    } else {
-        "memory".to_string()
-    };
-    let db_namespace = if envv.contains_key("DB_NAMESPACE") {
-        envv.get("DB_NAMESPACE").unwrap().clone()
-    } else {
-        "test".to_string()
-    };
-    let db_database = if envv.contains_key("DB_DATABASE") {
-        envv.get("DB_DATABASE").unwrap().clone()
-    } else {
-        "test".to_string()
-    };
+
+    let db_location = get_env_or("DB_LOCATION", "memory".to_string());
+    let db_namespace = get_env_or("DB_NAMESPACE", "test".to_string());
+    let db_database = get_env_or("DB_DATABASE", "test".to_string());
+
     let db_repo = SurrealDBRepo::init(db_location.clone(), db_namespace.clone(), db_database.clone())
         .await
         .expect("db-repo to connect");
 
     UserCRUD::init_table(db_repo.clone()).await.expect("table initilization to work");
 
-    let school = if envv.contains_key("UNTIS_SCHOOL") {
-        envv.get("UNTIS_SCHOOL").unwrap().clone()
-    } else {
-        panic!("UNTIS_SCHOOL not defined in .env")
-    };
-    let subdomain = if envv.contains_key("UNTIS_SUBDOMAIN") {
-        envv.get("UNTIS_SUBDOMAIN").unwrap().clone()
-    } else {
-        panic!("UNTIS_SUBDOMAIN not defined in .env")
-    };
+    let school = get_env("UNTIS_SCHOOL");
+    let subdomain = get_env("UNTIS_SUBDOMAIN");
+
     let untis_data = GlobalUntisData { school, subdomain };
 
     let cookie_key = if envv.contains_key("COOKIE_KEY") {
@@ -83,11 +68,7 @@ async fn main() -> io::Result<()> {
         Key::generate()
     };
 
-    let port = if envv.contains_key("PORT") {
-        envv.get("PORT").unwrap()
-    } else {
-        "8080"
-    };
+    let port = get_env_or("PORT", "8080".to_string());
 
     HttpServer::new(move || {
         let logger = Logger::default();
@@ -146,8 +127,7 @@ fn load_rustls_config() -> rustls::ServerConfig {
         pkcs8_private_keys(key_file).expect("key to load").into_iter().map(PrivateKey).collect();
 
     if keys.is_empty() {
-        println!("Could not locate private keys");
-        std::process::exit(1);
+        panic!("Could not locate private keys");
     }
 
     config.with_single_cert(cert_chain, keys.remove(0)).unwrap()
