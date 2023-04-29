@@ -139,7 +139,7 @@ export default function LoginForm(): JSX.Element  {
                     <input type="username" placeholder="Mailadresse" className="input-box" autocomplete="email"/>
                     <input type="password" placeholder="Passwort" className="input-box" />
                     <div className="password-notice">{notice}</div>
-                    <input id="untis-username" type="username" placeholder="Units-Nutzername" className="input-box untis-box" style={untisBoxStyle}/>
+                    <input id="untis-username" type="username" placeholder="Untis-Nutzername" className="input-box untis-box" style={untisBoxStyle}/>
                     <input type="password" placeholder="Untis-Passwort" className="input-box untis-box" style={untisBoxStyle}/>
                     <div className="button-container">
                         <input type="submit" id="submit-button" value="Absenden"/>

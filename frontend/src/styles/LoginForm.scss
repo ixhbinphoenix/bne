@@ -74,6 +74,7 @@
                 transition: opacity 0.25s ease;
             }
             &>input {
+                font-family: Inter, sans-serif;
                 color:#b8c0e0;
                 background-color: transparent;
                 padding: 1%;
@@ -91,6 +92,7 @@
                 display: flex;
                 justify-content: center;
                 &>input {
+                    font-family: Inter, sans-serif;
                     color:#b8c0e0;
                     border-radius: 10px;
                     background-color: transparent;
