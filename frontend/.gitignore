@@ -22,3 +22,6 @@ package-lock.json
 
 # macOS-specific files
 .DS_Store
+
+# vscode
+.vscode
