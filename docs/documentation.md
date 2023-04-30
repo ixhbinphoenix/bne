@@ -49,6 +49,21 @@
 >>>1. Nutzeraccounts können über die Loginpage erstellt werden
 >>>2. Bestehende Accounts können sich erneut einloggen
 >>>3. Untis-Daten werden überprüft und sicher gespeichert
+>>
+>>16.04.23 : Web Design änderungen
+>>>1. [Inter](https://rsms.me/inter/) als neue Standardschriftart.
+>>>2. Kleine Fehler behebungen.
+>>
+>>17.04.23 : Layout für statische Seiten + fehler behebung bei gestrichenen Stunden
+>>>1. Statischer Kontent kann in Markdown geschrieben werden und ann In das Layout eingebunden werden.
+>>>2. Gestrichene Stunden werden jetzt auch an den Client geschickt.
+>>
+>>21.04.23 : Aktueller Tag im Stundenplan angezeigt
+>>>1. Der aktuelle Tag wird nun im Stunden plan Angezeigt sowie die aktuelle Stunde.
+>>
+>>30.04.23 : Formattierung + Design änderungen.
+>>>1. Formattierung zu frontend und backend hinzugefügt.
+>>>2. Bessere Implementation für Buttons (Webdesign).
 
 
 
