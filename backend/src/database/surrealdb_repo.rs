@@ -1,11 +1,11 @@
 use std::sync::Arc;
 
-use surrealdb::{Datastore, Session, Error, sql::Value};
+use surrealdb::{sql::Value, Datastore, Error, Session};
 
 #[derive(Clone)]
 pub struct SurrealDBRepo {
     pub ds: Arc<Datastore>,
-    pub ses: Session
+    pub ses: Session,
 }
 
 pub trait Creatable: Into<Value> {}

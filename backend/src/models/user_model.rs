@@ -2,10 +2,14 @@ use std::collections::BTreeMap;
 
 use actix_web::web::Data;
 use backend_derive::{Creatable, Patchable};
-use serde::{Serialize, Deserialize};
-use surrealdb::{sql::{Value, Object, thing}, Response};
+use serde::{Deserialize, Serialize};
+use surrealdb::{
+    sql::{thing, Object, Value}, Response
+};
 
-use crate::{utils::macros::map, database::surrealdb_repo::{Creatable, Patchable, SurrealDBRepo}, prelude::*};
+use crate::{
+    database::surrealdb_repo::{Creatable, Patchable, SurrealDBRepo}, prelude::*, utils::macros::map
+};
 
 #[derive(Debug, Serialize, Deserialize, Creatable)]
 pub struct User {
@@ -13,7 +17,7 @@ pub struct User {
     pub username: String,
     pub person_id: i64,
     pub password_hash: String,
-    pub untis_cypher: String
+    pub untis_cypher: String,
 }
 
 impl From<User> for Value {
@@ -24,7 +28,8 @@ impl From<User> for Value {
             "person_id".into() => value.person_id.into(),
             "password_hash".into() => value.password_hash.into(),
             "untis_cypher".into() => value.untis_cypher.into(),
-        ].into()
+        ]
+        .into()
     }
 }
 
@@ -34,24 +39,29 @@ impl TryFrom<Object> for User {
     fn try_from(value: Object) -> Result<Self, Self::Error> {
         let id: String = W(match value.get("id") {
             Some(n) => n.to_owned(),
-            None => return Err(Error::ConversionError("id".to_owned()))
-        }).try_into()?;
+            None => return Err(Error::ConversionError("id".to_owned())),
+        })
+        .try_into()?;
         let username: String = W(match value.get("username") {
             Some(n) => n.to_owned(),
-            None => return Err(Error::ConversionError("username".to_owned()))
-        }).try_into()?;
+            None => return Err(Error::ConversionError("username".to_owned())),
+        })
+        .try_into()?;
         let person_id: i64 = W(match value.get("person_id") {
             Some(n) => n.to_owned(),
-            None => return Err(Error::ConversionError("person_id".to_owned()))
-        }).try_into()?;
+            None => return Err(Error::ConversionError("person_id".to_owned())),
+        })
+        .try_into()?;
         let password_hash: String = W(match value.get("password_hash") {
             Some(n) => n.to_owned(),
-            None => return Err(Error::ConversionError("password_hash".to_owned()))
-        }).try_into()?;
+            None => return Err(Error::ConversionError("password_hash".to_owned())),
+        })
+        .try_into()?;
         let untis_cypher: String = W(match value.get("untis_cypher") {
             Some(n) => n.to_owned(),
-            None => return Err(Error::ConversionError("untis_cypher".to_owned()))
-        }).try_into()?;
+            None => return Err(Error::ConversionError("untis_cypher".to_owned())),
+        })
+        .try_into()?;
 
         Ok(User {
             id: Some(id),
@@ -93,12 +103,10 @@ impl UserCRUD {
                    DEFINE INDEX person_id_index ON TABLE users COLUMNS person_id UNIQUE;\
                    DEFINE FIELD password_hash ON users TYPE string;\
                    DEFINE FIELD untis_cypher ON users TYPE string;";
-        
+
         match db.ds.execute(sql, &db.ses, None, false).await {
             Ok(n) => Ok(n),
-            Err(e) => {
-                Err(Error::Surreal(e))
-            },
+            Err(e) => Err(Error::Surreal(e)),
         }
     }
 
@@ -150,7 +158,7 @@ impl UserCRUD {
         let result = first_res.result?.first();
 
         if result.is_none() {
-            return Err(Error::ObjectNotFound(person_id.to_string()))
+            return Err(Error::ObjectNotFound(person_id.to_string()));
         }
 
         W(result).try_into()
@@ -167,17 +175,15 @@ impl UserCRUD {
 
         let first_res = match res.into_iter().next() {
             Some(r) => r,
-            None => {
-                return Err(Error::ObjectNotFound(username.to_owned()))
-            },
+            None => return Err(Error::ObjectNotFound(username.to_owned())),
         };
 
         let result = first_res.result?.first();
 
         if result.is_none() {
-            return Err(Error::ObjectNotFound(username.to_owned()))
+            return Err(Error::ObjectNotFound(username.to_owned()));
         }
-        
+
         W(result).try_into()
     }
 
@@ -188,7 +194,7 @@ impl UserCRUD {
             "th".into() => thing(tid)?.into(),
             "data".into() => data.into()
         ];
-        
+
         let res = db.ds.execute(sql, &db.ses, Some(vars), true).await?;
 
         let first_res = res.into_iter().next().expect("id to be returned");
@@ -212,4 +218,3 @@ impl UserCRUD {
         Ok(tid.to_string())
     }
 }
-

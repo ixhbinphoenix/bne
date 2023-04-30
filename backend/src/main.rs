@@ -1,29 +1,36 @@
 #![allow(clippy::enum_variant_names)]
-mod utils;
-mod error;
-mod prelude;
-mod database;
 mod api;
 mod api_wrapper;
+mod database;
+mod error;
 mod models;
+mod prelude;
+mod utils;
 
-use std::{io::{self, BufReader}, env, collections::HashMap, fs};
+use std::{
+    collections::HashMap, env, fs, io::{self, BufReader}
+};
+
 use actix_cors::Cors;
 use actix_identity::IdentityMiddleware;
-use actix_session::{SessionMiddleware, config::PersistentSession, storage::CookieSessionStore};
-use actix_web::{HttpServer, middleware::Logger, web::{self, Data}, HttpResponse, App, cookie::{Key, time::Duration}};
-use api::{login::login_post, check_session::check_session_get, register::register_post, get_timetable::get_timetable};
+use actix_session::{config::PersistentSession, storage::CookieSessionStore, SessionMiddleware};
+use actix_web::{
+    cookie::{time::Duration, Key}, middleware::Logger, web::{self, Data}, App, HttpResponse, HttpServer
+};
+use api::{check_session::check_session_get, get_timetable::get_timetable, login::login_post, register::register_post};
 use database::surrealdb_repo::SurrealDBRepo;
 use dotenv::dotenv;
 use log::info;
 use models::user_model::UserCRUD;
-use rustls::{ServerConfig, Certificate, PrivateKey};
+use rustls::{Certificate, PrivateKey, ServerConfig};
 use rustls_pemfile::{certs, pkcs8_private_keys};
+
+use crate::utils::env::{get_env, get_env_or};
 
 #[derive(Clone)]
 pub struct GlobalUntisData {
     school: String,
-    subdomain: String
+    subdomain: String,
 }
 
 #[actix_web::main]
@@ -36,32 +43,38 @@ async fn main() -> io::Result<()> {
         env_logger::init_from_env(env_logger::Env::new().default_filter_or("info"));
     }
 
-    let config = load_rustls_config(); 
+    let config = load_rustls_config();
 
     info!("Connecting database...");
-    let db_location = if envv.contains_key("DB_LOCATION") { envv.get("DB_LOCATION").unwrap().clone() } else { "memory".to_string() };
-    let db_namespace = if envv.contains_key("DB_NAMESPACE") { envv.get("DB_NAMESPACE").unwrap().clone() } else { "test".to_string() };
-    let db_database = if envv.contains_key("DB_DATABASE") { envv.get("DB_DATABASE").unwrap().clone() } else { "test".to_string() };
-    let db_repo = SurrealDBRepo::init(db_location.clone(), db_namespace.clone(), db_database.clone()).await.expect("db-repo to connect");
+
+    let db_location = get_env_or("DB_LOCATION", "memory".to_string());
+    let db_namespace = get_env_or("DB_NAMESPACE", "test".to_string());
+    let db_database = get_env_or("DB_DATABASE", "test".to_string());
+
+    let db_repo = SurrealDBRepo::init(db_location.clone(), db_namespace.clone(), db_database.clone())
+        .await
+        .expect("db-repo to connect");
 
     UserCRUD::init_table(db_repo.clone()).await.expect("table initilization to work");
 
-    let school = if envv.contains_key("UNTIS_SCHOOL") { envv.get("UNTIS_SCHOOL").unwrap().clone() } else { panic!("UNTIS_SCHOOL not defined in .env") };
-    let subdomain = if envv.contains_key("UNTIS_SUBDOMAIN") { envv.get("UNTIS_SUBDOMAIN").unwrap().clone() } else { panic!("UNTIS_SUBDOMAIN not defined in .env") };
-    let untis_data = GlobalUntisData {
-        school,
-        subdomain
+    let school = get_env("UNTIS_SCHOOL");
+    let subdomain = get_env("UNTIS_SUBDOMAIN");
+
+    let untis_data = GlobalUntisData { school, subdomain };
+
+    let cookie_key = if envv.contains_key("COOKIE_KEY") {
+        Key::from(envv.get("COOKIE_KEY").unwrap().as_bytes())
+    } else {
+        Key::generate()
     };
 
-    let cookie_key = if envv.contains_key("COOKIE_KEY") { Key::from(envv.get("COOKIE_KEY").unwrap().as_bytes()) } else { Key::generate() };
-
-    let port = if envv.contains_key("PORT") { envv.get("PORT").unwrap() } else { "8080" };
+    let port = get_env_or("PORT", "8080".to_string());
 
     HttpServer::new(move || {
         let logger = Logger::default();
         let json_config = web::JsonConfig::default()
             .limit(65536) // Fun fact: This is enough to fit the entire Bee movie script which
-                          // means it's probably way too much
+            // means it's probably way too much
             .error_handler(|err, _req| {
                 actix_web::error::InternalError::from_response(err, HttpResponse::BadRequest().finish()).into()
             });
@@ -82,8 +95,12 @@ async fn main() -> io::Result<()> {
                     .cookie_same_site(actix_web::cookie::SameSite::None)
                     .cookie_secure(true)
                     .cookie_http_only(true)
-                    .session_lifecycle(PersistentSession::default().session_ttl_extension_policy(actix_session::config::TtlExtensionPolicy::OnStateChanges).session_ttl(Duration::days(7)))
-                    .build()
+                    .session_lifecycle(
+                        PersistentSession::default()
+                            .session_ttl_extension_policy(actix_session::config::TtlExtensionPolicy::OnStateChanges)
+                            .session_ttl(Duration::days(7)),
+                    )
+                    .build(),
             )
             .wrap(cors)
             .app_data(json_config)
@@ -95,25 +112,22 @@ async fn main() -> io::Result<()> {
             .service(web::resource("/get_timetable").route(web::get().to(get_timetable)))
     })
     .bind_rustls(format!("127.0.0.1:{port}"), config)?
-    .run().await
+    .run()
+    .await
 }
 
 fn load_rustls_config() -> rustls::ServerConfig {
-    let config = ServerConfig::builder()
-        .with_safe_defaults()
-        .with_no_client_auth();
+    let config = ServerConfig::builder().with_safe_defaults().with_no_client_auth();
 
     let cert_file = &mut BufReader::new(fs::File::open("cert.pem").expect("cert.pem to load"));
     let key_file = &mut BufReader::new(fs::File::open("key.pem").expect("key.pem to load"));
 
-    let cert_chain = certs(cert_file).expect("certificate to load")
-        .into_iter().map(Certificate).collect();
-    let mut keys: Vec<PrivateKey> = pkcs8_private_keys(key_file).expect("key to load")
-        .into_iter().map(PrivateKey).collect();
+    let cert_chain = certs(cert_file).expect("certificate to load").into_iter().map(Certificate).collect();
+    let mut keys: Vec<PrivateKey> =
+        pkcs8_private_keys(key_file).expect("key to load").into_iter().map(PrivateKey).collect();
 
     if keys.is_empty() {
-        println!("Could not locate private keys");
-        std::process::exit(1);
+        panic!("Could not locate private keys");
     }
 
     config.with_single_cert(cert_chain, keys.remove(0)).unwrap()
