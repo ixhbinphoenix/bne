@@ -4,20 +4,16 @@ use serde::Serialize;
 use crate::prelude::Error;
 
 #[derive(Serialize)]
-pub struct Response<T>{
+pub struct Response<T> {
     pub success: bool,
-    pub body: ResponseResult<T>
+    pub body: ResponseResult<T>,
 }
 
 impl<ResponseError> Response<ResponseError> {
     pub fn new_error(code: u16, message: String) -> Self {
         Self {
             success: false,
-            body: ResponseResult::Err(
-                crate::api::response::ResponseError {
-                    code, message
-                }
-            )
+            body: ResponseResult::Err(crate::api::response::ResponseError { code, message }),
         }
     }
 }
@@ -26,7 +22,7 @@ impl<ResponseError> From<Error> for Response<ResponseError> {
     fn from(value: Error) -> Self {
         Response {
             success: false,
-            body: ResponseResult::Err(value.into())
+            body: ResponseResult::Err(value.into()),
         }
     }
 }
@@ -35,9 +31,7 @@ impl<T> Response<T> {
     pub fn new_success(body: T) -> Self {
         Self {
             success: true,
-            body: ResponseResult::Ok(
-                body
-            )
+            body: ResponseResult::Ok(body),
         }
     }
 }
@@ -50,22 +44,22 @@ impl<T> From<Response<T>> for Json<Response<T>> {
 
 #[derive(Serialize)]
 #[serde(untagged)]
-pub enum ResponseResult<T>{
+pub enum ResponseResult<T> {
     Ok(T),
-    Err(ResponseError)
+    Err(ResponseError),
 }
 
 #[derive(Serialize)]
 pub struct ResponseError {
     code: u16,
-    message: String
+    message: String,
 }
 
 impl From<Error> for ResponseError {
     fn from(value: Error) -> Self {
         Self {
             code: value.status_code().into(),
-            message: value.to_string()
+            message: value.to_string(),
         }
     }
 }

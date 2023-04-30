@@ -1,4 +1,4 @@
-use chrono::{Local, Datelike, Days, DateTime};
+use chrono::{DateTime, Datelike, Days, Local};
 
 pub fn get_this_monday() -> DateTime<Local> {
     let days_from_monday = Local::now().date_naive().weekday().num_days_from_monday();

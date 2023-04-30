@@ -1,87 +1,87 @@
 body {
-    color: #cad3f5;
-    display: flex;
-    position: fixed;
-    background-color: #1e2030;
-    height: 100%;
-    width: 100%;
-    margin: 0%;
+  color: #cad3f5;
+  display: flex;
+  position: fixed;
+  background-color: #1e2030;
+  height: 100%;
+  width: 100%;
+  margin: 0%;
 }
 .background {
-    height: 100%;
-    width: 100%;
-    margin: 0px;
-    padding: 0px;
-    font-size: calc(1rem + .5vw);
-    font-family: Inter, sans-serif;  
+  height: 100%;
+  width: 100%;
+  margin: 0px;
+  padding: 0px;
+  font-size: calc(1rem + 0.5vw);
+  font-family: Inter, sans-serif;
 }
 .title {
-    height: min(14.5vw, 14.5%);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: #24273a;
-    border-bottom: 0.5vh solid #181926;
+  height: min(14.5vw, 14.5%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #24273a;
+  border-bottom: 0.5vh solid #181926;
 }
 h1 {
-    -webkit-user-select: none;
-    user-select: none;
-    background: rgb(198,160,246);
-    background: linear-gradient(90deg, rgb(199, 160, 246) 0%, rgb(237,135,150) 50%, rgb(238,212,159) 100%);
-    background-size: 200%;
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    color: transparent;
-    background-color: text;
+  -webkit-user-select: none;
+  user-select: none;
+  background: rgb(198, 160, 246);
+  background: linear-gradient(90deg, rgb(199, 160, 246) 0%, rgb(237, 135, 150) 50%, rgb(238, 212, 159) 100%);
+  background-size: 200%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  background-color: text;
 }
 .content {
-    display: flex;
-    height: calc(99.5% - min(14.5vw , 14.5%));
-    width: 100%;
+  display: flex;
+  height: calc(99.5% - min(14.5vw, 14.5%));
+  width: 100%;
 }
 .sidebar {
+  flex-flow: column wrap;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  height: 100%;
+  min-width: 5%;
+  width: 15%;
+  background-color: #1e2030;
+  font-size: clamp(0.85rem, 0.95vw, 25px);
+}
+@media only screen and (max-width: 675px) {
+  .content {
+    flex-direction: column-reverse;
+  }
+  .sidebar {
+    padding: 2.5vh 2px 2.5vh 2px;
+    border-top: 0.5vh solid #181926;
     flex-flow: column wrap;
     display: flex;
     align-items: center;
-    justify-content: space-around;
-    height: 100%;
-    min-width: 5%;
-    width: 15%;
+    justify-content: space-evenly;
     background-color: #1e2030;
-    font-size: clamp(.85rem, .95vw, 25px);
+    font-size: clamp(0.85rem, 0.95vw, 25px);
+    flex-direction: row;
+    height: max-content;
+    width: 100%;
+  }
 }
-@media only screen and (max-width: 675px) {
-    .content {
-        flex-direction: column-reverse;
-    }
-    .sidebar {
-        padding: 2.5vh 2px 2.5vh 2px;
-        border-top: 0.5vh solid #181926;
-        flex-flow: column wrap;
-        display: flex;
-        align-items: center;
-        justify-content: space-evenly;
-        background-color: #1e2030;
-        font-size: clamp(.85rem, .95vw, 25px);
-        flex-direction: row;
-        height: max-content;
-        width: 100%;
-    }
-}
-.sidebar-element { 
-    cursor: pointer;
-    text-align: center;
+.sidebar-element {
+  cursor: pointer;
+  text-align: center;
 }
 .sidebar-element:active {
-    color: rgb(228, 64, 64)
+  color: rgb(228, 64, 64);
 }
 .active {
-    color: rgb(228, 64, 64) 
+  color: rgb(228, 64, 64);
 }
 p {
-    margin: 0px;
+  margin: 0px;
 }
 button {
-    all: unset;
+  all: unset;
 }

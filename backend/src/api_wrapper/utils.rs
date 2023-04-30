@@ -1,15 +1,16 @@
-use backend_derive::{UntisResult, UntisArrayResult};
-use serde::{Serialize, Deserialize};
+use backend_derive::{UntisArrayResult, UntisResult};
+use serde::{Deserialize, Serialize};
+
 use super::untis_client::UntisClient;
 
 
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(untagged)]
-pub enum Parameter{
+pub enum Parameter {
     AuthParameter(AuthParameter),
     DateParameter(DateParameter),
     TimetableParameter(TimetableParameter),
-    Null()
+    Null(),
 }
 
 pub trait UntisResult {}
@@ -21,18 +22,16 @@ pub struct UntisBody {
     pub id: String,
     pub method: String,
     pub params: Parameter,
-    pub jsonrpc: String
+    pub jsonrpc: String,
 }
 
-///
 /// Authentication
-/// 
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct AuthParameter {
     pub user: String,
     pub password: String,
-    pub client: String
+    pub client: String,
 }
 
 #[derive(Serialize, Deserialize, Debug, UntisResult)]
@@ -40,43 +39,39 @@ pub struct AuthParameter {
 pub struct LoginResults {
     pub session_id: String,
     pub person_type: u16,
-    pub person_id: u16
+    pub person_id: u16,
 }
 
-///
 /// Date
-///
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct DateParameter {
-    pub options: DateOptions
+    pub options: DateOptions,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct DateOptions {
     pub start_date: String,
-    pub end_date: String
+    pub end_date: String,
 }
 
-///
 /// Timetable
-/// 
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct TimetableParameter {
-    pub options: TimetableOptions
+    pub options: TimetableOptions,
 }
 
 impl TimetableParameter {
     pub fn default(client: UntisClient, start_date: String, end_date: String) -> Self {
-        TimetableParameter { 
+        TimetableParameter {
             options: TimetableOptions {
                 element: TimetableElement {
                     id: client.person_id,
                     r#type: client.person_type,
-                    key_type: "id".to_string()
+                    key_type: "id".to_string(),
                 },
                 start_date,
                 end_date,
@@ -87,11 +82,11 @@ impl TimetableParameter {
                 show_ls_text: true,
                 show_ls_number: true,
                 show_studentgroup: false,
-                klasse_fields: vec!["id".to_string(),"name".to_string(),"longname".to_string()],
-                room_fields: vec!["id".to_string(),"name".to_string(),"longname".to_string()],
-                subject_fields: vec!["id".to_string(),"name".to_string(),"longname".to_string()],
-                teacher_fields: vec!["id".to_string(),"name".to_string(),"longname".to_string()], 
-            }
+                klasse_fields: vec!["id".to_string(), "name".to_string(), "longname".to_string()],
+                room_fields: vec!["id".to_string(), "name".to_string(), "longname".to_string()],
+                subject_fields: vec!["id".to_string(), "name".to_string(), "longname".to_string()],
+                teacher_fields: vec!["id".to_string(), "name".to_string(), "longname".to_string()],
+            },
         }
     }
 }
@@ -120,14 +115,14 @@ pub struct TimetableOptions {
 pub struct TimetableElement {
     pub id: u16,
     pub r#type: u16,
-    pub key_type: String
+    pub key_type: String,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Klasse {
     pub id: u16,
     pub name: String,
-    pub longname: String
+    pub longname: String,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
@@ -138,14 +133,14 @@ pub struct Teacher {
     #[serde(default)]
     pub orgid: Option<u16>,
     #[serde(default)]
-    pub orgname: Option<String>
+    pub orgname: Option<String>,
 }
- 
+
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Subject {
     pub id: u16,
     pub name: String,
-    pub longname: String
+    pub longname: String,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
@@ -156,7 +151,7 @@ pub struct Room {
     #[serde(default)]
     pub orgid: Option<u16>,
     #[serde(default)]
-    pub orgname: Option<String>
+    pub orgname: Option<String>,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone, UntisArrayResult)]
@@ -177,12 +172,10 @@ pub struct PeriodObject {
     #[serde(default)]
     pub lstext: Option<String>,
     #[serde(default)]
-    pub code: Option<String>
+    pub code: Option<String>,
 }
 
-///
 /// Subjects
-/// 
 
 #[derive(Serialize, Deserialize, Debug, UntisArrayResult)]
 #[serde(rename_all = "camelCase")]
@@ -191,25 +184,21 @@ pub struct DetailedSubject {
     pub name: String,
     pub longname: String,
     pub fore_color: String,
-    pub back_color: String
+    pub back_color: String,
 }
 
-/// 
 /// Schoolyear
-/// 
 
 #[derive(Serialize, Deserialize, Debug, Clone, UntisArrayResult)]
 #[serde(rename_all = "camelCase")]
-pub struct Schoolyear{
+pub struct Schoolyear {
     pub id: u16,
     pub name: String,
     pub start_date: String,
-    pub end_date: String
+    pub end_date: String,
 }
 
-/// 
 /// Holiday
-/// 
 
 #[derive(Serialize, Deserialize, Debug, UntisArrayResult)]
 #[serde(rename_all = "camelCase")]
@@ -219,47 +208,48 @@ pub struct Holidays {
     #[serde(default)]
     pub longname: Option<String>,
     pub start_date: i64,
-    pub end_date: i64
+    pub end_date: i64,
 }
 
-///
 /// TimegridUnits
-/// 
 
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct TimeUnit {
     pub name: String,
     pub start_time: u16,
-    pub end_time: u16
+    pub end_time: u16,
 }
 
 #[derive(Serialize, Deserialize, Debug, UntisArrayResult)]
 #[serde(rename_all = "camelCase")]
 pub struct TimegridUnits {
     pub day: u16,
-    pub time_units: Vec<TimeUnit>
+    pub time_units: Vec<TimeUnit>,
 }
 
-///
 /// Untis Response
-/// 
 
 #[derive(Serialize, Deserialize, Debug)]
-pub struct UntisResponse<T> where T: UntisResult {
+pub struct UntisResponse<T>
+where
+    T: UntisResult,
+{
     pub id: String,
     pub result: T,
-    pub jsonrpc: String
+    pub jsonrpc: String,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
-pub struct UntisArrayResponse<T> where T: UntisArrayResult {
+pub struct UntisArrayResponse<T>
+where
+    T: UntisArrayResult,
+{
     pub id: String,
     pub result: Vec<T>,
-    pub jsonrpc: String
+    pub jsonrpc: String,
 }
 
-//
 // Formats
 //
 
@@ -273,7 +263,7 @@ pub struct FormattedLesson {
     pub subject: String,
     pub subject_short: String,
     pub room: String,
-    pub substitution: Option<Substitution>
+    pub substitution: Option<Substitution>,
 }
 
 #[derive(Serialize, Debug, Clone, Default)]
@@ -281,7 +271,7 @@ pub struct Substitution {
     pub teacher: Option<String>,
     pub room: Option<String>,
     pub substitution_text: Option<String>,
-    pub cancelled: bool
+    pub cancelled: bool,
 }
 
 #[allow(dead_code)]
@@ -291,14 +281,13 @@ impl Substitution {
             teacher: None,
             room: None,
             substitution_text: Some("Vtr. ohne Lehrer".to_string()),
-            cancelled: true
+            cancelled: true,
         }
     }
 }
 
-//
 // Helper functions
-// 
+//
 
 pub fn day_of_week(date: u32) -> u8 {
     let mut y = date / 10000;
@@ -313,5 +302,5 @@ pub fn day_of_week(date: u32) -> u8 {
     let k = y % 100;
     let j = y / 100;
     let h = (d + (13 * (m + 1)) / 5 + k + k / 4 + j / 4 + 5 * j) % 7;
-    ((h + 5) % 7 ) as u8
+    ((h + 5) % 7) as u8
 }

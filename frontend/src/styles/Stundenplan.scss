@@ -1,136 +1,135 @@
 :root {
-    --spacing-left: clamp(28px, 1.5vw, 55px);
-    --spacing-top: clamp(4%, 4%, 35px);
+  --spacing-left: clamp(28px, 1.5vw, 55px);
+  --spacing-top: clamp(4%, 4%, 35px);
 }
 
 .table-layout {
-    font-size: clamp(1px, 85%, 5rem);
-    height: 100%;
-    min-width: 85%;
+  font-size: clamp(1px, 85%, 5rem);
+  height: 100%;
+  min-width: 85%;
+  width: 100%;
+  background-color: #363a4f;
+
+  .table-top {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    left: var(--spacing-left);
+    height: var(--spacing-top);
+    width: calc(100% - var(--spacing-left));
+
+    & > span {
+      text-align: center;
+      width: 20%;
+      font-size: clamp(0.55rem, 125%, 1vh);
+    }
+    & > span.highlighted {
+      color: rgb(228, 64, 64);
+    }
+  }
+  .table-body {
+    display: flex;
     width: 100%;
-    background-color: #363a4f;
-    
-    .table-top {
-        position: relative;
+    height: calc(100% - var(--spacing-top));
+
+    .table-sidebar-left {
+      position: relative;
+      display: flex;
+      height: 100%;
+      width: var(--spacing-left);
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-around;
+
+      & > span.highlighted {
+        color: rgb(228, 64, 64);
+      }
+      span {
+        text-align: center;
+
+        div {
+          font-size: 42.5%;
+        }
+      }
+    }
+    .table {
+      position: relative;
+      display: flex;
+      width: 100%;
+      height: 100%;
+
+      .bar {
+        user-select: none;
+        cursor: pointer;
+        color: #cad3f5;
+        font-size: clamp(7px, 2.75rem, 3.5vh);
         display: flex;
         align-items: center;
         justify-content: center;
-        position: relative;
-        left: var(--spacing-left);
-        height: var(--spacing-top);
-        width: calc(100% - var(--spacing-left));
-        
-        &>span {
-            text-align: center;
-            width: 20%;
-            font-size: clamp(.55rem, 125%, 1vh);
-        }
-        &>span.highlighted {
-            color: rgb(228, 64, 64);
-        }
-    }
-    .table-body {
-        display: flex;
-        width: 100%;
-        height: calc(100% - var(--spacing-top));
-
-        .table-sidebar-left {
-        position: relative;
-        display: flex;
+        z-index: 10;
+        position: absolute;
         height: 100%;
-        width: var(--spacing-left);
-        flex-direction: column;
-        align-items: center;
-        justify-content: space-around;
+      }
+      .bar:active {
+        transform: translateY(3px);
+      }
+      .bar-left {
+        left: 0.5%;
+        text-shadow: 1px 1px #5a6382;
+      }
+      .bar-right {
+        right: 0.5%;
+        text-shadow: -1px -1px #5a6382;
+      }
+      .table-day {
+        background-color: transparent;
+        height: 100%;
+        width: 20%;
+        max-width: 20%;
+        display: grid;
+        grid-template-rows: repeat(10, 10%);
 
-            &>span.highlighted {
-                color:rgb(228, 64, 64);
-            }
-            span {
-                text-align: center;
+        .parent-flex {
+          width: 100%;
+          min-width: 0;
+          max-width: 100%;
+          height: 100%;
 
-                div {
-                    font-size: 42.5%;
-                }
-            }
-        }
-        .table {
-            position: relative;
-            display: flex;
+          display: flex;
+          flex-direction: row;
+          div {
+            min-width: 0;
             width: 100%;
             height: 100%;
+            margin: none;
+            flex-wrap: wrap;
+            flex-direction: column;
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            background-color: rgb(228, 64, 64);
+            font-size: clamp(25%, calc(65%), 30px);
 
-            .bar {
-                user-select: none;
-                cursor: pointer;
-                color: #cad3f5;
-                font-size: clamp(7px, 2.75rem, 3.5vh);
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                z-index: 10;
-                position: absolute;
-                height: 100%;
-                
+            & > h2 {
+              text-overflow: ellipsis;
+              overflow: hidden;
+              white-space: nowrap;
+              width: 100%;
+              margin: 0;
+              text-align: center;
+              font-size: clamp(4px, calc(125%), 20px);
             }
-            .bar:active {
-                transform: translateY(3px)
+            & > p {
+              text-overflow: ellipsis;
+              overflow: hidden;
+              white-space: nowrap;
+              margin: 0;
             }
-            .bar-left {
-                left: .5%;
-                text-shadow: 1px 1px #5a6382;
-            }
-            .bar-right {
-                right: .5%;
-                text-shadow: -1px -1px #5a6382;
-            }
-            .table-day{
-                background-color: transparent;
-                height: 100%;
-                width: 20%;
-                max-width: 20%;
-                display: grid;
-                grid-template-rows: repeat(10,10%);
-
-                .parent-flex{
-                    width: 100%;
-                    min-width: 0;
-                    max-width: 100%;
-                    height: 100%;
-
-                    display: flex;
-                    flex-direction: row;
-                    div {
-                        min-width: 0;
-                        width: 100%;
-                        height: 100%;
-                        margin: none;
-                        flex-wrap: wrap;
-                        flex-direction: column;
-                        display: flex;
-                        align-items: center;
-                        justify-content: space-around;
-                        background-color: rgb(228, 64, 64);
-                        font-size: clamp(25%, calc(65%), 30px);
-        
-                        &>h2 {
-                            text-overflow: ellipsis;
-                            overflow: hidden;
-                            white-space: nowrap;
-                            width: 100%;
-                            margin: 0;
-                            text-align: center;
-                            font-size: clamp(4px, calc(125%), 20px);
-                        }
-                        &>p {
-                            text-overflow: ellipsis;
-                            overflow: hidden;
-                            white-space: nowrap;
-                            margin: 0;
-                        }
-                    }
-                }
-            }            
+          }
         }
+      }
     }
+  }
 }
