@@ -3,6 +3,7 @@ lockfileVersion: 5.4
 specifiers:
   '@astrojs/preact': ^1.2.0
   '@astrojs/vercel': ^2.3.4
+  '@fontsource/inter': ^4.5.15
   '@types/crypto-js': ^4.1.1
   '@types/node': ^18.15.11
   astro: ^1.6.9
@@ -13,6 +14,7 @@ specifiers:
 dependencies:
   '@astrojs/preact': 1.2.0_preact@10.11.3
   '@astrojs/vercel': 2.3.4
+  '@fontsource/inter': 4.5.15
   astro: 1.6.9_j2yf6de4udyvkvhv3ekpqwbeya
   crypto-js: 4.1.1
   preact: 10.11.3
@@ -427,6 +429,10 @@ packages:
     requiresBuild: true
     dev: false
     optional: true
+
+  /@fontsource/inter/4.5.15:
+    resolution: {integrity: sha512-FzleM9AxZQK2nqsTDtBiY0PMEVWvnKnuu2i09+p6DHvrHsuucoV2j0tmw+kAT3L4hvsLdAIDv6MdGehsPIdT+Q==}
+    dev: false
 
   /@jridgewell/gen-mapping/0.1.1:
     resolution: {integrity: sha512-sQXCasFk+U8lWYEe66WxRDOE9PjVz4vSM51fTu3Hw+ClTpUSQb718772vH3pyS5pShp6lvQM7SxgIDXXXmOX7w==}

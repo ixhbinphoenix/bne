@@ -1,6 +1,6 @@
 /*@jsxImportSource preact */
 
-import "../styles/Inter.css"
+import "@fontsource/inter";
 import type { JSX } from "preact"
 import { useEffect, useState } from "preact/hooks"
 import "../styles/CookieBanner.scss"

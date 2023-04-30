@@ -13,6 +13,7 @@
   "dependencies": {
     "@astrojs/preact": "^1.2.0",
     "@astrojs/vercel": "^2.3.4",
+    "@fontsource/inter": "^4.5.15",
     "astro": "^1.6.9",
     "crypto-js": "^4.1.1",
     "preact": "^10.6.5"
