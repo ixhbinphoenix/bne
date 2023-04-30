@@ -15,11 +15,13 @@ export default function LoginForm(): JSX.Element {
   const [untisBoxStyle, setUntiBoxStyle] = useState({});
   const [notice, showPasswordNotice] = useState(<p style={{ opacity: "0" }}>A</p>);
 
-  verifySession().then((session) => {
-    if (session) {
-      window.location.href = "/stundenplan";
-    }
-  });
+  useEffect(() => {
+    verifySession().then((session) => {
+      if (session) {
+        window.location.href = "/stundenplan";
+      }
+    });
+  }, []);
 
   useEffect(() => {
     if (!isLogin) {
@@ -154,7 +156,7 @@ export default function LoginForm(): JSX.Element {
           <input
             id="untis-username"
             type="username"
-            placeholder="Units-Nutzername"
+            placeholder="Untis-Nutzername"
             className="input-box untis-box"
             style={untisBoxStyle}
           />

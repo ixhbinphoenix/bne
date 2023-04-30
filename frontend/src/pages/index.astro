@@ -1,6 +1,7 @@
 ---
 import HomeTitleBar from "../components/HomeTitleBar.astro";
 import IndexLayout from "../layouts/IndexLayout.astro";
+import GenericButton from "../components/generics/GenericButton.astro";
 ---
 
 <IndexLayout title="TheSchedule">
@@ -10,7 +11,7 @@ import IndexLayout from "../layouts/IndexLayout.astro";
       <h1 id="front-title">TheSchedule</h1>
       <p id="front-subtitle">Der einzige Planer, den du jemals brauchen wirst!</p>
     </div>
-    <a href="/stundenplan"><button id="front-signup">Coming Soon!</button></a>
+    <a href="/stundenplan"><GenericButton>Coming Soon!</GenericButton></a>
   </div>
 </IndexLayout>
 
@@ -36,7 +37,6 @@ import IndexLayout from "../layouts/IndexLayout.astro";
         rgba(237, 135, 150, 1) 50%,
         rgba(238, 212, 159, 1) 100%
       );
-      background-size: 250%;
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }

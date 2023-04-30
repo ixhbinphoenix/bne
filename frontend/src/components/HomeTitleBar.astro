@@ -1,15 +1,16 @@
 ---
 import logo from "../icons/logo-animated-no-bg.svg";
+import GenericButton from "../components/generics/GenericButton.astro";
 ---
 
 <div id="titlebar">
-  <img src={logo} alt="logo" class="logo" />
-  <a href="/login" id="login-button-link"><button id="login-button">Sign up</button></a>
+  <img src={logo} alt="error" class="logo" />
+  <a href="/login" id="login-button-link"><GenericButton fontSize="1.5vh">Sign Up</GenericButton></a>
 </div>
 
 <style lang="scss">
   #titlebar {
-    height: 6vmin;
+    height: 5vh;
     position: relative;
     display: flex;
     width: 100%;
@@ -29,25 +30,6 @@ import logo from "../icons/logo-animated-no-bg.svg";
     }
   }
   #login-button-link {
-    margin-right: 1.5%;
-    & > #login-button {
-      white-space: nowrap;
-      font-size: 1.25vmin;
-      align-self: center;
-      border-radius: 15px;
-      padding: 10%;
-      border: 3px solid #cad3f5;
-      background-color: #1e2030;
-      color: #cad3f5;
-      cursor: pointer;
-
-      &:active {
-        transform: translateY(4px) !important;
-      }
-
-      &:hover {
-        transform: translateY(2px);
-      }
-    }
+    margin-right: min(28px, 2%);
   }
 </style>
