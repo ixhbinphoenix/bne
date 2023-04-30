@@ -1,24 +1,24 @@
 ---
 import "@fontsource/inter";
-import "@fontsource/inter/700.css"
+import "@fontsource/inter/700.css";
 import CookieBanner from "../components/CookieBanner";
 import favicon from "../icons/favicon.svg";
 export interface Props {
-  title: String
+  title: String;
 }
-const {title} = Astro.props;
+const { title } = Astro.props;
 ---
 
 <html lang="de">
   <head>
-    <link rel="icon" href={favicon}>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="theme-color" content ="#1e2030">
+    <link rel="icon" href={favicon} />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#1e2030" />
     <title>{title}</title>
   </head>
   <body>
-    <CookieBanner client:load/>
-    <slot></slot>
+    <CookieBanner client:load />
+    <slot />
   </body>
 </html>

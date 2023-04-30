@@ -1,35 +1,40 @@
 .cookie-banner-container {
-    z-index: 1000;
-    position: fixed;
-    padding: 1rem;
-    background-color: #1e2030;
-    bottom: 5%;
-    left: 50%;
-    transform: translateX(-50%);
-    flex-direction: column;
+  z-index: 1000;
+  position: fixed;
+  padding: 1rem;
+  background-color: #1e2030;
+  bottom: 5%;
+  left: 50%;
+  transform: translateX(-50%);
+  flex-direction: column;
+  font-family: Inter, sans-serif;
+  color: #b8c0e0;
+  text-align: center;
+  border-radius: 15px;
+  box-shadow: 0px 0px 7.5px rgba(0, 0, 0, 0.3);
+
+  & > p {
+    padding: 0.5rem 0px;
+  }
+
+  & > button {
     font-family: Inter, sans-serif;
-    color: #b8c0e0;
-    text-align: center;
+    border-color: #181926;
+    font-weight: bolder;
+    border-style: solid;
     border-radius: 15px;
-    box-shadow: 0px 0px 7.5px rgba(0, 0, 0, 0.3);
-
-    &> p {
-        padding: 0.5rem 0px;
-    }
-
-    &> button {
-        font-family: Inter, sans-serif;
-        border-color: #181926;
-        font-weight: bolder;
-        border-style: solid;
-        border-radius: 15px;
-        background: transparent;
-        padding: 1.5rem 1rem;
-        font-size: larger;
-        background: rgb(198,160,246);
-        background: linear-gradient(90deg, rgba(198,160,246,1) 0%, rgba(237,135,150,1) 50%, rgba(238,212,159,1) 100%);
-        background-clip: text;
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-    }
+    background: transparent;
+    padding: 1.5rem 1rem;
+    font-size: larger;
+    background: rgb(198, 160, 246);
+    background: linear-gradient(
+      90deg,
+      rgba(198, 160, 246, 1) 0%,
+      rgba(237, 135, 150, 1) 50%,
+      rgba(238, 212, 159, 1) 100%
+    );
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
 }

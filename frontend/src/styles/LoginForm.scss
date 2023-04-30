@@ -1,116 +1,126 @@
 .form-container {
-    margin-left: 2.5%;
-    margin-right: 2.5%;
-    color: #b8c0e0;
+  margin-left: 2.5%;
+  margin-right: 2.5%;
+  color: #b8c0e0;
 
-    &>.description {
+  & > .description {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    flex-direction: column;
+
+    & > .title {
+      font-size: clamp(14px, 12vmin, 120px);
+      margin: 0px;
+      background: rgb(198, 160, 246);
+      background: linear-gradient(
+        90deg,
+        rgba(198, 160, 246, 1) 0%,
+        rgba(237, 135, 150, 1) 50%,
+        rgba(238, 212, 159, 1) 100%
+      );
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    & > .subtitle {
+      font-size: clamp(5px, 2.5vmin, 25px);
+      margin-bottom: 6%;
+      text-align: end;
+    }
+  }
+
+  & > .login-box-container {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+
+    & > .login-switch {
+      position: relative;
+      display: inline-block;
+      margin-bottom: 1%;
+      & > button {
+        font-family: Inter, sans-serif;
+        cursor: pointer;
+        background-color: transparent;
+        outline: none;
+        border: none;
+        color: #b8c0e0;
+        font-size: clamp(15px, 2.5vmin, 3vh);
+        margin: 1.5%;
+      }
+      & > .underline {
+        position: absolute;
+        width: 20%;
+        height: 5%;
+        background-color: #5974e2;
+        transition: all 0.3s ease;
+      }
+    }
+
+    & > form {
+      display: flex;
+      flex-direction: column;
+
+      & > .password-notice {
+        margin: 1% 0px;
+        white-space: pre-line;
+        color: #ff4d17;
+        text-align: center;
+        & > p {
+          font-size: clamp(10px, 1.75rem, 1.5vh);
+          margin: 0px;
+          opacity: 0;
+        }
+      }
+      & > .untis-box {
+        opacity: 0;
+        transition: opacity 0.25s ease;
+      }
+      & > input {
+        font-family: Inter, sans-serif;
+        color: #b8c0e0;
+        background-color: transparent;
+        padding: 1%;
+        font-size: clamp(15px, 3rem, 3vh);
+        margin: 1.5% 0px;
+        outline: none;
+        border: 2px solid;
+        border-image: linear-gradient(
+            90deg,
+            rgba(198, 160, 246, 1) 0%,
+            rgba(237, 135, 150, 1) 50%,
+            rgba(238, 212, 159, 1) 100%
+          )
+          1;
+      }
+      & > input:focus {
+        border-image: none;
+        border-color: #5974e2;
+      }
+      & > .button-container {
         display: flex;
-        align-items: flex-end;
         justify-content: center;
-        flex-direction: column;
-        
-        
-        &>.title {
-            font-size: clamp(14px, 12vmin, 120px);
-            margin: 0px;
-            background: rgb(198,160,246);
-            background: linear-gradient(90deg, rgba(198,160,246,1) 0%, rgba(237,135,150,1) 50%, rgba(238,212,159,1) 100%);
-            background-clip: text;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        &>.subtitle {
-            font-size: clamp(5px, 2.5vmin, 25px);
-            margin-bottom: 6%;
-            text-align: end;
-        }
-    }
-    
-    &>.login-box-container {
-        display: flex;
-        flex-direction: column;
-        align-items: stretch;
-        
-        &>.login-switch{
-            position: relative;
-            display: inline-block;
-            margin-bottom: 1%;
-            &> button {
-                font-family: Inter, sans-serif;
-                cursor: pointer;
-                background-color: transparent;
-                outline: none;
-                border: none;
-                color: #b8c0e0;
-                font-size: clamp(15px, 2.5vmin, 3vh);
-                margin: 1.5%;
-            }
-            &>.underline {
-                position: absolute;
-                width: 20%;
-                height: 5%;
-                background-color: #5974e2;
-                transition: all 0.3s ease;
-            }
-        }
-        
-        &> form {
-            display: flex;
-            flex-direction: column;
+        & > input {
+          font-family: Inter, sans-serif;
+          color: #b8c0e0;
+          border-radius: 10px;
+          background-color: transparent;
+          padding: 1.25%;
+          font-size: clamp(15px, 3rem, 3vh);
+          margin: 1.5%;
+          outline: none;
+          border: 2px solid #5974e2;
+          cursor: pointer;
 
-            &>.password-notice {
-                margin: 1% 0px;
-                white-space: pre-line;
-                color: #ff4d17;
-                text-align: center;
-                &> p {
-                    font-size: clamp(10px, 1.75rem, 1.5vh);
-                    margin: 0px;
-                    opacity: 0;
-                }
-            }
-            &>.untis-box {
-                opacity: 0;
-                transition: opacity 0.25s ease;
-            }
-            &>input {
-                font-family: Inter, sans-serif;
-                color:#b8c0e0;
-                background-color: transparent;
-                padding: 1%;
-                font-size: clamp(15px, 3rem, 3vh);
-                margin: 1.5% 0px;
-                outline: none;
-                border: 2px solid;
-                border-image: linear-gradient(90deg, rgba(198,160,246,1) 0%, rgba(237,135,150,1) 50%, rgba(238,212,159,1) 100%) 1;
-            }
-            &>input:focus {
-                border-image: none;
-                border-color: #5974e2;
-            }
-            &>.button-container {
-                display: flex;
-                justify-content: center;
-                &>input {
-                    font-family: Inter, sans-serif;
-                    color:#b8c0e0;
-                    border-radius: 10px;
-                    background-color: transparent;
-                    padding: 1.25%;
-                    font-size: clamp(15px, 3rem, 3vh);
-                    margin: 1.5%;
-                    outline: none;
-                    border: 2px solid #5974e2;
-                    cursor: pointer;
-
-                    &:hover {
-                        background-color: #5974e2;
-                    }
-                    &:active {
-                        background-color: #5974e2;
-                    }
-                }
-            }
-        }    
+          &:hover {
+            background-color: #5974e2;
+          }
+          &:active {
+            background-color: #5974e2;
+          }
+        }
+      }
     }
+  }
 }

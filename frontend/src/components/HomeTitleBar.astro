@@ -1,10 +1,10 @@
 ---
-import logo from "../icons/logo-animated-no-bg.svg"
-import GenericButton from "../components/generics/GenericButton.astro"
+import logo from "../icons/logo-animated-no-bg.svg";
+import GenericButton from "../components/generics/GenericButton.astro";
 ---
 
 <div id="titlebar">
-  <img src={logo} alt="error" class="logo">
+  <img src={logo} alt="error" class="logo" />
   <a href="/login" id="login-button-link"><GenericButton fontSize="1.5vh">Sign Up</GenericButton></a>
 </div>
 
@@ -19,9 +19,9 @@ import GenericButton from "../components/generics/GenericButton.astro"
     margin-top: 0;
     align-items: center;
     justify-content: space-between;
-    
-    &> .logo {
-      margin-left: .5%;
+
+    & > .logo {
+      margin-left: 0.5%;
       height: 100%;
       user-select: none;
       -webkit-user-drag: none;

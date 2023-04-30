@@ -1,14 +1,14 @@
 ---
-import RootLayout from './RootLayout.astro';
+import RootLayout from "./RootLayout.astro";
 
 export interface Props {
-  title: string
+  title: string;
 }
-const {title} = Astro.props;
+const { title } = Astro.props;
 ---
 
-<RootLayout title={title}>
-  <slot></slot>
+<RootLayout {title}>
+  <slot />
 </RootLayout>
 
 <style lang="scss">
