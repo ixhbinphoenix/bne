@@ -21,4 +21,10 @@ const { title } = Astro.props;
     <CookieBanner client:load />
     <slot />
   </body>
+  <style is:global>
+    ::selection {
+      background: #151723;
+      color: #b8c0e0;
+    }
+  </style>
 </html>
