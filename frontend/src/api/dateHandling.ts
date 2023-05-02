@@ -104,7 +104,7 @@ export function getCurrentLesson(currentMonday: string, currentFriday: string): 
     7: { start: "13:15", end: "14:00" },
     8: { start: "14:05", end: "14:49" },
     9: { start: "14:50", end: "15:35" },
-    10: { start: "15:40", end: "22:25" }
+    10: { start: "15:40", end: "16:25" }
   };
 
   let currentHourNumber = 11;
