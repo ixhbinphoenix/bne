@@ -20,15 +20,19 @@ import {
 export default function Stundenplan(): JSX.Element {
   const [currentWeek, setCurrentWeek] = useState(getMondayAndFridayDates());
 
-  const highlightDates = () => {
-    const currentDay = document.getElementById("day" + getCurrentDay());
+  const highlightDates = (currentMonday: string, currentFriday: string) => {
+    const days = document.getElementsByClassName("day");
+    Array.from(days).forEach((day) => {
+      day.classList.remove("highlighted")
+    })
+    const currentDay = document.getElementById("day" + getCurrentDay(currentMonday, currentFriday));
     currentDay?.classList.add("highlighted");
 
     const currentLesson = document.getElementById("lesson" + getCurrentLesson());
     currentLesson?.classList.add("highlighted");
   };
   useEffect(() => {
-    highlightDates();
+    highlightDates(getMondayAndFridayDates().currentMonday, getMondayAndFridayDates().currentFriday);
 
     verifySession().then((status) => {
       if (!status) {
@@ -56,7 +60,9 @@ export default function Stundenplan(): JSX.Element {
   }, []);
 
   const nextWeek = () => {
+    
     let week = shiftForward(currentWeek.currentMonday, currentWeek.currentFriday);
+    highlightDates(week.currentMonday, week.currentFriday);
     setCurrentDates(getWeekDays(week.currentMonday));
 
     getTimetable(week.currentMonday, week.currentFriday).then((result) => {
@@ -73,7 +79,9 @@ export default function Stundenplan(): JSX.Element {
   };
   const previousWeek = () => {
     let week = shiftBackward(currentWeek.currentMonday, currentWeek.currentFriday);
+    highlightDates(week.currentMonday, week.currentFriday);
     setCurrentDates(getWeekDays(week.currentMonday));
+
     getTimetable(week.currentMonday, week.currentFriday).then((result) => {
       if (result.lessons) {
         addToDivs(result.lessons);
@@ -87,9 +95,11 @@ export default function Stundenplan(): JSX.Element {
     setCurrentWeek(week);
   };
   const goToCurrentWeek = () => {
-    setCurrentWeek(getMondayAndFridayDates());
+    let week = getMondayAndFridayDates();
+    highlightDates(week.currentMonday, week.currentFriday);
+    setCurrentDates(getWeekDays(week.currentMonday));
 
-    getTimetable(currentWeek.currentMonday, currentWeek.currentFriday).then((result) => {
+    getTimetable(week.currentMonday, week.currentFriday).then((result) => {
       if (result.lessons) {
         addToDivs(result.lessons);
         const tableDaysTemp = [];
@@ -243,27 +253,27 @@ export default function Stundenplan(): JSX.Element {
   return (
     <div className="table-layout">
       <div className="table-top">
-        <span id="day1">
+        <span id="day1" class="day">
           {currentDates[0]}
           <br />
           Mo.
         </span>
-        <span id="day2">
+        <span id="day2" class="day">
           {currentDates[1]}
           <br />
           Di.
         </span>
-        <span id="day3">
+        <span id="day3" class="day">
           {currentDates[2]}
           <br />
           Mi.
         </span>
-        <span id="day4">
+        <span id="day4" class="day">
           {currentDates[3]}
           <br />
           Do.
         </span>
-        <span id="day5">
+        <span id="day5" class="day">
           {currentDates[4]}
           <br />
           Fr.
