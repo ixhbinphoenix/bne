@@ -23,8 +23,8 @@ export default function Stundenplan(): JSX.Element {
   const highlightDates = (currentMonday: string, currentFriday: string) => {
     const days = document.getElementsByClassName("day");
     Array.from(days).forEach((day) => {
-      day.classList.remove("highlighted")
-    })
+      day.classList.remove("highlighted");
+    });
     const currentDay = document.getElementById("day" + getCurrentDay(currentMonday, currentFriday));
     currentDay?.classList.add("highlighted");
 
@@ -60,7 +60,6 @@ export default function Stundenplan(): JSX.Element {
   }, []);
 
   const nextWeek = () => {
-    
     let week = shiftForward(currentWeek.currentMonday, currentWeek.currentFriday);
     highlightDates(week.currentMonday, week.currentFriday);
     setCurrentDates(getWeekDays(week.currentMonday));
