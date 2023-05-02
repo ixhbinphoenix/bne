@@ -86,7 +86,12 @@ function isBetweenDates(startDateStr: string, endDateStr: string, todayDate: Dat
   );
   return startDate <= todayDate && todayDate <= endDate;
 }
-export function getCurrentLesson(): number {
+export function getCurrentLesson(currentMonday: string, currentFriday: string): number {
+  const today = new Date();
+  if (!isBetweenDates(currentMonday, currentFriday, today)) {
+    return 11;
+  }
+
   const currentTime = new Date();
 
   const hours = {
@@ -99,7 +104,7 @@ export function getCurrentLesson(): number {
     7: { start: "13:15", end: "14:00" },
     8: { start: "14:05", end: "14:49" },
     9: { start: "14:50", end: "15:35" },
-    10: { start: "15:40", end: "16:25" }
+    10: { start: "15:40", end: "22:25" }
   };
 
   let currentHourNumber = 11;
