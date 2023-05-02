@@ -59,7 +59,7 @@
 >>>2. Gestrichene Stunden werden jetzt auch an den Client geschickt.
 >>
 >>21.04.23 : Aktueller Tag im Stundenplan angezeigt
->>>1. Der aktuelle Tag wird nun im Stunden plan Angezeigt sowie die aktuelle Stunde.
+>>>1. Der aktuelle Tag wird nun im Stundenplan Angezeigt sowie die aktuelle Stunde.
 >>
 >>30.04.23 : Formattierung + Design änderungen.
 >>>1. Formattierung zu frontend und backend hinzugefügt.
