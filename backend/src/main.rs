@@ -17,7 +17,7 @@ use actix_session::{config::PersistentSession, storage::CookieSessionStore, Sess
 use actix_web::{
     cookie::{time::Duration, Key}, middleware::Logger, web::{self, Data}, App, HttpResponse, HttpServer
 };
-use api::{check_session::check_session_get, get_timetable::get_timetable, login::login_post, register::register_post};
+use api::{check_session::check_session_get, get_timetable::get_timetable, login::login_post, register::register_post, get_lernbueros::get_lernbueros};
 use database::surrealdb_repo::SurrealDBRepo;
 use dotenv::dotenv;
 use log::info;
@@ -110,6 +110,7 @@ async fn main() -> io::Result<()> {
             .service(web::resource("/login").route(web::post().to(login_post)))
             .service(web::resource("/check_session").route(web::get().to(check_session_get)))
             .service(web::resource("/get_timetable").route(web::get().to(get_timetable)))
+            .service(web::resource("/get_lerbueros").route(web::get().to(get_lernbueros)))
     })
     .bind_rustls(format!("127.0.0.1:{port}"), config)?
     .run()

@@ -118,11 +118,17 @@ pub struct TimetableElement {
     pub key_type: String,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone)]
+#[derive(Serialize, Deserialize, Debug, Clone, UntisArrayResult)]
 pub struct Klasse {
     pub id: u16,
     pub name: String,
     pub longname: String,
+    #[serde(default)]
+    pub active: Option<bool>,
+    #[serde(default)]
+    pub teacher1: Option<u32>,
+    #[serde(default)]
+    pub teacher2: Option<u32>
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]

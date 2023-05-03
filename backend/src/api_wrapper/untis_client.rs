@@ -4,7 +4,7 @@ use chrono::{Days, NaiveDate};
 use reqwest::{Client, Error, Response};
 
 use super::utils::{
-    self, day_of_week, DetailedSubject, FormattedLesson, Holidays, LoginResults, PeriodObject, Schoolyear, Substitution, TimegridUnits, TimetableParameter, UntisArrayResponse
+    self, day_of_week, DetailedSubject, FormattedLesson, Holidays, LoginResults, PeriodObject, Schoolyear, Substitution, TimegridUnits, TimetableParameter, UntisArrayResponse, Klasse
 };
 use crate::api_wrapper::utils::UntisResponse;
 
@@ -367,11 +367,53 @@ impl UntisClient {
         Ok(formatted)
     }
 
+    pub async fn get_lernbueros(&mut self, mut parameter: TimetableParameter) -> Result<Vec<FormattedLesson>, Box<dyn std::error::Error>>{
+        let ef_id = self.get_klassen().await?.into_iter().find(|klasse| klasse.name == "EF").ok_or("Couldn't find EF")?;
+        let q1_id = self.get_klassen().await?.into_iter().find(|klasse| klasse.name == "Q1").ok_or("Couldn't find Q1")?;
+        let q2_id = self.get_klassen().await?.into_iter().find(|klasse| klasse.name == "Q2").ok_or("Couldn't find Q2")?;
+
+        parameter.options.element.r#type = 1;
+
+        let mut ef_parameter = parameter.clone();
+        let mut q1_parameter = parameter.clone();
+        let mut q2_parameter = parameter.clone();
+
+        ef_parameter.options.element.id = ef_id.id;
+        q1_parameter.options.element.id = q1_id.id;
+        q2_parameter.options.element.id = q2_id.id;
+
+        let ef_lessons = self.get_timetable(ef_parameter).await?;
+        let q1_lessons = self.get_timetable(q1_parameter).await?;
+        let q2_lessons = self.get_timetable(q2_parameter).await?;
+
+        let ef_lbs: Vec<FormattedLesson> = ef_lessons.into_iter().filter(|lesson| lesson.is_lb == true).collect();
+        let mut q1_lbs: Vec<FormattedLesson> = q1_lessons.into_iter().filter(|lesson| lesson.is_lb == true).collect();
+        let mut q2_lbs: Vec<FormattedLesson> = q2_lessons.into_iter().filter(|lesson| lesson.is_lb == true).collect();
+
+        let mut all_lbs = ef_lbs.clone();
+        all_lbs.append(&mut q1_lbs);
+        all_lbs.append(&mut q2_lbs);
+
+        Ok(all_lbs)
+    }
+
     pub async fn get_subjects(&mut self) -> Result<Vec<DetailedSubject>, Box<dyn std::error::Error>> {
         let response = self.request(utils::Parameter::Null(), "getSubjects".to_string()).await?;
 
         let text = response.text().await?;
         let json: UntisArrayResponse<DetailedSubject> = serde_json::from_str(&text)?;
+
+        Ok(json.result)
+    }
+
+    pub async fn get_klassen(&mut self) -> Result<Vec<Klasse>, Box<dyn std::error::Error>>{
+        let response = self.request(
+            utils::Parameter::Null(),
+            "getKlassen".to_string()
+        ).await?;
+
+        let text = response.text().await?;
+        let json: UntisArrayResponse<Klasse> = serde_json::from_str(&text)?;
 
         Ok(json.result)
     }
