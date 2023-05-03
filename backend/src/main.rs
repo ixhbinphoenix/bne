@@ -110,7 +110,7 @@ async fn main() -> io::Result<()> {
             .service(web::resource("/login").route(web::post().to(login_post)))
             .service(web::resource("/check_session").route(web::get().to(check_session_get)))
             .service(web::resource("/get_timetable").route(web::get().to(get_timetable)))
-            .service(web::resource("/get_lerbueros").route(web::get().to(get_lernbueros)))
+            .service(web::resource("/get_lernbueros").route(web::get().to(get_lernbueros)))
     })
     .bind_rustls(format!("127.0.0.1:{port}"), config)?
     .run()

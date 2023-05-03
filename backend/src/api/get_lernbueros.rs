@@ -79,7 +79,7 @@ pub async fn get_lernbueros(
     };
 
     let lernbueros = match untis.clone().get_lernbueros(TimetableParameter::default(untis, from, until)).await {
-        Ok(timetable) => timetable,
+        Ok(lernbueros) => lernbueros,
         Err(_) => {
             return Ok(Response::from(Error::UntisError).into());
         }

@@ -122,7 +122,8 @@ pub struct TimetableElement {
 pub struct Klasse {
     pub id: u16,
     pub name: String,
-    pub longname: String,
+    #[serde(default)]
+    pub longname: Option<String>,
     #[serde(default)]
     pub active: Option<bool>,
     #[serde(default)]
