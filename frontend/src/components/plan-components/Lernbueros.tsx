@@ -6,7 +6,7 @@ import { fetchJSessionId } from "../../api/untisAPI";
 import { getLernbueros, verifySession } from "../../api/theBackend";
 import Popup from "./Popup";
 import type { JSX } from "preact";
-import "../../styles/Lernbueros.scss";
+import "../../styles/Stundenplan.scss";
 import { useState, useEffect } from "preact/hooks";
 import {
   getMondayAndFridayDates,

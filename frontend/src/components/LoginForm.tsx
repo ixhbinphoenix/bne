@@ -18,7 +18,7 @@ export default function LoginForm(): JSX.Element {
   useEffect(() => {
     verifySession().then((session) => {
       if (session) {
-        window.location.href = "/stundenplan";
+        window.location.href = "/home";
       }
     });
   }, []);
@@ -104,7 +104,7 @@ export default function LoginForm(): JSX.Element {
 
     registerAccount(username, password, personId, untisCredentialsEncrtypted).then((result) => {
       if (result.status == "200 OK") {
-        window.location.href = "/stundenplan";
+        window.location.href = "/home";
       }
     });
   };
@@ -116,7 +116,7 @@ export default function LoginForm(): JSX.Element {
         saveUntisCredentials(untisCredentialsDecrypted.username, untisCredentialsDecrypted.password);
         fetchJSessionId(getLocalUntisCredentials().username, getLocalUntisCredentials().password).then((result) => {
           if (result.status == 200) {
-            window.location.href = "/stundenplan";
+            window.location.href = "/home";
           }
         });
       } else {
