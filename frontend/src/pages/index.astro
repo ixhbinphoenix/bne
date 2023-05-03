@@ -5,11 +5,10 @@ import GenericButton from "../components/generics/GenericButton.astro";
 ---
 
 <IndexLayout title="TheSchedule">
-  <HomeTitleBar />
   <div id="main-content">
     <div id="title-content">
       <h1 id="front-title">TheSchedule</h1>
-      <p id="front-subtitle">Der einzige Planer, den du jemals brauchen wirst!</p>
+      <p id="front-subtitle">Dein Tag auf einen Blick</p>
     </div>
     <a href="/stundenplan"><GenericButton>Coming Soon!</GenericButton></a>
   </div>
@@ -21,42 +20,31 @@ import GenericButton from "../components/generics/GenericButton.astro";
     justify-content: center;
     flex-direction: column;
     align-items: center;
-  }
-  #title-content {
-    display: flex;
-    justify-content: center;
-    flex-direction: column;
-    align-items: center;
-    font-family: Inter, sans-serif;
-    & > #front-title {
-      font-size: max(4.5vw, 2.5rem);
-      background: rgb(198, 160, 246);
-      background: linear-gradient(
-        90deg,
-        rgba(198, 160, 246, 1) 0%,
-        rgba(237, 135, 150, 1) 50%,
-        rgba(238, 212, 159, 1) 100%
-      );
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-    & > #front-subtitle {
-      font-size: 1.25rem;
-      color: #b8c0e0;
-      text-align: center;
-    }
-  }
-  #front-signup {
-    margin-top: 40vh;
-    font-size: 24px;
-    padding: 1rem;
-    border-radius: 15px;
-    border: 5px solid #8aadf4;
-    background-color: #1e2030;
-    color: #8aadf4;
 
-    &:active {
-      transform: translateY(4px);
+    & > #title-content {
+      display: flex;
+      justify-content: center;
+      flex-direction: column;
+      align-items: center;
+      font-family: Inter, sans-serif;
+      & > #front-title {
+        font-size: max(4.5vw, 2.5rem);
+        background: rgb(198, 160, 246);
+        background: linear-gradient(90deg, rgb(200, 162, 246) 0%, rgb(237, 135, 150) 50%, rgb(238, 212, 159) 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        user-select: none;
+      }
+      & > #front-subtitle {
+        font-size: 1.25rem;
+        color: #b8c0e0;
+        text-align: center;
+      }
+    }
+    & > a {
+      display: flex;
+      justify-content: center;
+      text-decoration: none;
     }
   }
 </style>

@@ -12,7 +12,7 @@ export default function LoginForm(): JSX.Element {
   const [buttonStyle1, setButtonStyle1] = useState({ borderBottom: "2px solid #5974e2" });
   const [buttonStyle2, setButtonStyle2] = useState({});
   let password: string, username: string, untisPassword: string, untisUsername: string, personId: number;
-  const [untisBoxStyle, setUntiBoxStyle] = useState({});
+  const [untisBoxStyle, setUntisBoxStyle] = useState({});
   const [notice, showPasswordNotice] = useState(<p style={{ opacity: "0" }}>A</p>);
 
   useEffect(() => {
@@ -28,12 +28,12 @@ export default function LoginForm(): JSX.Element {
       setButtonStyle2({ borderBottom: "2px solid #5974e2" });
       setButtonStyle1({ borderBottom: "none" });
       showPasswordNotice(<p style={{ opacity: "0" }}>A</p>);
-      setUntiBoxStyle({ opacity: "100" });
+      setUntisBoxStyle({ opacity: "100" });
     } else {
       setButtonStyle1({ borderBottom: "2px solid #5974e2" });
       setButtonStyle2({ borderBottom: "none" });
       showPasswordNotice(<p style={{ opacity: "0" }}>A</p>);
-      setUntiBoxStyle({ opacity: "0" });
+      setUntisBoxStyle({ opacity: "0" });
     }
   }, [isLogin]);
   const handleButtonClick = (buttonId: number) => {
