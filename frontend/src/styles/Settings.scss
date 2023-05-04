@@ -1,0 +1,54 @@
+.settings-page {
+  width: 100%;
+  height: 100%;
+  background-color: #363a4f;
+  display: flex;
+  flex-direction: column;
+
+  & > #top-bar {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    top: 0px;
+
+    & > #username {
+      margin-top: 2vh;
+      margin-bottom: 1vh;
+      font-weight: 600;
+      font-size: clamp(25px, 4vmin, 60px);
+    }
+    & > #settings-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-evenly;
+      width: 100%;
+      
+
+      & > button {
+        flex-grow: 1;
+        flex-basis: 0;
+        margin: 0px;
+        cursor: pointer;
+        font-size: clamp(10px, 2vmin, 40px);
+        text-align: center;
+      }
+    }
+  }
+  &> #page-content {
+    flex: 1 1 auto
+  }
+  &> #bottom-bar {
+    height: 2.5vh;
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+    bottom: 0px;
+    width: 100%;
+
+    &> a {
+        color: #8aadf4;
+        font-size: clamp(8px, 2vmin, 14px);
+    }
+  }
+}

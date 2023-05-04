@@ -3,6 +3,7 @@
 import Stundenplan from "./plan-components/Stundenplan";
 import Kontakt from "./plan-components/Kontakt";
 import Lernbuero from "./plan-components/Lernbueros";
+import Settings from "./plan-components/Settings";
 import { useState } from "preact/hooks";
 import type { JSX } from "preact";
 import "../styles/Sidebar.css";
@@ -45,12 +46,12 @@ export default function Sidebar(): JSX.Element {
           </button>
           <button
             class="sidebar-element"
-            id="fehler"
+            id="settings"
             onClick={() => {
-              setActivePage(<p></p>);
-              highlightButton("fehler");
+              setActivePage(<Settings />);
+              highlightButton("settings");
             }}>
-            Fehler
+            Einstellungen
           </button>
           <button
             class="sidebar-element"
