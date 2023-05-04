@@ -23,7 +23,6 @@
       align-items: center;
       justify-content: space-evenly;
       width: 100%;
-      
 
       & > button {
         flex-grow: 1;
@@ -35,10 +34,10 @@
       }
     }
   }
-  &> #page-content {
-    flex: 1 1 auto
+  & > #page-content {
+    flex: 1 1 auto;
   }
-  &> #bottom-bar {
+  & > #bottom-bar {
     height: 2.5vh;
     display: flex;
     align-items: center;
@@ -46,9 +45,9 @@
     bottom: 0px;
     width: 100%;
 
-    &> a {
-        color: #8aadf4;
-        font-size: clamp(8px, 2vmin, 14px);
+    & > a {
+      color: #8aadf4;
+      font-size: clamp(8px, 2vmin, 14px);
     }
   }
 }

@@ -213,3 +213,29 @@ export async function verifySession() {
     return false;
   }
 }
+export async function changePassword(currentPassword: string, newPassword: string) {
+  try {
+    let result = await fetch("https://localhost:8080/change_password", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      credentials: "include",
+      body: JSON.stringify({
+        current_password: currentPassword,
+        new_password: newPassword
+      })
+    });
+    if (!result.body) {
+      return {
+        status: 400,
+        message: "No result body found"
+      };
+    }
+  } catch {
+    return {
+      status: 500,
+      message: "Server Connection Failed"
+    };
+  }
+}
