@@ -81,7 +81,7 @@ impl TimetableParameter {
                 show_subst_text: true,
                 show_ls_text: true,
                 show_ls_number: true,
-                show_studentgroup: false,
+                show_studentgroup: true,
                 klasse_fields: vec!["id".to_string(), "name".to_string(), "longname".to_string()],
                 room_fields: vec!["id".to_string(), "name".to_string(), "longname".to_string()],
                 subject_fields: vec!["id".to_string(), "name".to_string(), "longname".to_string()],
@@ -180,6 +180,8 @@ pub struct PeriodObject {
     pub lstext: Option<String>,
     #[serde(default)]
     pub code: Option<String>,
+    #[serde(default)]
+    pub sg: Option<String>
 }
 
 /// Subjects

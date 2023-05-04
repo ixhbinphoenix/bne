@@ -163,6 +163,7 @@ impl UntisClient {
                             None => holiday.name.clone(),
                         }),
                         code: None,
+                        sg: None
                     })
                 }
             }
@@ -197,6 +198,14 @@ impl UntisClient {
         for d in days {
             let clone = d.clone();
             for lesson in clone {
+                let is_exam: bool = match lesson.sg{
+                    Some(sg) => {
+                        sg.starts_with("EXAM")
+                    }
+                    None => {
+                        false
+                    }
+                };
                 if !lesson.su.is_empty() && skip.contains_key(&lesson.su[0].id) && skip[&lesson.su[0].id] > 0 {
                     skip.entry(lesson.su[0].id).and_modify(|skips| *skips -= 1);
                     if skip[&lesson.su[0].id] == 0 {
@@ -263,6 +272,10 @@ impl UntisClient {
                     }
                 }
                 let mut substituted = false;
+
+                if is_exam {
+                    subject = "Prüfung".to_string() + &subject; 
+                }
 
                 let teacher = if !lesson.te.is_empty() {
                     match lesson.te[0].orgname.clone() {
@@ -356,7 +369,7 @@ impl UntisClient {
                         None
                     },
                 };
-                formatted_lesson.is_lb = formatted_lesson.length == 1;
+                formatted_lesson.is_lb = formatted_lesson.length == 1 && is_exam == false;
                 if formatted_lesson.length > 1 && !lesson.su.is_empty() {
                     skip.insert(lesson.su[0].id, formatted_lesson.length - 1);
                 }
