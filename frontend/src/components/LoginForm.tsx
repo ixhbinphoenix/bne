@@ -8,7 +8,6 @@ import { fetchJSessionId, getLocalUntisCredentials, saveUntisCredentials } from 
 import { generateKey, passwordDecrypt } from "../api/encryption";
 
 export default function LoginForm(): JSX.Element {
-
   useEffect(() => {
     verifySession().then((session) => {
       if (session) {
@@ -19,15 +18,13 @@ export default function LoginForm(): JSX.Element {
   const handleSubmit = (event: any) => {
     event.preventDefault();
     sendLogin(event.target[0].value, event.target[1].value);
-    fetchJSessionId(localStorage.getItem("untis_username"), localStorage.getItem("untis_password")).then(
-      (result) => {
-        if (result.JSessionId && result.personId) {
-          document.cookie = `JSESSIONID=${result.JSessionId}; max-age=600; secure; samesite=none`;
-        } else {
-          alert(result.status);
-        }
+    fetchJSessionId(localStorage.getItem("untis_username"), localStorage.getItem("untis_password")).then((result) => {
+      if (result.JSessionId && result.personId) {
+        document.cookie = `JSESSIONID=${result.JSessionId}; max-age=600; secure; samesite=none`;
+      } else {
+        alert(result.status);
       }
-    );      
+    });
   };
   const sendLogin = (username: string, password: string) => {
     const key = generateKey(password);
