@@ -8,7 +8,7 @@ title: "Datenschutzerklärung"
 #### 1. Allgemeine Hinweise
 
 Im Folgenden erklären wir, welche personenbezogenen Daten wir von Ihnen erheben, wie wir sie nutzen und wie sie gespeichert werden.
-Generell verwenden wir Ihre Daten aber niemals, um damit Geld zu verdienen, oder irgendeine andere Art der Gegenleistung zu erhalten.aber
+Generell verwenden wir Ihre Daten aber niemals, um damit Geld zu verdienen, oder irgendeine andere Art der Gegenleistung zu erhalten.
 
 Die Erhebung, Verarbeitung und Speicherung Ihrer Daten erfolgt bei uns gemäß Art. 6 Abs. 1 lit. a DSGVO oder Art. 6 Abs. 1 lit. f DSGVO.
 
@@ -19,7 +19,7 @@ Ihre personenbezogenen Daten werden von uns, den Betreibern dieser Webseite, erf
 #### 3. Welche Daten wir erfassen
 
 Wir erfassen automatisiert Daten über den Besuch unserer Seite, das sind, Ihre IP-Adresse, Datum und Uhrzeit des Aufrufs, sowie technische Daten über Ihr Gerät.
-Außerdem erfassen wir personenbezogene Daten die Sie uns direkt zur Verfügung stellen, das sind, Ihre E-Mail Adresse, Ihr Untis Nutername und Ihr Untis Passwort.
+Außerdem erfassen wir personenbezogene Daten die Sie uns direkt zur Verfügung stellen, das sind, Ihre E-Mail Adresse, Ihr Untis Nutzername und Ihr Untis Passwort.
 
 #### 4. Wofür wir Ihre Daten nutzen
 
@@ -31,7 +31,7 @@ Um die Sicherheit Ihrer Daten zu gewährleisten, werden diese Verschlüsselt üb
 
 #### 6. Wie wir Cookies benutzen
 
-Wir nutzen Cookies, das sind kleine Datenpakete die wir auf Ihrem Gerät speichern, ausschließlich dazu, die Funktionalität unserer Dienst zu ermöglichen.
+Wir nutzen Cookies, das sind kleine Datenpakete die wir auf Ihrem Gerät speichern, ausschließlich um die Funktionalität unserer Dienst zu ermöglichen.
 
 #### 7. Welche Daten wir an Untis senden
 
