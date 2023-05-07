@@ -2,6 +2,8 @@
   margin-left: 2.5%;
   margin-right: 2.5%;
   color: #b8c0e0;
+  position: absolute;
+  top: 20%;
 
   & > .description {
     display: flex;
@@ -49,13 +51,6 @@
         font-size: clamp(15px, 2.5vmin, 3vh);
         margin: 1.5%;
       }
-      & > .underline {
-        position: absolute;
-        width: 20%;
-        height: 5%;
-        background-color: #5974e2;
-        transition: all 0.3s ease;
-      }
     }
 
     & > form {
@@ -73,10 +68,6 @@
           opacity: 0;
         }
       }
-      & > .untis-box {
-        opacity: 0;
-        transition: opacity 0.25s ease;
-      }
       & > input {
         font-family: Inter, sans-serif;
         color: #b8c0e0;
@@ -93,10 +84,14 @@
             rgba(238, 212, 159, 1) 100%
           )
           1;
-      }
-      & > input:focus {
-        border-image: none;
-        border-color: #5974e2;
+        &:focus {
+          border-image: none;
+          border-color: #5974e2;
+        }
+        &:invalid {
+          color: #ff4d17;
+          border-color: #ff4d17;
+        }
       }
       & > .button-container {
         display: flex;
