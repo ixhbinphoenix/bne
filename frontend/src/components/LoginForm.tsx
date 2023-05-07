@@ -11,7 +11,7 @@ export default function LoginForm(): JSX.Element {
   useEffect(() => {
     verifySession().then((session) => {
       if (session) {
-        window.location.href = "/stundenplan";
+        window.location.href = "/home";
       }
     });
   }, []);

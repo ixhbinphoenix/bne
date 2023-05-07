@@ -20,15 +20,23 @@ import {
 export default function Stundenplan(): JSX.Element {
   const [currentWeek, setCurrentWeek] = useState(getMondayAndFridayDates());
 
-  const highlightDates = () => {
-    const currentDay = document.getElementById("day" + getCurrentDay());
+  const highlightDates = (currentMonday: string, currentFriday: string) => {
+    const days = document.getElementsByClassName("day");
+    Array.from(days).forEach((day) => {
+      day.classList.remove("highlighted");
+    });
+    const currentDay = document.getElementById("day" + getCurrentDay(currentMonday, currentFriday));
     currentDay?.classList.add("highlighted");
 
-    const currentLesson = document.getElementById("lesson" + getCurrentLesson());
+    const lessons = document.getElementsByClassName("lesson");
+    Array.from(lessons).forEach((lesson) => {
+      lesson.classList.remove("highlighted");
+    });
+    const currentLesson = document.getElementById("lesson" + getCurrentLesson(currentMonday, currentFriday));
     currentLesson?.classList.add("highlighted");
   };
   useEffect(() => {
-    highlightDates();
+    highlightDates(getMondayAndFridayDates().currentMonday, getMondayAndFridayDates().currentFriday);
 
     verifySession().then((status) => {
       if (!status) {
@@ -58,6 +66,7 @@ export default function Stundenplan(): JSX.Element {
 
   const nextWeek = () => {
     let week = shiftForward(currentWeek.currentMonday, currentWeek.currentFriday);
+    highlightDates(week.currentMonday, week.currentFriday);
     setCurrentDates(getWeekDays(week.currentMonday));
 
     getTimetable(week.currentMonday, week.currentFriday).then((result) => {
@@ -74,7 +83,9 @@ export default function Stundenplan(): JSX.Element {
   };
   const previousWeek = () => {
     let week = shiftBackward(currentWeek.currentMonday, currentWeek.currentFriday);
+    highlightDates(week.currentMonday, week.currentFriday);
     setCurrentDates(getWeekDays(week.currentMonday));
+
     getTimetable(week.currentMonday, week.currentFriday).then((result) => {
       if (result.lessons) {
         addToDivs(result.lessons);
@@ -88,9 +99,11 @@ export default function Stundenplan(): JSX.Element {
     setCurrentWeek(week);
   };
   const goToCurrentWeek = () => {
-    setCurrentWeek(getMondayAndFridayDates());
+    let week = getMondayAndFridayDates();
+    highlightDates(week.currentMonday, week.currentFriday);
+    setCurrentDates(getWeekDays(week.currentMonday));
 
-    getTimetable(currentWeek.currentMonday, currentWeek.currentFriday).then((result) => {
+    getTimetable(week.currentMonday, week.currentFriday).then((result) => {
       if (result.lessons) {
         addToDivs(result.lessons);
         const tableDaysTemp = [];
@@ -244,27 +257,27 @@ export default function Stundenplan(): JSX.Element {
   return (
     <div className="table-layout">
       <div className="table-top">
-        <span id="day1">
+        <span id="day1" class="day">
           {currentDates[0]}
           <br />
           Mo.
         </span>
-        <span id="day2">
+        <span id="day2" class="day">
           {currentDates[1]}
           <br />
           Di.
         </span>
-        <span id="day3">
+        <span id="day3" class="day">
           {currentDates[2]}
           <br />
           Mi.
         </span>
-        <span id="day4">
+        <span id="day4" class="day">
           {currentDates[3]}
           <br />
           Do.
         </span>
-        <span id="day5">
+        <span id="day5" class="day">
           {currentDates[4]}
           <br />
           Fr.
@@ -272,34 +285,34 @@ export default function Stundenplan(): JSX.Element {
       </div>
       <div className="table-body">
         <div className="table-sidebar-left">
-          <span id="lesson1">
+          <span class="lesson" id="lesson1">
             <div>07:55</div>1<div>08:40</div>
           </span>
-          <span id="lesson2">
+          <span class="lesson" id="lesson2">
             <div>08:40</div>2<div>09:25</div>
           </span>
-          <span id="lesson3">
+          <span class="lesson" id="lesson3">
             <div>09:45</div>3<div>10:30</div>
           </span>
-          <span id="lesson4">
+          <span class="lesson" id="lesson4">
             <div>10:30</div>4<div>11:15</div>
           </span>
-          <span id="lesson5">
+          <span class="lesson" id="lesson5">
             <div>11:35</div>5<div>12:20</div>
           </span>
-          <span id="lesson6">
+          <span class="lesson" id="lesson6">
             <div>12:20</div>6<div>13:05</div>
           </span>
-          <span id="lesson7">
+          <span class="lesson" id="lesson7">
             <div>13:15</div>7<div>14:00</div>
           </span>
-          <span id="lesson8">
+          <span class="lesson" id="lesson8">
             <div>14:05</div>8<div>14:50</div>
           </span>
-          <span id="lesson9">
+          <span class="lesson" id="lesson9">
             <div>14:50</div>9<div>15:35</div>
           </span>
-          <span id="lesson10">
+          <span class="lesson" id="lesson10">
             <div>15:40</div>
             10
             <div>16:25</div>
