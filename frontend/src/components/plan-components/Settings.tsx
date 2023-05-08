@@ -5,6 +5,10 @@ import type { JSX } from "preact";
 import "../../styles/Settings.scss";
 import { useEffect, useState } from "preact/hooks";
 import ChangePassword from "./settings-components/ChangePassword";
+import ChangeEmail from "./settings-components/ChangeEmail";
+import ChangeUntisData from "./settings-components/ChangeUntisData";
+import DeleteAccount from "./settings-components/DeleteAccount";
+import Logout from "./settings-components/Logout";
 
 export default function Settings(): JSX.Element {
   const [pageContent, setPageContent] = useState(<ChangePassword />);
@@ -44,7 +48,7 @@ export default function Settings(): JSX.Element {
             id="button2"
             onClick={() => {
               highlightButton("button2");
-              setPageContent();
+              setPageContent(<ChangeEmail />);
             }}>
             E-Mail-Adresse ändern
           </button>
@@ -53,7 +57,7 @@ export default function Settings(): JSX.Element {
             id="button3"
             onClick={() => {
               highlightButton("button3");
-              setPageContent();
+              setPageContent(<ChangeUntisData />);
             }}>
             Untis-Daten ändern
           </button>
@@ -62,7 +66,7 @@ export default function Settings(): JSX.Element {
             id="button4"
             onClick={() => {
               highlightButton("button4");
-              setPageContent();
+              setPageContent(<DeleteAccount />);
             }}>
             Account löschen
           </button>
@@ -71,7 +75,7 @@ export default function Settings(): JSX.Element {
             id="button5"
             onClick={() => {
               highlightButton("button5");
-              setPageContent();
+              setPageContent(<Logout />);
             }}>
             Abmelden
           </button>

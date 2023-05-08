@@ -4,7 +4,7 @@ import "../../../styles/SettingsElement.scss";
 import type { JSX } from "preact";
 import { changePassword } from "../../../api/theBackend";
 
-export default function ChangePassword(): JSX.Element {
+export default function ChangeEmail(): JSX.Element {
   const sendPasswordChange = (event: any) => {
     event.preventDefault();
     changePassword(event.target[0].value, event.target[1].value);
@@ -32,7 +32,6 @@ export default function ChangePassword(): JSX.Element {
           />
           <input type="submit" id="submit-button" />
         </form>
-        <iframe name="dummyframe" id="dummyframe" style="display: none"></iframe>
       </div>
     </div>
   );

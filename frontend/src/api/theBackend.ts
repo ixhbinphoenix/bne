@@ -1,4 +1,4 @@
-import { getLocalUntisCredentials, fetchJSessionId } from "./untisAPI";
+import { getLocalUntisCredentials, fetchJSessionId, saveUntisCredentials } from "./untisAPI";
 import type { TheScheduleObject } from "./main";
 
 export function verifyPassword(password: string): boolean {
@@ -238,4 +238,103 @@ export async function changePassword(currentPassword: string, newPassword: strin
       message: "Server Connection Failed"
     };
   }
+}
+export async function changeEmail(password: string, email: string) {
+  try {
+    let result = await fetch("https://localhost:8080/change_email", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      credentials: "include",
+      body: JSON.stringify({
+        password: password,
+        email: email
+      })
+    });
+    if (!result.body) {
+      return {
+        status: 400,
+        message: "No result body found"
+      };
+    }
+  } catch {
+    return {
+      status: 500,
+      message: "Server Connection Failed"
+    };
+  }
+}
+export async function changeUntisData(password: string, personId: number, untisCredentialsEncrypted: string) {
+  try {
+    let result = await fetch("https://localhost:8080/change_untis_data", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      credentials: "include",
+      body: JSON.stringify({
+        password: password,
+        person_id: personId,
+        untis_cypher: untisCredentialsEncrypted
+      })
+    });
+    if (!result.body) {
+      return {
+        status: 400,
+        message: "No result body found"
+      };
+    }
+    let body: ReadableStream<Uint8Array> = await result.body;
+    let stream = await readStream(body);
+    let requestResult = stream.split("\n");
+    return {
+      status: requestResult[0],
+      message: requestResult[1]
+    };
+  } catch {
+    return {
+      status: 500,
+      message: "Server Connection Failed"
+    };
+  }
+}
+export async function deleteAccount(password: string) {
+  try {
+    let result = await fetch("https://localhost:8080/delete_account", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      credentials: "include",
+      body: JSON.stringify({
+        password: password
+      })
+    });
+    if (!result.body) {
+      return {
+        status: 400,
+        message: "No result body found"
+      };
+    }
+  } catch {
+    return {
+      status: 500,
+      message: "Server Connection Failed"
+    };
+  }
+}
+export function logoutHere() {
+  saveUntisCredentials("", "");
+  fetch("https://localhost:8080/logout_here", {
+    method: "GET",
+    credentials: "include"
+  });
+}
+export function logoutEverywhere() {
+  saveUntisCredentials("", "");
+  fetch("https://localhost:8080/logout_everywhere", {
+    method: "GET",
+    credentials: "include"
+  });
 }
