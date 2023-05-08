@@ -7,10 +7,37 @@
   align-items: center;
 
   & > .form-container {
+    flex-direction: column;
+    display: flex;
+    justify-content: center;
     & > h2 {
       text-align: center;
       margin-top: 11vh;
       font-size: clamp(14px, 3.5vmin, 50px);
+    }
+    & > button {
+      text-align: center;
+      cursor: pointer;
+      font-family: Inter, sans-serif;
+      color: #b8c0e0;
+      background-color: transparent;
+      padding: 1%;
+      font-size: clamp(15px, 3rem, 3vh);
+      margin: 1.5% 0px;
+      outline: none;
+      border: 2px solid;
+      border-image: linear-gradient(
+          90deg,
+          rgba(198, 160, 246, 1) 0%,
+          rgba(237, 135, 150, 1) 50%,
+          rgba(238, 212, 159, 1) 100%
+        )
+        1;
+      &:hover {
+        border-image: none;
+        border-color: #5974e2;
+        background-color: #5974e2;
+      }
     }
     & > form {
       display: flex;
@@ -25,7 +52,6 @@
           background-color: #5974e2;
         }
       }
-
       & > input {
         font-family: Inter, sans-serif;
         color: #b8c0e0;
