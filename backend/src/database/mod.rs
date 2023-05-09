@@ -1,1 +1,1 @@
-pub mod surrealdb_repo;
+pub mod surrealdb;
