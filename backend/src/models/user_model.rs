@@ -1,220 +1,64 @@
-use std::collections::BTreeMap;
-
-use actix_web::web::Data;
-use backend_derive::{Creatable, Patchable};
 use serde::{Deserialize, Serialize};
-use surrealdb::{
-    sql::{thing, Object, Value}, Response
-};
+use surrealdb::sql::Thing;
 
-use crate::{
-    database::surrealdb_repo::{Creatable, Patchable, SurrealDBRepo}, prelude::*, utils::macros::map
-};
+use super::model::{ConnectionData, DBConnection, CRUD};
+use crate::prelude::Error;
 
-#[derive(Debug, Serialize, Deserialize, Creatable)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct User {
-    pub id: Option<String>,
-    pub username: String,
+    pub id: Thing,
+    pub email: String,
     pub person_id: i64,
     pub password_hash: String,
     pub untis_cypher: String,
 }
 
-impl From<User> for Value {
-    fn from(value: User) -> Self {
-        map![
-            "id".into() => value.id.into(),
-            "username".into() => value.username.into(),
-            "person_id".into() => value.person_id.into(),
-            "password_hash".into() => value.password_hash.into(),
-            "untis_cypher".into() => value.untis_cypher.into(),
-        ]
-        .into()
-    }
+#[derive(Debug, Serialize, Deserialize)]
+pub struct UserCreate {
+    pub email: String,
+    pub person_id: i64,
+    pub password_hash: String,
+    pub untis_cypher: String,
 }
 
-impl TryFrom<Object> for User {
-    type Error = Error;
-
-    fn try_from(value: Object) -> Result<Self, Self::Error> {
-        let id: String = W(match value.get("id") {
-            Some(n) => n.to_owned(),
-            None => return Err(Error::ConversionError("id".to_owned())),
-        })
-        .try_into()?;
-        let username: String = W(match value.get("username") {
-            Some(n) => n.to_owned(),
-            None => return Err(Error::ConversionError("username".to_owned())),
-        })
-        .try_into()?;
-        let person_id: i64 = W(match value.get("person_id") {
-            Some(n) => n.to_owned(),
-            None => return Err(Error::ConversionError("person_id".to_owned())),
-        })
-        .try_into()?;
-        let password_hash: String = W(match value.get("password_hash") {
-            Some(n) => n.to_owned(),
-            None => return Err(Error::ConversionError("password_hash".to_owned())),
-        })
-        .try_into()?;
-        let untis_cypher: String = W(match value.get("untis_cypher") {
-            Some(n) => n.to_owned(),
-            None => return Err(Error::ConversionError("untis_cypher".to_owned())),
-        })
-        .try_into()?;
-
-        Ok(User {
-            id: Some(id),
-            username,
-            person_id,
-            password_hash,
-            untis_cypher,
-        })
-    }
-}
-
-#[derive(Debug, Serialize, Deserialize, Patchable)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct UserPatch {
-    pub username: Option<String>,
-    pub person_id: Option<String>,
+    pub id: Thing,
+    pub email: Option<String>,
+    pub person_id: Option<i64>,
     pub password_hash: Option<String>,
     pub untis_cypher: Option<String>,
 }
 
-impl From<UserPatch> for Value {
-    fn from(val: UserPatch) -> Self {
-        let mut value: BTreeMap<String, Value> = BTreeMap::new();
+#[async_trait::async_trait]
+impl CRUD<User, UserCreate, UserPatch> for User {
+    async fn init_table(db: DBConnection) -> Result<bool, Error> {
+        let sql = "DEFINE TABLE users SCHEMAFULL;\
+                   DEFINE FIELD email ON users TYPE string ASSERT is::email($value);\
+                   DEFINE INDEX email ON TABLE users COLUMNS email UNIQUE;\
+                   DEFINE FIELD person_id ON users TYPE number;\
+                   DEFINE INDEX person_id ON TABLE users COLUMNS person_id UNIQUE;\
+                   DEFINE FIELD password_hash ON users TYPE string;\
+                   DEFINE FIELD untis_cypher ON users TYPE string;";
+        db.query(sql).await?;
 
-        if let Some(t) = val.username {
-            value.insert("username".into(), t.into());
-        }
-        Value::from(value)
+        Ok(true)
     }
 }
 
-pub struct UserCRUD;
-
 #[allow(dead_code)]
-impl UserCRUD {
-    pub async fn init_table(db: SurrealDBRepo) -> Result<Vec<Response>, Error> {
-        let sql = "DEFINE TABLE users SCHEMAFULL;\
-                   DEFINE FIELD username ON users TYPE string;\
-                   DEFINE FIELD person_id ON users TYPE number;\
-                   DEFINE INDEX person_id_index ON TABLE users COLUMNS person_id UNIQUE;\
-                   DEFINE FIELD password_hash ON users TYPE string;\
-                   DEFINE FIELD untis_cypher ON users TYPE string;";
+impl User {
+    pub async fn get_from_email(db: ConnectionData, email: String) -> Result<Option<User>, Error> {
+        let mut res = db.query("SELECT * FROM users WHERE email=$email;").bind(("email", email)).await?;
+        let user: Option<User> = res.take(0)?;
 
-        match db.ds.execute(sql, &db.ses, None, false).await {
-            Ok(n) => Ok(n),
-            Err(e) => Err(Error::Surreal(e)),
-        }
+        Ok(user)
     }
 
-    pub async fn create<T: Creatable>(db: Data<SurrealDBRepo>, data: T) -> Result<Object, Error> {
-        let sql = "CREATE type::table($tb) CONTENT $data RETURN *;";
+    pub async fn get_from_person_id(db: ConnectionData, person_id: i64) -> Result<Option<User>, Error> {
+        let mut res = db.query("SELECT * FROM users WHERE person_id=$id;").bind(("id", person_id)).await?;
+        let user: Option<User> = res.take(0)?;
 
-        let data: Object = W(data.into()).try_into()?;
-
-        let vars: BTreeMap<String, Value> = map![
-            "tb".into() => "users".into(),
-            "data".into() => data.into()
-        ];
-
-        let res = db.ds.execute(sql, &db.ses, Some(vars), false).await?;
-
-        let first_val = res.into_iter().next().map(|r| r.result).expect("id to be returned")?;
-
-        W(first_val.first()).try_into()
-    }
-
-    pub async fn get_from_id(db: Data<SurrealDBRepo>, tid: &str) -> Result<Object, Error> {
-        let sql = "SELECT * FROM $th;";
-
-        let vars: BTreeMap<String, Value> = map!["th".into() => thing(tid)?.into()];
-
-        let res = db.ds.execute(sql, &db.ses, Some(vars), true).await?;
-
-        let first_res = res.into_iter().next().expect("to get a response");
-
-        W(first_res.result?.first()).try_into()
-    }
-
-    pub async fn get_from_person_id(db: Data<SurrealDBRepo>, person_id: i64) -> Result<Object, Error> {
-        let sql = "SELECT * FROM users WHERE personid=$personid";
-
-        let vars: BTreeMap<String, Value> = map![
-            "person_id".into() => person_id.to_string().into()
-        ];
-
-        let res = db.ds.execute(sql, &db.ses, Some(vars), true).await?;
-
-        let first_res = match res.into_iter().next() {
-            Some(r) => r,
-            None => {
-                return Err(Error::ObjectNotFound(person_id.to_string()));
-            }
-        };
-
-        let result = first_res.result?.first();
-
-        if result.is_none() {
-            return Err(Error::ObjectNotFound(person_id.to_string()));
-        }
-
-        W(result).try_into()
-    }
-
-    pub async fn get_from_username(db: Data<SurrealDBRepo>, username: &str) -> Result<Object, Error> {
-        let sql = "SELECT * FROM users WHERE username=$username;";
-
-        let vars: BTreeMap<String, Value> = map![
-            "username".into() => username.into()
-        ];
-
-        let res = db.ds.execute(sql, &db.ses, Some(vars), true).await?;
-
-        let first_res = match res.into_iter().next() {
-            Some(r) => r,
-            None => return Err(Error::ObjectNotFound(username.to_owned())),
-        };
-
-        let result = first_res.result?.first();
-
-        if result.is_none() {
-            return Err(Error::ObjectNotFound(username.to_owned()));
-        }
-
-        W(result).try_into()
-    }
-
-    pub async fn update<T: Patchable>(db: Data<SurrealDBRepo>, tid: &str, data: T) -> Result<Object, Error> {
-        let sql = "UPDATE $th MERGE $data RETURN *;";
-
-        let vars = map![
-            "th".into() => thing(tid)?.into(),
-            "data".into() => data.into()
-        ];
-
-        let res = db.ds.execute(sql, &db.ses, Some(vars), true).await?;
-
-        let first_res = res.into_iter().next().expect("id to be returned");
-
-        let result = first_res.result?;
-
-        W(result.first()).try_into()
-    }
-
-    pub async fn delete(db: Data<SurrealDBRepo>, tid: &str) -> Result<String, Error> {
-        let sql = "DELETE $th RETURN *;";
-
-        let vars = map!["th".into() => thing(tid)?.into()];
-
-        let res = db.ds.execute(sql, &db.ses, Some(vars), false).await?;
-
-        let first_res = res.into_iter().next().expect("id to be returned");
-
-        first_res.result?;
-
-        Ok(tid.to_string())
+        Ok(user)
     }
 }

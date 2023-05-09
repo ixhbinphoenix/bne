@@ -6,22 +6,26 @@ use rand_core::OsRng;
 use serde::Deserialize;
 
 use crate::{
-    database::surrealdb_repo::SurrealDBRepo, models::user_model::{User, UserCRUD}, prelude::Error, utils::password::valid_password
+    models::{
+        model::{DBConnection, CRUD}, user_model::{User, UserCreate}
+    }, prelude::Error, utils::password::valid_password
 };
 
 #[derive(Deserialize)]
 pub struct RegisterData {
-    username: String,
+    email: String,
     password: String,
     person_id: i64,
     untis_cypher: String,
 }
 
 pub async fn register_post(
-    data: web::Json<RegisterData>, db: web::Data<SurrealDBRepo>, request: HttpRequest,
+    data: web::Json<RegisterData>, db: web::Data<DBConnection>, request: HttpRequest,
 ) -> Result<impl Responder> {
-    if UserCRUD::get_from_username(db.clone(), &data.username).await.is_ok() {
-        return Ok(HttpResponse::Forbidden().body("403 Forbidden\nUsername already taken!".to_string()));
+    // TODO: Email validation
+    let pot_user = User::get_from_email(db.clone(), data.email.clone()).await;
+    if pot_user.is_ok() && pot_user.unwrap().is_some() {
+        return Ok(HttpResponse::Forbidden().body("403 Forbidden\nE-mail already associated to account!".to_string()));
     }
     if let Err(e) = valid_password(&data.password) {
         return Err(Error::from(e).try_into()?);
@@ -39,18 +43,19 @@ pub async fn register_post(
         }
     };
 
-    let db_user = User {
-        id: None,
-        username: data.username.clone(),
+    let db_user = UserCreate {
+        email: data.email.clone(),
         person_id: data.person_id,
         password_hash,
         untis_cypher: data.untis_cypher.clone(),
     };
 
-    let object = UserCRUD::create(db, db_user).await?;
-    let ret_user: User = object.try_into()?;
+    let ret_user = match User::create(db, "users".to_owned(), db_user).await {
+        Ok(a) => a,
+        Err(e) => return Err(e.try_into()?),
+    };
 
-    match Identity::login(&request.extensions(), ret_user.id.expect("id to be check during conversion")) {
+    match Identity::login(&request.extensions(), ret_user.id.to_string()) {
         Ok(_) => {}
         Err(e) => {
             error!("Error trying to log into Identity\n{}", e);
