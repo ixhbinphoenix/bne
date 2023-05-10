@@ -3,7 +3,6 @@ use serde::{Deserialize, Serialize};
 
 use super::untis_client::UntisClient;
 
-
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(untagged)]
 pub enum Parameter {
@@ -129,7 +128,7 @@ pub struct Klasse {
     #[serde(default)]
     pub teacher1: Option<u32>,
     #[serde(default)]
-    pub teacher2: Option<u32>
+    pub teacher2: Option<u32>,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
@@ -181,7 +180,7 @@ pub struct PeriodObject {
     #[serde(default)]
     pub code: Option<String>,
     #[serde(default)]
-    pub sg: Option<String>
+    pub sg: Option<String>,
 }
 
 /// Subjects

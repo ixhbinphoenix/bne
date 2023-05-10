@@ -4,7 +4,7 @@ use chrono::{Days, NaiveDate};
 use reqwest::{Client, Error, Response};
 
 use super::utils::{
-    self, day_of_week, DetailedSubject, FormattedLesson, Holidays, LoginResults, PeriodObject, Schoolyear, Substitution, TimegridUnits, TimetableParameter, UntisArrayResponse, Klasse
+    self, day_of_week, DetailedSubject, FormattedLesson, Holidays, Klasse, LoginResults, PeriodObject, Schoolyear, Substitution, TimegridUnits, TimetableParameter, UntisArrayResponse
 };
 use crate::api_wrapper::utils::UntisResponse;
 
@@ -163,7 +163,7 @@ impl UntisClient {
                             None => holiday.name.clone(),
                         }),
                         code: None,
-                        sg: None
+                        sg: None,
                     })
                 }
             }
@@ -198,13 +198,9 @@ impl UntisClient {
         for d in days {
             let clone = d.clone();
             for lesson in clone {
-                let is_exam: bool = match lesson.sg{
-                    Some(sg) => {
-                        sg.starts_with("EXAM")
-                    }
-                    None => {
-                        false
-                    }
+                let is_exam: bool = match lesson.sg {
+                    Some(sg) => sg.starts_with("EXAM"),
+                    None => false,
                 };
                 if !lesson.su.is_empty() && skip.contains_key(&lesson.su[0].id) && skip[&lesson.su[0].id] > 0 {
                     skip.entry(lesson.su[0].id).and_modify(|skips| *skips -= 1);
@@ -274,7 +270,7 @@ impl UntisClient {
                 let mut substituted = false;
 
                 if is_exam {
-                    subject = "Prüfung".to_string() + &subject; 
+                    subject = "Prüfung".to_string() + &subject;
                 }
 
                 let teacher = if !lesson.te.is_empty() {
@@ -313,12 +309,16 @@ impl UntisClient {
                         && d.iter().any(|les| {
                             !les.su.is_empty()
                                 && les.su[0].id == lesson.su[0].id
-                                && (les.start_time == lesson.end_time || les.start_time == lesson.end_time + 5)
+                                && (les.start_time == lesson.end_time
+                                    || les.start_time == lesson.end_time + 5
+                                    || les.start_time == lesson.end_time + 20) // !! Could break !!
                         }) {
                         if d.iter().any(|les| {
                             !les.su.is_empty()
                                 && les.su[0].id == lesson.su[0].id
-                                && (les.end_time == lesson.start_time || les.end_time == lesson.start_time - 5)
+                                && (les.end_time == lesson.start_time
+                                    || les.end_time == lesson.start_time - 5
+                                    || les.start_time == lesson.end_time + 20)
                         }) {
                             3
                         } else {
@@ -380,10 +380,15 @@ impl UntisClient {
         Ok(formatted)
     }
 
-    pub async fn get_lernbueros(&mut self, mut parameter: TimetableParameter) -> Result<Vec<FormattedLesson>, Box<dyn std::error::Error>>{
-        let ef_id = self.get_klassen().await?.into_iter().find(|klasse| klasse.name == "EF").ok_or("Couldn't find EF")?;
-        let q1_id = self.get_klassen().await?.into_iter().find(|klasse| klasse.name == "Q1").ok_or("Couldn't find Q1")?;
-        let q2_id = self.get_klassen().await?.into_iter().find(|klasse| klasse.name == "Q2").ok_or("Couldn't find Q2")?;
+    pub async fn get_lernbueros(
+        &mut self, mut parameter: TimetableParameter,
+    ) -> Result<Vec<FormattedLesson>, Box<dyn std::error::Error>> {
+        let ef_id =
+            self.get_klassen().await?.into_iter().find(|klasse| klasse.name == "EF").ok_or("Couldn't find EF")?;
+        let q1_id =
+            self.get_klassen().await?.into_iter().find(|klasse| klasse.name == "Q1").ok_or("Couldn't find Q1")?;
+        let q2_id =
+            self.get_klassen().await?.into_iter().find(|klasse| klasse.name == "Q2").ok_or("Couldn't find Q2")?;
 
         parameter.options.element.r#type = 1;
 
@@ -419,11 +424,8 @@ impl UntisClient {
         Ok(json.result)
     }
 
-    pub async fn get_klassen(&mut self) -> Result<Vec<Klasse>, Box<dyn std::error::Error>>{
-        let response = self.request(
-            utils::Parameter::Null(),
-            "getKlassen".to_string()
-        ).await?;
+    pub async fn get_klassen(&mut self) -> Result<Vec<Klasse>, Box<dyn std::error::Error>> {
+        let response = self.request(utils::Parameter::Null(), "getKlassen".to_string()).await?;
 
         let text = response.text().await?;
         let json: UntisArrayResponse<Klasse> = serde_json::from_str(&text)?;

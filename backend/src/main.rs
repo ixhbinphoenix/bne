@@ -17,7 +17,9 @@ use actix_session::{config::PersistentSession, storage::CookieSessionStore, Sess
 use actix_web::{
     cookie::{time::Duration, Key}, middleware::Logger, web::{self, Data}, App, HttpResponse, HttpServer
 };
-use api::{check_session::check_session_get, get_timetable::get_timetable, login::login_post, register::register_post, get_lernbueros::get_lernbueros};
+use api::{
+    check_session::check_session_get, get_lernbueros::get_lernbueros, get_timetable::get_timetable, login::login_post, register::register_post
+};
 use database::surrealdb_repo::SurrealDBRepo;
 use dotenv::dotenv;
 use log::info;
