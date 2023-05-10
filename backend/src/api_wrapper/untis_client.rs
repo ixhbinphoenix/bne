@@ -113,18 +113,23 @@ impl UntisClient {
         let text = response.text().await?;
         let json: UntisArrayResponse<PeriodObject> = serde_json::from_str(&text)?;
 
-        self.format_lessons(
-            json.result,
-            parameter.options.start_date.parse::<u32>()?,
-            parameter.options.end_date.parse::<u32>()?,
-        )
-        .await
+        let mut timetable = json.result;
+
+        let mut holidays = self
+            .get_period_holidays(
+                parameter.options.start_date.parse::<u32>()?,
+                parameter.options.end_date.parse::<u32>()?,
+            )
+            .await?;
+
+        timetable.append(&mut holidays);
+
+        self.format_lessons(timetable, parameter.options.start_date.parse::<u32>()?).await
     }
 
-    async fn format_lessons(
-        &mut self, mut lessons: Vec<PeriodObject>, start_date: u32, end_date: u32,
-    ) -> Result<Vec<FormattedLesson>, Box<dyn std::error::Error>> {
-        let mut formatted: Vec<FormattedLesson> = vec![];
+    pub async fn get_period_holidays(
+        &mut self, start_date: u32, end_date: u32,
+    ) -> Result<Vec<PeriodObject>, Box<dyn std::error::Error>> {
         let all_holidays = self.get_holidays().await?;
         let holidays = all_holidays.iter().filter(|&holiday| {
             holiday.start_date <= i64::from(start_date) && holiday.end_date >= i64::from(start_date)
@@ -168,7 +173,13 @@ impl UntisClient {
                 }
             }
         }
-        lessons.append(&mut period_holidays);
+        Ok(period_holidays)
+    }
+
+    async fn format_lessons(
+        &mut self, mut lessons: Vec<PeriodObject>, start_date: u32,
+    ) -> Result<Vec<FormattedLesson>, Box<dyn std::error::Error>> {
+        let mut formatted: Vec<FormattedLesson> = vec![];
 
         lessons.sort_unstable_by_key(|les| les.date);
         let mut days: Vec<Vec<PeriodObject>> = vec![];
@@ -408,9 +419,20 @@ impl UntisClient {
         let mut q1_lbs: Vec<FormattedLesson> = q1_lessons.into_iter().filter(|lesson| lesson.is_lb == true).collect();
         let mut q2_lbs: Vec<FormattedLesson> = q2_lessons.into_iter().filter(|lesson| lesson.is_lb == true).collect();
 
+        let holidays = self
+            .get_period_holidays(
+                parameter.options.start_date.parse::<u32>()?,
+                parameter.options.end_date.parse::<u32>()?,
+            )
+            .await?;
+
+        let mut formatted_holidays =
+            self.format_lessons(holidays, parameter.options.start_date.parse::<u32>()?).await?;
+
         let mut all_lbs = ef_lbs.clone();
         all_lbs.append(&mut q1_lbs);
         all_lbs.append(&mut q2_lbs);
+        all_lbs.append(&mut formatted_holidays);
 
         Ok(all_lbs)
     }
