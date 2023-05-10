@@ -13,7 +13,8 @@ use std::{
 
 use actix_cors::Cors;
 use actix_identity::IdentityMiddleware;
-use actix_session::{config::PersistentSession, storage::CookieSessionStore, SessionMiddleware};
+use actix_session::{config::PersistentSession, SessionMiddleware};
+use actix_session_surrealdb::SurrealSessionStore;
 use actix_web::{
     cookie::{time::Duration, Key}, middleware::Logger, web::{self, Data}, App, HttpResponse, HttpServer
 };
@@ -50,7 +51,7 @@ async fn main() -> io::Result<()> {
 
     let db_location = get_env_or("DB_LOCATION", "127.0.0.1:8000".to_string());
 
-    let db = Surreal::new::<Ws>(db_location).await.expect("DB to connect");
+    let db = Surreal::new::<Ws>(db_location.clone()).await.expect("DB to connect");
 
     let db_user = get_env_or("DB_USERNAME", "root".to_string());
     let db_pass = get_env_or("DB_PASSWORD", "root".to_string());
@@ -67,9 +68,21 @@ async fn main() -> io::Result<()> {
     let db_namespace = get_env_or("DB_NAMESPACE", "test".to_string());
     let db_database = get_env_or("DB_DATABASE", "test".to_string());
 
-    db.use_ns(db_namespace).use_db(db_database).await.expect("using namespace and db to work");
+    db.use_ns(db_namespace.clone()).use_db(db_database.clone()).await.expect("using namespace and db to work");
 
     User::init_table(db.clone()).await.expect("Table initialization to work");
+
+    let session_db = Surreal::new::<Ws>(db_location).await.expect("DB to connect");
+
+    session_db
+        .signin(Root {
+            username: db_user.as_str(),
+            password: db_pass.as_str(),
+        })
+        .await
+        .expect("DB Credentials to be correct");
+
+    session_db.use_ns(db_namespace).use_db(db_database).await.expect("using namespace and db to work");
 
     let school = get_env("UNTIS_SCHOOL");
     let subdomain = get_env("UNTIS_SUBDOMAIN");
@@ -109,16 +122,19 @@ async fn main() -> io::Result<()> {
             .wrap(IdentityMiddleware::default())
             .wrap(logger)
             .wrap(
-                SessionMiddleware::builder(CookieSessionStore::default(), cookie_key.clone())
-                    .cookie_same_site(actix_web::cookie::SameSite::None)
-                    .cookie_secure(true)
-                    .cookie_http_only(true)
-                    .session_lifecycle(
-                        PersistentSession::default()
-                            .session_ttl_extension_policy(actix_session::config::TtlExtensionPolicy::OnStateChanges)
-                            .session_ttl(Duration::days(7)),
-                    )
-                    .build(),
+                SessionMiddleware::builder(
+                    SurrealSessionStore::from_connection(session_db.clone(), "sessions"),
+                    cookie_key.clone(),
+                )
+                .cookie_same_site(actix_web::cookie::SameSite::None)
+                .cookie_secure(true)
+                .cookie_http_only(true)
+                .session_lifecycle(
+                    PersistentSession::default()
+                        .session_ttl_extension_policy(actix_session::config::TtlExtensionPolicy::OnStateChanges)
+                        .session_ttl(Duration::days(7)),
+                )
+                .build(),
             )
             .wrap(cors)
             .app_data(json_config)
