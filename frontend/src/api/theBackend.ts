@@ -11,7 +11,7 @@ export function verifyEmail(email: string): boolean {
 
   return regex.test(email);
 }
-export async function loginAccount(username: string, password: string) {
+export async function loginAccount(email: string, password: string) {
   try {
     let result = await fetch("https://localhost:8080/login", {
       method: "POST",
@@ -20,7 +20,7 @@ export async function loginAccount(username: string, password: string) {
       },
       credentials: "include",
       body: JSON.stringify({
-        username: username,
+        email: email,
         password: password
       })
     });
@@ -52,7 +52,7 @@ export async function loginAccount(username: string, password: string) {
   }
 }
 export async function registerAccount(
-  username: string,
+  email: string,
   hashedPassword: string,
   personId: number,
   untisCredentialsEncrypted: string
@@ -65,7 +65,7 @@ export async function registerAccount(
       },
       credentials: "include",
       body: JSON.stringify({
-        username: username,
+        email: email,
         password: hashedPassword,
         person_id: personId,
         untis_cypher: untisCredentialsEncrypted

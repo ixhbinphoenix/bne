@@ -96,7 +96,7 @@ async fn main() -> io::Result<()> {
         // This is not ok
         let cors = Cors::default()
             .allowed_origin(if cfg!(debug_assertions) {
-                "https://localhost:3000"
+                "http://localhost:3000"
             } else {
                 "https://theschedule.de"
             })
