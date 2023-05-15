@@ -27,8 +27,6 @@ export default function Stundenplan(): JSX.Element {
     });
     const currentDay = document.getElementById("day" + getCurrentDay(currentMonday, currentFriday));
     currentDay?.classList.add("highlighted");
-    console.log(currentDay, getCurrentDay(currentMonday, currentFriday));
-
     const lessons = document.getElementsByClassName("lesson");
     Array.from(lessons).forEach((lesson) => {
       lesson.classList.remove("highlighted");
