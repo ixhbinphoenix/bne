@@ -18,13 +18,6 @@ export default function LoginForm(): JSX.Element {
   const handleSubmit = (event: any) => {
     event.preventDefault();
     sendLogin(event.target[0].value, event.target[1].value);
-    fetchJSessionId(localStorage.getItem("untis_username"), localStorage.getItem("untis_password")).then((result) => {
-      if (result.JSessionId && result.personId) {
-        document.cookie = `JSESSIONID=${result.JSessionId}; max-age=600; secure; samesite=none`;
-      } else {
-        alert(result.status);
-      }
-    });
   };
   const sendLogin = (username: string, password: string) => {
     const key = generateKey(password);
@@ -34,6 +27,7 @@ export default function LoginForm(): JSX.Element {
         saveUntisCredentials(untisCredentialsDecrypted.username, untisCredentialsDecrypted.password);
         fetchJSessionId(getLocalUntisCredentials().username, getLocalUntisCredentials().password).then((result) => {
           if (result.status == 200) {
+            document.cookie = `JSESSIONID=${result.JSessionId}; max-age=600; secure; samesite=none`;
             window.location.href = "/home";
           }
         });

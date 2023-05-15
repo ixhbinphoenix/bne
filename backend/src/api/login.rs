@@ -9,7 +9,6 @@ use crate::{
     database::surrealdb_repo::SurrealDBRepo, models::user_model::{User, UserCRUD}, prelude::*
 };
 
-
 #[derive(Deserialize)]
 pub struct LoginData {
     username: String,

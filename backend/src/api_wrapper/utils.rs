@@ -3,7 +3,6 @@ use serde::{Deserialize, Serialize};
 
 use super::untis_client::UntisClient;
 
-
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(untagged)]
 pub enum Parameter {
@@ -81,7 +80,7 @@ impl TimetableParameter {
                 show_subst_text: true,
                 show_ls_text: true,
                 show_ls_number: true,
-                show_studentgroup: false,
+                show_studentgroup: true,
                 klasse_fields: vec!["id".to_string(), "name".to_string(), "longname".to_string()],
                 room_fields: vec!["id".to_string(), "name".to_string(), "longname".to_string()],
                 subject_fields: vec!["id".to_string(), "name".to_string(), "longname".to_string()],
@@ -118,11 +117,18 @@ pub struct TimetableElement {
     pub key_type: String,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone)]
+#[derive(Serialize, Deserialize, Debug, Clone, UntisArrayResult)]
 pub struct Klasse {
     pub id: u16,
     pub name: String,
-    pub longname: String,
+    #[serde(default)]
+    pub longname: Option<String>,
+    #[serde(default)]
+    pub active: Option<bool>,
+    #[serde(default)]
+    pub teacher1: Option<u32>,
+    #[serde(default)]
+    pub teacher2: Option<u32>,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
@@ -173,6 +179,8 @@ pub struct PeriodObject {
     pub lstext: Option<String>,
     #[serde(default)]
     pub code: Option<String>,
+    #[serde(default)]
+    pub sg: Option<String>,
 }
 
 /// Subjects
