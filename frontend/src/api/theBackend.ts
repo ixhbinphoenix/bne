@@ -1,4 +1,9 @@
-import { getLocalUntisCredentials, fetchJSessionId, saveUntisCredentials } from "./untisAPI";
+import {
+  getLocalUntisCredentials,
+  fetchJSessionId,
+  saveUntisCredentials,
+  deleteLocalUntisCredentials
+} from "./untisAPI";
 import type { TheScheduleObject } from "./main";
 
 export function verifyPassword(password: string): boolean {
@@ -207,6 +212,7 @@ async function checkSessionId(): Promise<number> {
 }
 export async function verifySession() {
   if (getLocalUntisCredentials()) {
+    console.log(getLocalUntisCredentials());
     const status = await checkSessionId();
     return status == 200;
   } else {
@@ -325,14 +331,14 @@ export async function deleteAccount(password: string) {
   }
 }
 export function logoutHere() {
-  saveUntisCredentials("", "");
+  deleteLocalUntisCredentials();
   fetch("https://localhost:8080/logout_here", {
     method: "GET",
     credentials: "include"
   });
 }
 export function logoutEverywhere() {
-  saveUntisCredentials("", "");
+  deleteLocalUntisCredentials();
   fetch("https://localhost:8080/logout_everywhere", {
     method: "GET",
     credentials: "include"

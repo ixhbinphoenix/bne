@@ -30,12 +30,13 @@ export function saveUntisCredentials(username: string, password: string) {
   localStorage.setItem("untis_username", username);
   localStorage.setItem("untis_password", password);
 }
-export function getLocalUntisCredentials(): { username: string | null; password: string | null } {
+export function getLocalUntisCredentials(): { username: string; password: string } | null {
   const username = localStorage.getItem("untis_username");
   const password = localStorage.getItem("untis_password");
-  if (username && password) {
-    return { username: username, password: password };
-  } else {
-    return { username: null, password: null };
-  }
+
+  return username && password ? { username: username, password: password } : null;
+}
+export function deleteLocalUntisCredentials() {
+  localStorage.removeItem("untis_username");
+  localStorage.removeItem("untis_password");
 }

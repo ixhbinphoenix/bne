@@ -25,7 +25,7 @@ export default function LoginForm(): JSX.Element {
       if (result.status == 200) {
         const untisCredentialsDecrypted = JSON.parse(passwordDecrypt(key, result.cypher));
         saveUntisCredentials(untisCredentialsDecrypted.username, untisCredentialsDecrypted.password);
-        fetchJSessionId(getLocalUntisCredentials().username, getLocalUntisCredentials().password).then((result) => {
+        fetchJSessionId(untisCredentialsDecrypted.username, untisCredentialsDecrypted.password).then((result) => {
           if (result.status == 200) {
             document.cookie = `JSESSIONID=${result.JSessionId}; max-age=600; secure; samesite=none`;
             window.location.href = "/home";
