@@ -7,7 +7,6 @@ use serde::{Deserialize, Serialize};
 use super::response::Response;
 use crate::models::{model::DBConnection, user_model::User};
 
-
 #[derive(Deserialize)]
 pub struct LoginData {
     email: String,

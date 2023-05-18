@@ -1,6 +1,5 @@
 use std::{collections::HashMap, env};
 
-
 /// Returns HashMap of Enviroment variables
 fn get_envv() -> HashMap<String, String> {
     env::vars().map(|(key, value)| (key, value)).collect()

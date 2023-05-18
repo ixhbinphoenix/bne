@@ -1,12 +1,14 @@
 /* @jsxImportSource preact */
 
-import Plan from "./Plan";
+import Stundenplan from "./plan-components/Stundenplan";
+import Kontakt from "./plan-components/Kontakt";
+import Lernbuero from "./plan-components/Lernbueros";
 import { useState } from "preact/hooks";
 import type { JSX } from "preact";
 import "../styles/Sidebar.css";
 
 export default function Sidebar(): JSX.Element {
-  const [activePage, setActivePage] = useState("stundenplan");
+  const [activePage, setActivePage] = useState(<Stundenplan />);
 
   const highlightButton = (button: string) => {
     const buttons = document.getElementsByClassName("sidebar-element");
@@ -27,7 +29,7 @@ export default function Sidebar(): JSX.Element {
             class="sidebar-element active"
             id="stundenplan"
             onClick={() => {
-              setActivePage("stundenplan");
+              setActivePage(<Stundenplan />);
               highlightButton("stundenplan");
             }}>
             Stundenplan
@@ -36,7 +38,7 @@ export default function Sidebar(): JSX.Element {
             class="sidebar-element"
             id="lernbueros"
             onClick={() => {
-              setActivePage("lernbueros");
+              setActivePage(<Lernbuero />);
               highlightButton("lernbueros");
             }}>
             Lernbüros
@@ -45,7 +47,7 @@ export default function Sidebar(): JSX.Element {
             class="sidebar-element"
             id="fehler"
             onClick={() => {
-              setActivePage("fehler");
+              setActivePage(<p></p>);
               highlightButton("fehler");
             }}>
             Fehler
@@ -54,13 +56,13 @@ export default function Sidebar(): JSX.Element {
             class="sidebar-element"
             id="kontakt"
             onClick={() => {
-              setActivePage("kontakt");
+              setActivePage(<Kontakt />);
               highlightButton("kontakt");
             }}>
             Kontakt
           </button>
         </div>
-        <Plan activePage={activePage}></Plan>
+        {activePage}
       </div>
     </div>
   );

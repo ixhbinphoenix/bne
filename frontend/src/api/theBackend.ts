@@ -149,6 +149,51 @@ export async function getTimetable(
     };
   }
 }
+export async function getLernbueros(
+  monday: string,
+  friday: string
+): Promise<{ lessons?: TheScheduleObject[]; status: number; message?: string }> {
+  try {
+    const storedJSessionId = document.cookie.match("(^|;)\\s*" + "JSESSIONID" + "\\s*=\\s*([^;]+)")?.pop() || "";
+    if (!storedJSessionId) {
+      fetchJSessionId(localStorage.getItem("untis_username"), localStorage.getItem("untis_password")).then((result) => {
+        if (result.JSessionId) {
+          document.cookie = `JSESSIONID=${result.JSessionId}; max-age=600; secure; samesite=none`;
+        }
+      });
+    }
+    const searchQuery = `?from=${monday}&until=${friday}`;
+    let resultRaw = await fetch("https://localhost:8080/get_lernbueros" + searchQuery, {
+      method: "GET",
+      credentials: "include"
+    });
+    let resultClean = await resultRaw.json();
+    try {
+      if (resultClean.body.lessons) {
+        return {
+          lessons: resultClean.body.lessons,
+          status: 200,
+          message: undefined
+        };
+      }
+      return {
+        lessons: undefined,
+        status: resultClean.body.code,
+        message: resultClean.body.message
+      };
+    } catch {
+      return {
+        status: 400,
+        message: "Bad Request"
+      };
+    }
+  } catch {
+    return {
+      status: 500,
+      message: "Server connection failed"
+    };
+  }
+}
 async function checkSessionId(): Promise<number> {
   try {
     let result = await fetch("https://localhost:8080/check_session", {
