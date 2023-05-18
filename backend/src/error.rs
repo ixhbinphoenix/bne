@@ -10,29 +10,14 @@ pub enum Error {
     #[error("Fail to get Ctx")]
     CtxFail,
 
-    #[error("Value not of type '{0}'")]
-    XValueNotOfType(&'static str),
-
-    #[error("Property '{0}' not found")]
-    XPropertyNotFound(String),
-
-    #[error("Fail to create. Cause: {0}")]
-    StoreFailToCreate(String),
-
-    #[error("Object with identifier {0} not found")]
-    ObjectNotFound(String),
-
-    #[error("Object conversion failed at property {0}")]
-    ConversionError(String),
-
     #[error("Fetching from Untis failed")]
     UntisError,
 
     #[error(transparent)]
-    Password(#[from] PasswordError),
+    Surreal(#[from] surrealdb::Error),
 
     #[error(transparent)]
-    Surreal(#[from] surrealdb::Error),
+    Password(#[from] PasswordError),
 
     #[error(transparent)]
     IO(#[from] std::io::Error),
@@ -41,7 +26,6 @@ pub enum Error {
 impl ResponseError for Error {
     fn status_code(&self) -> StatusCode {
         match self {
-            Self::ObjectNotFound(_) => StatusCode::from_u16(404).expect("404 is an invalid status code now?"),
             Self::Password(_) => StatusCode::from_u16(403).expect("403 is an invalid status code now?"),
             _ => StatusCode::from_u16(500).expect("500 is an invalid status code now?"),
         }
@@ -52,6 +36,7 @@ impl ResponseError for Error {
         match code {
             StatusCode::NOT_FOUND => HttpResponse::NotFound().body(format!("404 Not Found\n{self}")),
             StatusCode::FORBIDDEN => HttpResponse::Forbidden().body(format!("403 Forbidden\n{self}")),
+            StatusCode::CONFLICT => HttpResponse::Conflict().body(format!("409 Conflict\n{self}")),
             StatusCode::INTERNAL_SERVER_ERROR => {
                 HttpResponse::InternalServerError().body(format!("500 Internal Server Error\n{self}"))
             }

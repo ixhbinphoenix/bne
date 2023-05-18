@@ -1,12 +1,15 @@
 use actix_identity::Identity;
 use actix_web::{web, HttpRequest, Responder, Result};
-use log::error;
+use log::{debug, error};
 use serde::{Deserialize, Serialize};
+use surrealdb::sql::Thing;
 
 use crate::{
     api::response::Response, api_wrapper::{
         untis_client::UntisClient, utils::{FormattedLesson, TimetableParameter}
-    }, database::surrealdb_repo::SurrealDBRepo, models::user_model::{User, UserCRUD}, prelude::Error, utils::time::{format_for_untis, get_this_friday, get_this_monday}, GlobalUntisData
+    }, models::{
+        model::{DBConnection, CRUD}, user_model::User
+    }, prelude::Error, utils::time::{format_for_untis, get_this_friday, get_this_monday}, GlobalUntisData
 };
 
 #[derive(Serialize)]
@@ -22,7 +25,7 @@ pub struct TimetableQuery {
 
 pub async fn get_timetable(
     id: Option<Identity>, query: web::Query<TimetableQuery>, req: HttpRequest, untis_data: web::Data<GlobalUntisData>,
-    db: web::Data<SurrealDBRepo>,
+    db: web::Data<DBConnection>,
 ) -> Result<impl Responder> {
     if id.is_none() {
         return Ok(web::Json(Response::new_error(403, "Not logged in".to_string())));
@@ -35,19 +38,37 @@ pub async fn get_timetable(
         session_cookie.unwrap().value().to_string()
     };
 
-    let user: User = UserCRUD::get_from_id(
+    let pot_user: Option<User> = User::get_from_id(
         db,
         match id.unwrap().id() {
-            Ok(i) => i,
+            Ok(i) => {
+                let split = i.split_once(':');
+                if split.is_some() {
+                    Thing::from(split.unwrap())
+                } else {
+                    error!("ID in session_cookie is wrong???");
+                    return Ok(Response::new_error(500, "There was an error trying to get your id".to_string()).into());
+                }
+            }
             Err(e) => {
                 error!("Error getting Identity id\n{e}");
                 return Ok(Response::new_error(500, "There was an error trying to get your id".to_string()).into());
             }
-        }
-        .as_str(),
+        },
     )
-    .await?
-    .try_into()?;
+    .await?;
+
+    let user = match pot_user {
+        Some(u) => u,
+        None => {
+            // This can be currently reached since we still use the CookieSessionStore, meaning we
+            // can't invalidate sessions if we delete accounts. However, we can still delete them
+            // straight from the database and if that happens without them logging out, this
+            // happens
+            debug!("Deleted(?) User tried to log in with old session token");
+            return Ok(Response::new_error(404, "This account doesn't exist!".to_string()).into());
+        }
+    };
 
     let untis = match UntisClient::unsafe_init(
         jsessionid,
