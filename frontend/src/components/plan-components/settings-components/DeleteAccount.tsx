@@ -13,7 +13,7 @@ export default function DeleteAccount(): JSX.Element {
     <div class="new-password-content">
       <div class="form-container">
         <h2>
-          Wenn du deine Account löschst, <br />
+          Wenn du deinen Account löschst, <br />
           kannst du ihn nicht wiederherstellen
         </h2>
         <form onSubmit={sendDeleteAccount} autocomplete="on">
