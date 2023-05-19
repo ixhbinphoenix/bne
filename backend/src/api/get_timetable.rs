@@ -61,10 +61,6 @@ pub async fn get_timetable(
     let user = match pot_user {
         Some(u) => u,
         None => {
-            // This can be currently reached since we still use the CookieSessionStore, meaning we
-            // can't invalidate sessions if we delete accounts. However, we can still delete them
-            // straight from the database and if that happens without them logging out, this
-            // happens
             debug!("Deleted(?) User tried to log in with old session token");
             return Ok(Response::new_error(404, "This account doesn't exist!".to_string()).into());
         }
