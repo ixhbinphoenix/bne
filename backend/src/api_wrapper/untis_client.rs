@@ -230,7 +230,7 @@ impl UntisClient {
                 let mut subject = "".to_string();
                 let mut subject_short = "".to_string();
 
-                if lesson.su.len() > 0 {
+                if !lesson.su.is_empty() {
                     subject = lesson.su[0].name.to_owned();
                     subject_short = lesson.su[0].name.to_owned();
                     subject_short = subject_short.split(' ').collect::<Vec<&str>>()[0].to_owned();
@@ -380,7 +380,7 @@ impl UntisClient {
                         None
                     },
                 };
-                formatted_lesson.is_lb = formatted_lesson.length == 1 && is_exam == false;
+                formatted_lesson.is_lb = formatted_lesson.length == 1 && !is_exam;
                 if formatted_lesson.length > 1 && !lesson.su.is_empty() {
                     skip.insert(lesson.su[0].id, formatted_lesson.length - 1);
                 }
@@ -415,9 +415,9 @@ impl UntisClient {
         let q1_lessons = self.get_timetable(q1_parameter).await?;
         let q2_lessons = self.get_timetable(q2_parameter).await?;
 
-        let ef_lbs: Vec<FormattedLesson> = ef_lessons.into_iter().filter(|lesson| lesson.is_lb == true).collect();
-        let mut q1_lbs: Vec<FormattedLesson> = q1_lessons.into_iter().filter(|lesson| lesson.is_lb == true).collect();
-        let mut q2_lbs: Vec<FormattedLesson> = q2_lessons.into_iter().filter(|lesson| lesson.is_lb == true).collect();
+        let ef_lbs: Vec<FormattedLesson> = ef_lessons.into_iter().filter(|lesson| lesson.is_lb).collect();
+        let mut q1_lbs: Vec<FormattedLesson> = q1_lessons.into_iter().filter(|lesson| lesson.is_lb).collect();
+        let mut q2_lbs: Vec<FormattedLesson> = q2_lessons.into_iter().filter(|lesson| lesson.is_lb).collect();
 
         let holidays = self
             .get_period_holidays(
