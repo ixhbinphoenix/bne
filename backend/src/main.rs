@@ -128,7 +128,7 @@ async fn main() -> io::Result<()> {
                     SurrealSessionStore::from_connection(session_db.clone(), "sessions"),
                     cookie_key.clone(),
                 )
-                .cookie_same_site(actix_web::cookie::SameSite::Strict)
+                .cookie_same_site(actix_web::cookie::SameSite::None)
                 .cookie_secure(true)
                 .cookie_http_only(true)
                 .session_lifecycle(
