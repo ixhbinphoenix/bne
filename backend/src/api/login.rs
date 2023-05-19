@@ -19,18 +19,15 @@ pub struct LoginResponse {
 }
 
 pub async fn login_post(
-    data: web::Json<LoginData>, db: web::Data<DBConnection>, req: HttpRequest, id: Option<Identity>,
+    data: web::Json<LoginData>, db: web::Data<DBConnection>, req: HttpRequest,
 ) -> Result<impl Responder> {
-    if id.is_some() {
-        return Ok(web::Json(Response::new_error(403, "Already logged in! Log out first".to_owned())));
-    }
     let db_user: User = {
         // Very readable yes yes. Suprisingly clippy doesn't have a Problem with this
         match match User::get_from_email(db, data.email.clone()).await {
             Ok(n) => n,
             Err(e) => {
                 error!("Unknown error occured when trying to get user.\n{}", e);
-                return Ok(Response::new_error(500, "Internal Server Error".to_owned()).into());
+                return Ok(web::Json(Response::new_error(500, "Internal Server Error".to_owned())));
             }
         } {
             Some(u) => u,
