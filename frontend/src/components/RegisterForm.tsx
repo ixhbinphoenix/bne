@@ -9,10 +9,8 @@ import { generateKey, passwordEncrypt } from "../api/encryption";
 
 export default function LoginForm(): JSX.Element {
   useEffect(() => {
-    verifySession().then((session) => {
-      if (session) {
-        window.location.href = "/stundenplan";
-      }
+    verifySession().catch(() => {
+      window.location.href = "/stundenplan";
     });
   }, []);
   const handleSubmit = (event: any) => {
@@ -42,10 +40,8 @@ export default function LoginForm(): JSX.Element {
     const untisCredentials = JSON.stringify({ username: untisUsername, password: untisPassword });
     const untisCredentialsEncrtypted = passwordEncrypt(key, untisCredentials).toString();
 
-    registerAccount(username, password, personId, untisCredentialsEncrtypted).then((result) => {
-      if (result.status == "200 OK") {
-        window.location.href = "/home";
-      }
+    registerAccount(username, password, personId, untisCredentialsEncrtypted).then(() => {
+      window.location.href = "/home";
     });
   };
   return (

@@ -1,29 +1,21 @@
 export async function fetchJSessionId(
   username: string | null,
   password: string | null
-): Promise<{ status: number; JSessionId: string | null; personId: number | null }> {
-  let resultRaw = await fetch("https://borys.webuntis.com/WebUntis/jsonrpc.do?school=ges-münster", {
-    method: "POST",
-    body: JSON.stringify({
-      id: "theSchedule",
-      method: "authenticate",
-      params: { user: username, password: password, client: "theSchedule" },
-      jsonrpc: "2.0"
-    })
-  });
-  let resultClean = await resultRaw.json();
+): Promise<{ JSessionId: string; personId: number } | any> {
   try {
-    return {
-      status: 200,
-      JSessionId: resultClean.result.sessionId,
-      personId: resultClean.result.personId
-    };
-  } catch {
-    return {
-      status: 401,
-      JSessionId: null,
-      personId: null
-    };
+    let resultRaw = await fetch("https://borys.webuntis.com/WebUntis/jsonrpc.do?school=ges-münster", {
+      method: "POST",
+      body: JSON.stringify({
+        id: "theSchedule",
+        method: "authenticate",
+        params: { user: username, password: password, client: "theSchedule" },
+        jsonrpc: "2.0"
+      })
+    });
+    let resultClean = await resultRaw.json();
+    return { JSessionId: resultClean.sessionId, personId: resultClean.personId };
+  } catch (error) {
+    return Promise.reject(error);
   }
 }
 export function saveUntisCredentials(username: string, password: string) {

@@ -6,113 +6,89 @@ import {
 } from "./untisAPI";
 import type { TheScheduleObject } from "./main";
 
-export function verifyPassword(password: string): boolean {
-  const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^a-zA-Z\d]).{8,}$/;
+class Request {
+  //class to handle primitive requests
 
-  return regex.test(password);
+  public static async Post(path: string, data: object): Promise<any> {
+    try {
+      let result = await fetch("https://localhost:8080/" + path, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        credentials: "include",
+        body: JSON.stringify(data)
+      });
+      if (!result.body) {
+        return Promise.reject({ status: 500, message: "Server Connection Failed" });
+      }
+      let stream = await Request.readStream(result.body);
+      let body = JSON.parse(stream);
+      if (!body.success) {
+        return Promise.reject(body.body);
+      }
+      return body.body;
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  }
+  public static async Get(path: string): Promise<any> {
+    try {
+      let result = await fetch("https://localhost:8080/" + path, {
+        method: "GET",
+        credentials: "include"
+      });
+      const body = await result.json();
+      if (!body.success) {
+        return Promise.reject(body.body);
+      }
+      return body.body;
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  }
+  static async readStream(stream: ReadableStream<Uint8Array>) {
+    const textDecode = new TextDecoder();
+    const chunks = [];
+    const reader = stream.getReader();
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) {
+        break;
+      }
+      chunks.push(textDecode.decode(value));
+    }
+    return chunks.join("");
+  }
 }
-export function verifyEmail(email: string): boolean {
-  const regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
-  return regex.test(email);
-}
 export async function loginAccount(email: string, password: string) {
   try {
-    let result = await fetch("https://localhost:8080/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      credentials: "include",
-      body: JSON.stringify({
-        email: email,
-        password: password
-      })
-    });
-    if (!result.body) {
-      return {
-        status: 400,
-        message: "No result body found"
-      };
-    }
-    let body: ReadableStream<Uint8Array> = await result.body;
-    let stream = await readStream(body);
-    let cleanBody = JSON.parse(stream);
-    if (cleanBody.success) {
-      return {
-        status: 200,
-        cypher: cleanBody.body.untis_cypher
-      };
-    } else {
-      return {
-        status: 403,
-        message: cleanBody.body.message
-      };
-    }
+    const result = await Request.Post("login", { email: email, password: password });
+    return result.untis_cypher;
   } catch (error) {
-    return {
-      status: 500,
-      message: "Server connection failed"
-    };
+    return Promise.reject(error);
   }
 }
 export async function registerAccount(
   email: string,
-  hashedPassword: string,
+  password: string,
   personId: number,
   untisCredentialsEncrypted: string
 ) {
   try {
-    let result = await fetch("https://localhost:8080/register", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      credentials: "include",
-      body: JSON.stringify({
-        email: email,
-        password: hashedPassword,
-        person_id: personId,
-        untis_cypher: untisCredentialsEncrypted
-      })
+    const result = await Request.Post("register", {
+      email: email,
+      password: password,
+      person_id: personId,
+      untis_cypher: untisCredentialsEncrypted
     });
-    if (!result.body) {
-      return {
-        status: 400,
-        message: "No result body found"
-      };
-    }
-    let body: ReadableStream<Uint8Array> = await result.body;
-    let stream = await readStream(body);
-    let requestResult = stream.split("\n");
-    return {
-      status: requestResult[0],
-      message: requestResult[1]
-    };
-  } catch {
-    return {
-      status: 500,
-      message: "Server connection failed"
-    };
+    return Promise.resolve();
+  } catch (error) {
+    return Promise.reject(error);
   }
 }
-async function readStream(stream: ReadableStream<Uint8Array>) {
-  const textDecode = new TextDecoder();
-  const chunks = [];
-  const reader = stream.getReader();
-  while (true) {
-    const { done, value } = await reader.read();
-    if (done) {
-      break;
-    }
-    chunks.push(textDecode.decode(value));
-  }
-  return chunks.join("");
-}
-export async function getTimetable(
-  monday: string,
-  friday: string
-): Promise<{ lessons?: TheScheduleObject[]; status: number; message?: string }> {
+export async function getTimetable(monday: string, friday: string): Promise<TheScheduleObject[] | any> {
   try {
     const storedJSessionId = document.cookie.match("(^|;)\\s*" + "JSESSIONID" + "\\s*=\\s*([^;]+)")?.pop() || "";
     if (!storedJSessionId) {
@@ -123,41 +99,13 @@ export async function getTimetable(
       });
     }
     const searchQuery = `?from=${monday}&until=${friday}`;
-    let resultRaw = await fetch("https://localhost:8080/get_timetable" + searchQuery, {
-      method: "GET",
-      credentials: "include"
-    });
-    let resultClean = await resultRaw.json();
-    try {
-      if (resultClean.body.lessons) {
-        return {
-          lessons: resultClean.body.lessons,
-          status: 200,
-          message: undefined
-        };
-      }
-      return {
-        lessons: undefined,
-        status: resultClean.body.code,
-        message: resultClean.body.message
-      };
-    } catch {
-      return {
-        status: 400,
-        message: "Bad Request"
-      };
-    }
-  } catch {
-    return {
-      status: 500,
-      message: "Server connection failed"
-    };
+    let body = await Request.Get("get_timetable" + searchQuery);
+    return body.lessons;
+  } catch (error) {
+    return Promise.reject(error);
   }
 }
-export async function getLernbueros(
-  monday: string,
-  friday: string
-): Promise<{ lessons?: TheScheduleObject[]; status: number; message?: string }> {
+export async function getLernbueros(monday: string, friday: string): Promise<any> {
   try {
     const storedJSessionId = document.cookie.match("(^|;)\\s*" + "JSESSIONID" + "\\s*=\\s*([^;]+)")?.pop() || "";
     if (!storedJSessionId) {
@@ -168,55 +116,28 @@ export async function getLernbueros(
       });
     }
     const searchQuery = `?from=${monday}&until=${friday}`;
-    let resultRaw = await fetch("https://localhost:8080/get_lernbueros" + searchQuery, {
-      method: "GET",
-      credentials: "include"
-    });
-    let resultClean = await resultRaw.json();
-    try {
-      if (resultClean.body.lessons) {
-        return {
-          lessons: resultClean.body.lessons,
-          status: 200,
-          message: undefined
-        };
-      }
-      return {
-        lessons: undefined,
-        status: resultClean.body.code,
-        message: resultClean.body.message
-      };
-    } catch {
-      return {
-        status: 400,
-        message: "Bad Request"
-      };
-    }
-  } catch {
-    return {
-      status: 500,
-      message: "Server connection failed"
-    };
+    let body = await Request.Get("get_lernbueros" + searchQuery);
+    return body.lessons;
+  } catch (error) {
+    return Promise.reject(error);
   }
 }
-async function checkSessionId(): Promise<number> {
+async function checkSessionId(): Promise<any> {
   try {
-    let result = await fetch("https://localhost:8080/check_session", {
-      method: "GET",
-      credentials: "include"
-    });
-    return result.status;
-  } catch {
-    return 500;
+    let result = await Request.Get("check_session");
+    return result;
+  } catch (error) {
+    return Promise.reject(error);
   }
 }
 export async function verifySession() {
-  if (getLocalUntisCredentials()) {
-    console.log(getLocalUntisCredentials());
-    const status = await checkSessionId();
-    return status == 200;
-  } else {
-    return false;
+  try {
+    if (getLocalUntisCredentials()) {
+      await checkSessionId();
+      return Promise.resolve();
+    }
+  } catch (error) {
+    return Promise.reject(error);
   }
 }
 export async function changePassword(currentPassword: string, newPassword: string) {
@@ -291,7 +212,7 @@ export async function changeUntisData(password: string, personId: number, untisC
         message: "No result body found"
       };
     }
-    let body: ReadableStream<Uint8Array> = await result.body;
+    let body: ReadableStream<Uint8Array> = result.body;
     let stream = await readStream(body);
     let requestResult = stream.split("\n");
     return {
