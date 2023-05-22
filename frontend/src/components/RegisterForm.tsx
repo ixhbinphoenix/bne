@@ -9,8 +9,8 @@ import { generateKey, passwordEncrypt } from "../api/encryption";
 
 export default function LoginForm(): JSX.Element {
   useEffect(() => {
-    verifySession().catch(() => {
-      window.location.href = "/stundenplan";
+    verifySession().then(() => {
+      window.location.href = "/home";
     });
   }, []);
   const handleSubmit = (event: any) => {
@@ -27,6 +27,8 @@ export default function LoginForm(): JSX.Element {
           event.target[3].value
         );
       }
+    }, (error) => {
+      console.error(error)
     });
   };
   const sendRegister = (

@@ -132,10 +132,9 @@ async function checkSessionId(): Promise<any> {
 }
 export async function verifySession() {
   try {
-    if (getLocalUntisCredentials()) {
+      getLocalUntisCredentials();
       await checkSessionId();
       return Promise.resolve();
-    }
   } catch (error) {
     return Promise.reject(error);
   }

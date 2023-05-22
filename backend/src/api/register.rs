@@ -1,11 +1,12 @@
 use actix_identity::Identity;
-use actix_web::{web, HttpMessage, HttpRequest, HttpResponse, Responder, Result};
+use actix_web::{web, HttpMessage, HttpRequest, Responder, Result};
 use argon2::{password_hash::SaltString, Argon2, PasswordHasher};
 use log::error;
 use rand_core::OsRng;
 use serde::Deserialize;
 
 use crate::{
+    api::response::Response,
     models::{
         model::{DBConnection, CRUD}, user_model::{User, UserCreate}
     }, prelude::Error, utils::password::valid_password
@@ -25,7 +26,7 @@ pub async fn register_post(
     // TODO: Email validation
     let pot_user = User::get_from_email(db.clone(), data.email.clone()).await;
     if pot_user.is_ok() && pot_user.unwrap().is_some() {
-        return Ok(HttpResponse::Forbidden().body("403 Forbidden\nE-mail already associated to account!".to_string()));
+        return Ok(web::Json(Response::new_error(403,"E-mail already associated to account!".to_string())));
     }
     if let Err(e) = valid_password(&data.password) {
         return Err(Error::from(e).try_into()?);
@@ -38,8 +39,7 @@ pub async fn register_post(
         Ok(str) => str.to_string(),
         Err(e) => {
             error!("Error: Unknown error trying to hash password\n{}", e);
-            return Ok(HttpResponse::Forbidden()
-                .body("500 Internal Server Error\nUnknown error trying to hash password".to_string()));
+            return Ok(Response::new_error(500, "Unknown error trying to hash password".to_string()).into())
         }
     };
 
@@ -59,10 +59,9 @@ pub async fn register_post(
         Ok(_) => {}
         Err(e) => {
             error!("Error trying to log into Identity\n{}", e);
-            return Ok(HttpResponse::InternalServerError()
-                .body("500 Internal Server Error\nError trying to login, please retry".to_string()));
+            return Ok(Response::new_error(500, "Error trying to login, please retry".to_string()).into());
         }
     };
 
-    Ok(HttpResponse::Ok().body("200 OK".to_string()))
+    return Ok(Response::new_success("Account successfully registered".to_string()).into())
 }
