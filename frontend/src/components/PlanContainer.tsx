@@ -1,12 +1,15 @@
 /* @jsxImportSource preact */
 
-import Stundenplan from "./plan-components/Stundenplan";
-import Kontakt from "./plan-components/Kontakt";
-import Lernbuero from "./plan-components/Lernbueros";
-import Settings from "./plan-components/Settings";
 import { useState } from "preact/hooks";
 import type { JSX } from "preact";
 import "../styles/Sidebar.css";
+import { lazy, Suspense } from "preact/compat";
+import Loading from "./Loading";
+
+const Stundenplan = lazy(() => import("./plan-components/Stundenplan"))
+const Lernbuero = lazy(() => import("./plan-components/Lernbueros"));
+const Kontakt = lazy(() => import("./plan-components/Kontakt"));
+const Settings = lazy(() => import("./plan-components/Settings"));
 
 export default function Sidebar(): JSX.Element {
   const [activePage, setActivePage] = useState(<Stundenplan />);
@@ -63,7 +66,9 @@ export default function Sidebar(): JSX.Element {
             Kontakt
           </button>
         </div>
-        {activePage}
+        <Suspense fallback={<Loading />}>
+          {activePage}
+        </Suspense>
       </div>
     </div>
   );
