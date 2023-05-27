@@ -22,8 +22,12 @@ const { title } = Astro.props;
     <slot />
   </body>
   <style is:global>
+    :root {
+      --heading-gradient: linear-gradient(90deg, rgb(200, 162, 246) 0%, rgb(237, 135, 150) 50%, rgb(238, 212, 159) 100%);
+    }
+
     ::selection {
-      background: #151723;
+      background: #1a1d2f;
       color: #b8c0e0;
     }
   </style>
