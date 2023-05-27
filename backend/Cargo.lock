@@ -194,9 +194,9 @@ dependencies = [
 
 [[package]]
 name = "actix-session-surrealdb"
-version = "0.1.1"
+version = "0.1.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6f4f37e692f966a3b47732a238c63f32e014a562bc3e59fc20373d399dcc56ff"
+checksum = "4b491c329a6b5d87cd1e5bc8572f4d825671278f6048e242bcfa3bfcf8bba54c"
 dependencies = [
  "actix-session",
  "actix-web",
