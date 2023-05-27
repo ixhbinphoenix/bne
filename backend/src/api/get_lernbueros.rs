@@ -1,13 +1,15 @@
 use actix_identity::Identity;
 use actix_web::{web, HttpRequest, Responder, Result};
-use log::{error, debug};
+use log::{debug, error};
 use serde::{Deserialize, Serialize};
 use surrealdb::sql::Thing;
 
 use crate::{
     api::response::Response, api_wrapper::{
         untis_client::UntisClient, utils::{FormattedLesson, TimetableParameter}
-    }, models::{user_model::User, model::{CRUD, DBConnection}}, prelude::Error, utils::time::{format_for_untis, get_this_friday, get_this_monday}, GlobalUntisData
+    }, models::{
+        model::{DBConnection, CRUD}, user_model::User
+    }, prelude::Error, utils::time::{format_for_untis, get_this_friday, get_this_monday}, GlobalUntisData
 };
 
 #[derive(Serialize)]

@@ -12,14 +12,14 @@ use std::{
 };
 
 use actix_cors::Cors;
-use actix_identity::{IdentityMiddleware, config::LogoutBehaviour};
+use actix_identity::{config::LogoutBehaviour, IdentityMiddleware};
 use actix_session::{config::PersistentSession, SessionMiddleware};
 use actix_session_surrealdb::SurrealSessionStore;
 use actix_web::{
     cookie::{time::Duration, Key}, middleware::Logger, web::{self, Data}, App, HttpResponse, HttpServer
 };
 use api::{
-    check_session::check_session_get, get_lernbueros::get_lernbueros, get_timetable::get_timetable, login::login_post, logout::logout_post, register::register_post
+    check_session::check_session_get, get_lernbueros::get_lernbueros, get_timetable::get_timetable, login::login_post, logout::logout_post, logout_all::logout_all_post, register::register_post
 };
 use dotenv::dotenv;
 use log::info;
@@ -121,9 +121,7 @@ async fn main() -> io::Result<()> {
             .max_age(3600);
 
         App::new()
-            .wrap(IdentityMiddleware::builder()
-                  .logout_behaviour(LogoutBehaviour::PurgeSession)
-                  .build())
+            .wrap(IdentityMiddleware::builder().logout_behaviour(LogoutBehaviour::PurgeSession).build())
             .wrap(logger)
             .wrap(
                 SessionMiddleware::builder(
@@ -147,6 +145,7 @@ async fn main() -> io::Result<()> {
             .service(web::resource("/register").route(web::post().to(register_post)))
             .service(web::resource("/login").route(web::post().to(login_post)))
             .service(web::resource("/logout").route(web::post().to(logout_post)))
+            .service(web::resource("/logout_all").route(web::post().to(logout_all_post)))
             .service(web::resource("/check_session").route(web::get().to(check_session_get)))
             .service(web::resource("/get_timetable").route(web::get().to(get_timetable)))
             .service(web::resource("/get_lernbueros").route(web::get().to(get_lernbueros)))

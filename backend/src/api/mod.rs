@@ -3,5 +3,6 @@ pub mod get_lernbueros;
 pub mod get_timetable;
 pub mod login;
 pub mod logout;
+pub mod logout_all;
 pub mod register;
 pub mod response;
