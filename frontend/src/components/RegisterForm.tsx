@@ -16,20 +16,23 @@ export default function LoginForm(): JSX.Element {
   const handleSubmit = (event: any) => {
     event.preventDefault();
     saveUntisCredentials(event.target[2].value, event.target[3].value);
-    fetchJSessionId(event.target[2].value, event.target[3].value).then((result) => {
-      if (result.JSessionId && result.personId) {
-        document.cookie = `JSESSIONID=${result.JSessionId}; max-age=600; secure; samesite=none`;
-        sendRegister(
-          event.target[0].value,
-          event.target[1].value,
-          result.personId,
-          event.target[2].value,
-          event.target[3].value
-        );
+    fetchJSessionId(event.target[2].value, event.target[3].value).then(
+      (result) => {
+        if (result.JSessionId && result.personId) {
+          document.cookie = `JSESSIONID=${result.JSessionId}; max-age=600; secure; samesite=none`;
+          sendRegister(
+            event.target[0].value,
+            event.target[1].value,
+            result.personId,
+            event.target[2].value,
+            event.target[3].value
+          );
+        }
+      },
+      (error) => {
+        console.error(error);
       }
-    }, (error) => {
-      console.error(error)
-    });
+    );
   };
   const sendRegister = (
     username: string,
