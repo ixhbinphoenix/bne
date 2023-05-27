@@ -13,6 +13,7 @@ Wir erlauben Ihnen unsere Dienste zu nutzen, sowie unseren Quellcode zu verände
 #### Verwaltung von Untis-Daten
 
 Wenn Sie diese Nutzungsbedingungen akzeptieren, stimmen Sie zu, dass wir Ihre Untis-Nutzerdaten speichern und verwenden dürfen.
+Damit erhalten wir ebenfalls den Zugriff auf Ihren Untis Account.
 Wir tun das ausschließlich um Ihnen unsere Dienste anbieten zu können und geben Ihre Daten niemals an Dritte, abgesehen von der Untis GmbH, weiter. 
 
 Desweiteren liegen Ihre Zugangsdaten auf unseren Systemen unter keinen Umständen im Klartext vor, sondern sind zu jeder Zeit verschlüsselt, sodass selbst wir sie aus unseren Systemen nicht auslesen können. Wenn Sie mehr über den Umgang mit Ihren Daten erfahren möchten, können Sie sich unser [Sicherheitskonzept](sicherheit) 
