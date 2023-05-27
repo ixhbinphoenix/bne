@@ -1,10 +1,11 @@
 /* @jsxImportSource preact */
 
-import { useState } from "preact/hooks";
+import { useEffect, useState } from "preact/hooks";
 import type { JSX } from "preact";
 import "../styles/Sidebar.css";
 import { lazy, Suspense } from "preact/compat";
 import Loading from "./Loading";
+
 
 const Stundenplan = lazy(() => import("./plan-components/Stundenplan"));
 const Lernbuero = lazy(() => import("./plan-components/Lernbueros"));
@@ -12,7 +13,11 @@ const Kontakt = lazy(() => import("./plan-components/Kontakt"));
 const Settings = lazy(() => import("./plan-components/Settings"));
 
 export default function Sidebar(): JSX.Element {
-  const [activePage, setActivePage] = useState(<Stundenplan />);
+  const [activePage, setActivePage] = useState<JSX.Element>();
+
+  useEffect(() => {
+    setActivePage(<Stundenplan />);
+  }, [])
 
   const highlightButton = (button: string) => {
     const buttons = document.getElementsByClassName("sidebar-element");
