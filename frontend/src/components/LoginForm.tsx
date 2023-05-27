@@ -4,15 +4,13 @@ import "../styles/LoginForm.scss";
 import type { JSX } from "preact";
 import { useEffect } from "preact/hooks";
 import { loginAccount, verifySession } from "../api/theBackend";
-import { fetchJSessionId, getLocalUntisCredentials, saveUntisCredentials } from "../api/untisAPI";
+import { fetchJSessionId, saveUntisCredentials } from "../api/untisAPI";
 import { generateKey, passwordDecrypt } from "../api/encryption";
 
 export default function LoginForm(): JSX.Element {
   useEffect(() => {
-    verifySession().then((session) => {
-      if (session) {
-        window.location.href = "/home";
-      }
+    verifySession().then(() => {
+      window.location.href = "/home";
     });
   }, []);
   const handleSubmit = (event: any) => {
@@ -21,17 +19,13 @@ export default function LoginForm(): JSX.Element {
   };
   const sendLogin = (username: string, password: string) => {
     const key = generateKey(password);
-    loginAccount(username, password).then((result) => {
-      if (result.status == 200) {
-        const untisCredentialsDecrypted = JSON.parse(passwordDecrypt(key, result.cypher));
-        saveUntisCredentials(untisCredentialsDecrypted.username, untisCredentialsDecrypted.password);
-        fetchJSessionId(untisCredentialsDecrypted.username, untisCredentialsDecrypted.password).then((result) => {
-          if (result.status == 200) {
-            document.cookie = `JSESSIONID=${result.JSessionId}; max-age=600; secure; samesite=none`;
-            window.location.href = "/home";
-          }
-        });
-      }
+    loginAccount(username, password).then((cypher) => {
+      const untisCredentialsDecrypted = JSON.parse(passwordDecrypt(key, cypher));
+      saveUntisCredentials(untisCredentialsDecrypted.username, untisCredentialsDecrypted.password);
+      fetchJSessionId(untisCredentialsDecrypted.username, untisCredentialsDecrypted.password).then((result) => {
+        document.cookie = `JSESSIONID=${result.JSessionId}; max-age=600; secure; samesite=none`;
+        window.location.href = "/home";
+      });
     });
   };
   return (

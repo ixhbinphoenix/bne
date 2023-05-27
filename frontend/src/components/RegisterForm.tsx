@@ -9,27 +9,30 @@ import { generateKey, passwordEncrypt } from "../api/encryption";
 
 export default function LoginForm(): JSX.Element {
   useEffect(() => {
-    verifySession().then((session) => {
-      if (session) {
-        window.location.href = "/stundenplan";
-      }
+    verifySession().then(() => {
+      window.location.href = "/home";
     });
   }, []);
   const handleSubmit = (event: any) => {
     event.preventDefault();
     saveUntisCredentials(event.target[2].value, event.target[3].value);
-    fetchJSessionId(event.target[2].value, event.target[3].value).then((result) => {
-      if (result.JSessionId && result.personId) {
-        document.cookie = `JSESSIONID=${result.JSessionId}; max-age=600; secure; samesite=none`;
-        sendRegister(
-          event.target[0].value,
-          event.target[1].value,
-          result.personId,
-          event.target[2].value,
-          event.target[3].value
-        );
+    fetchJSessionId(event.target[2].value, event.target[3].value).then(
+      (result) => {
+        if (result.JSessionId && result.personId) {
+          document.cookie = `JSESSIONID=${result.JSessionId}; max-age=600; secure; samesite=none`;
+          sendRegister(
+            event.target[0].value,
+            event.target[1].value,
+            result.personId,
+            event.target[2].value,
+            event.target[3].value
+          );
+        }
+      },
+      (error) => {
+        console.error(error);
       }
-    });
+    );
   };
   const sendRegister = (
     username: string,
@@ -42,10 +45,8 @@ export default function LoginForm(): JSX.Element {
     const untisCredentials = JSON.stringify({ username: untisUsername, password: untisPassword });
     const untisCredentialsEncrtypted = passwordEncrypt(key, untisCredentials).toString();
 
-    registerAccount(username, password, personId, untisCredentialsEncrtypted).then((result) => {
-      if (result.status == "200 OK") {
-        window.location.href = "/home";
-      }
+    registerAccount(username, password, personId, untisCredentialsEncrtypted).then(() => {
+      window.location.href = "/home";
     });
   };
   return (
