@@ -20,7 +20,7 @@ export default function ChangeUntisData(): JSX.Element {
     });
   };
   return (
-    <div class="new-password-content">
+    <div class="page-content">
       <div class="form-container">
         <h2>Ändere deine Untis-Nutzerdaten</h2>
         <form onSubmit={sendUntisDataChange} autocomplete="on">

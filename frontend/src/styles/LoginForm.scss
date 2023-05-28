@@ -52,22 +52,15 @@
         margin: 1.5%;
       }
     }
-
+    & > .error-message {
+      text-align: center;
+      color: #ff4d17;
+      margin-top: 3%;
+    }
     & > form {
       display: flex;
       flex-direction: column;
 
-      & > .password-notice {
-        margin: 1% 0px;
-        white-space: pre-line;
-        color: #ff4d17;
-        text-align: center;
-        & > p {
-          font-size: clamp(10px, 1.75rem, 1.5vh);
-          margin: 0px;
-          opacity: 0;
-        }
-      }
       & > input {
         font-family: Inter, sans-serif;
         color: #b8c0e0;

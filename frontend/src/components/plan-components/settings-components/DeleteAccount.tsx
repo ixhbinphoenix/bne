@@ -10,7 +10,7 @@ export default function DeleteAccount(): JSX.Element {
     deleteAccount(event.target[0].value);
   };
   return (
-    <div class="new-password-content">
+    <div class="page-content">
       <div class="form-container">
         <h2>
           Wenn du deinen Account löschst, <br />

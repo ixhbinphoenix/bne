@@ -18,11 +18,21 @@
       font-weight: 600;
       font-size: clamp(25px, 4vmin, 60px);
     }
-    & > #settings-bar {
-      display: flex;
-      align-items: center;
-      justify-content: space-evenly;
+  }
+  & > .back-button {
+    cursor: pointer;
+    margin-left: 4%;
+    font-size: clamp(8px, 2.5vmin, 22px);
+  }
+
+  & > #page-content {
+    flex: 1 1 auto;
+
+    & > .menu {
+      height: 100%;
       width: 100%;
+      display: grid;
+      justify-content: center;
 
       & > button {
         flex-grow: 1;
@@ -30,12 +40,9 @@
         margin: 0px;
         cursor: pointer;
         font-size: clamp(10px, 2vmin, 40px);
-        text-align: center;
+        text-align: left;
       }
     }
-  }
-  & > #page-content {
-    flex: 1 1 auto;
   }
   & > #bottom-bar {
     height: 2.5vh;

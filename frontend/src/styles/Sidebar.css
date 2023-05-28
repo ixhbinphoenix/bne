@@ -50,7 +50,7 @@ h1 {
   background-color: #24273a;
   font-size: clamp(0.85rem, 0.95vw, 25px);
 }
-@media only screen and (max-width: 675px) {
+@media only screen and (max-width: 1200px) {
   .content {
     flex-direction: column-reverse;
   }

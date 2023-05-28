@@ -10,7 +10,7 @@ export default function ChangePassword(): JSX.Element {
     changeEmail(event.target[0].value, event.target[1].value);
   };
   return (
-    <div class="new-password-content">
+    <div class="page-content">
       <div class="form-container">
         <h2>Ändere deine E-Mail-Adresse</h2>
         <form onSubmit={sendEmailChange} autocomplete="on">

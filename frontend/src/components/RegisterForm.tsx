@@ -2,12 +2,15 @@
 
 import "../styles/LoginForm.scss";
 import type { JSX } from "preact";
-import { useEffect } from "preact/hooks";
+import { useEffect, useState } from "preact/hooks";
 import { registerAccount, verifySession } from "../api/theBackend";
 import { fetchJSessionId, saveUntisCredentials } from "../api/untisAPI";
 import { generateKey, passwordEncrypt } from "../api/encryption";
+import { componentIsHTMLElement } from "astro/dist/runtime/server/render/dom";
 
 export default function LoginForm(): JSX.Element {
+  const [errorMessage, setErrorMessage] = useState<JSX.Element>(<p></p>);
+
   useEffect(() => {
     verifySession().then(() => {
       window.location.href = "/home";
@@ -31,6 +34,7 @@ export default function LoginForm(): JSX.Element {
       },
       (error) => {
         console.error(error);
+        setErrorMessage(error.message);
       }
     );
   };
@@ -45,9 +49,14 @@ export default function LoginForm(): JSX.Element {
     const untisCredentials = JSON.stringify({ username: untisUsername, password: untisPassword });
     const untisCredentialsEncrtypted = passwordEncrypt(key, untisCredentials).toString();
 
-    registerAccount(username, password, personId, untisCredentialsEncrtypted).then(() => {
-      window.location.href = "/home";
-    });
+    registerAccount(username, password, personId, untisCredentialsEncrtypted).then(
+      () => {
+        window.location.href = "/home";
+      },
+      (error) => {
+        setErrorMessage(error.message);
+      }
+    );
   };
   return (
     <div className="form-container">
@@ -105,6 +114,7 @@ export default function LoginForm(): JSX.Element {
             <input type="submit" id="submit-button" value="Absenden" />
           </div>
         </form>
+        <div class="error-message">{errorMessage}</div>
       </div>
     </div>
   );

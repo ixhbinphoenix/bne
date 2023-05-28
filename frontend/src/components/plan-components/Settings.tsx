@@ -11,7 +11,31 @@ import DeleteAccount from "./settings-components/DeleteAccount";
 import Logout from "./settings-components/Logout";
 
 export default function Settings(): JSX.Element {
-  const [pageContent, setPageContent] = useState(<ChangePassword />);
+  const MenuButton = (title: string, route: JSX.Element): JSX.Element => {
+    return (
+      <button
+        class="menu-button"
+        onClick={() => {
+          setBackButtonStyle({ opacity: "100%" });
+          setPageContent(<div>{route}</div>);
+        }}>
+        {title}
+      </button>
+    );
+  };
+
+  const Menu = (
+    <div class="menu">
+      {MenuButton("Passwort ändern", <ChangePassword />)}
+      {MenuButton("E-Mail ändern", <ChangeEmail />)}
+      {MenuButton("Untis-Daten ändern", <ChangeUntisData />)}
+      {MenuButton("Account löschen", <DeleteAccount />)}
+      {MenuButton("Abmelden", <Logout />)}
+    </div>
+  );
+
+  const [backButtonStyle, setBackButtonStyle] = useState({ opacity: "0%" });
+  const [pageContent, setPageContent] = useState<JSX.Element>(Menu);
   const [username, setUsername] = useState("");
   useEffect(() => {
     const usernameRaw = localStorage.getItem("untis_username");
@@ -21,66 +45,20 @@ export default function Settings(): JSX.Element {
     }
   }, []);
 
-  const highlightButton = (button: string) => {
-    const buttons = document.getElementsByClassName("settings-button");
-    Array.from(buttons).forEach((button) => {
-      button.classList.remove("active");
-    });
-    const activeButton = document.getElementById(button)?.classList.add("active");
-  };
-
   return (
     <div class="settings-page">
       <div id="top-bar">
         <div id="username">{username}</div>
-        <div id="settings-bar">
-          <button
-            class="settings-button active"
-            id="button1"
-            onClick={() => {
-              highlightButton("button1");
-              setPageContent(<ChangePassword />);
-            }}>
-            Passwort ändern
-          </button>
-          <button
-            class="settings-button"
-            id="button2"
-            onClick={() => {
-              highlightButton("button2");
-              setPageContent(<ChangeEmail />);
-            }}>
-            E-Mail-Adresse ändern
-          </button>
-          <button
-            class="settings-button"
-            id="button3"
-            onClick={() => {
-              highlightButton("button3");
-              setPageContent(<ChangeUntisData />);
-            }}>
-            Untis-Daten ändern
-          </button>
-          <button
-            class="settings-button"
-            id="button4"
-            onClick={() => {
-              highlightButton("button4");
-              setPageContent(<DeleteAccount />);
-            }}>
-            Account löschen
-          </button>
-          <button
-            class="settings-button"
-            id="button5"
-            onClick={() => {
-              highlightButton("button5");
-              setPageContent(<Logout />);
-            }}>
-            Abmelden
-          </button>
-        </div>
       </div>
+      <button
+        class="back-button"
+        style={backButtonStyle}
+        onClick={() => {
+          setPageContent(Menu);
+          setBackButtonStyle({ opacity: "0%" });
+        }}>
+        ❰ Zurück
+      </button>
       <div id="page-content">{pageContent}</div>
       <div id="bottom-bar">
         <a href="/datenschutz">Datenschutzerklärung</a>

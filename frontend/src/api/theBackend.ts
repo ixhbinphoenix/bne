@@ -9,7 +9,7 @@ import type { TheScheduleObject } from "./main";
 class Request {
   //class to handle primitive requests
 
-  public static async Post(path: string, data: object): Promise<any> {
+  public static async Post(path: string, data?: object): Promise<any> {
     try {
       let result = await fetch("https://localhost:8080/" + path, {
         method: "POST",
@@ -136,6 +136,7 @@ export async function verifySession() {
     await checkSessionId();
     return Promise.resolve();
   } catch (error) {
+    deleteLocalUntisCredentials();
     return Promise.reject(error);
   }
 }
@@ -250,17 +251,19 @@ export async function deleteAccount(password: string) {
     };
   }
 }
-export function logoutHere() {
-  deleteLocalUntisCredentials();
-  fetch("https://localhost:8080/logout_here", {
-    method: "GET",
-    credentials: "include"
-  });
+export async function logout() {
+  try {
+    await Request.Post("logout");
+    deleteLocalUntisCredentials();
+  } catch (error) {
+    return Promise.reject(error);
+  }
 }
-export function logoutEverywhere() {
-  deleteLocalUntisCredentials();
-  fetch("https://localhost:8080/logout_everywhere", {
-    method: "GET",
-    credentials: "include"
-  });
+export async function logoutAll() {
+  try {
+    await Request.Post("logout_all");
+    deleteLocalUntisCredentials();
+  } catch (error) {
+    return Promise.reject(error);
+  }
 }

@@ -2,22 +2,26 @@
 
 import "../../../styles/SettingsElement.scss";
 import type { JSX } from "preact";
-import { logoutEverywhere, logoutHere } from "../../../api/theBackend";
+import { logout, logoutAll } from "../../../api/theBackend";
 
 export default function Logout(): JSX.Element {
   return (
-    <div class="new-password-content">
+    <div class="page-content">
       <div class="form-container">
         <h2>Melde dich hier, oder auf allen Geräten ab</h2>
         <button
           onClick={() => {
-            logoutHere();
+            logout().then(() => {
+              window.location.href = "/login";
+            });
           }}>
           Hier abmelden
         </button>
         <button
           onClick={() => {
-            logoutEverywhere();
+            logoutAll().then(() => {
+              window.location.href = "/login";
+            });
           }}>
           Auf allen Geräten abmelden
         </button>

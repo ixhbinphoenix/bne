@@ -6,7 +6,6 @@ import "../styles/Sidebar.css";
 import { lazy, Suspense } from "preact/compat";
 import Loading from "./Loading";
 
-
 const Stundenplan = lazy(() => import("./plan-components/Stundenplan"));
 const Lernbuero = lazy(() => import("./plan-components/Lernbueros"));
 const Kontakt = lazy(() => import("./plan-components/Kontakt"));
@@ -17,7 +16,7 @@ export default function Sidebar(): JSX.Element {
 
   useEffect(() => {
     setActivePage(<Stundenplan />);
-  }, [])
+  }, []);
 
   const highlightButton = (button: string) => {
     const buttons = document.getElementsByClassName("sidebar-element");

@@ -13,6 +13,9 @@ export async function fetchJSessionId(
       })
     });
     let resultClean = await resultRaw.json();
+    if (!resultClean.result) {
+      return Promise.reject(resultClean.error);
+    }
     return { JSessionId: resultClean.result.sessionId, personId: resultClean.result.personId };
   } catch (error) {
     return Promise.reject(error);
