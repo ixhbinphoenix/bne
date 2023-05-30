@@ -22,7 +22,7 @@
   & > .back-button {
     cursor: pointer;
     margin-left: 4%;
-    font-size: clamp(8px, 2.5vmin, 22px);
+    font-size: clamp(8px, 4.5vmin, 22px);
   }
 
   & > #page-content {
@@ -39,7 +39,7 @@
         flex-basis: 0;
         margin: 0px;
         cursor: pointer;
-        font-size: clamp(10px, 2vmin, 40px);
+        font-size: clamp(10px, 4vmin, 25px);
         text-align: left;
       }
     }

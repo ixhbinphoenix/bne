@@ -16,6 +16,7 @@ import {
   getCurrentDay,
   getCurrentLesson
 } from "../../api/dateHandling";
+import { onSwipe } from "../../api/Touch";
 
 export default function Lernbueros(): JSX.Element {
   const [currentWeek, setCurrentWeek] = useState(getMondayAndFridayDates());
@@ -56,6 +57,11 @@ export default function Lernbueros(): JSX.Element {
       }
     );
   }, []);
+
+  useEffect(() => {
+    onSwipe(".table-layout", { direction: "left" }, nextWeek);
+    onSwipe(".table-layout", { direction: "right" }, previousWeek);
+  }, [currentWeek]);
 
   const nextWeek = () => {
     let week = shiftForward(currentWeek.currentMonday, currentWeek.currentFriday);

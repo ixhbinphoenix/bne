@@ -9,6 +9,7 @@ import ChangeEmail from "./settings-components/ChangeEmail";
 import ChangeUntisData from "./settings-components/ChangeUntisData";
 import DeleteAccount from "./settings-components/DeleteAccount";
 import Logout from "./settings-components/Logout";
+import { onSwipe } from "../../api/Touch";
 
 export default function Settings(): JSX.Element {
   const MenuButton = (title: string, route: JSX.Element): JSX.Element => {
@@ -44,6 +45,13 @@ export default function Settings(): JSX.Element {
       setUsername(nameParts[1] + " " + nameParts[0]);
     }
   }, []);
+
+  useEffect(() => {
+    onSwipe(".settings-page", { direction: "right", renew: true }, () => {
+      setPageContent(Menu);
+      setBackButtonStyle({ opacity: "0%" });
+    });
+  }, [pageContent]);
 
   return (
     <div class="settings-page">
