@@ -1,6 +1,23 @@
 ---
 import LoginLayout from "../layouts/LoginLayout.astro";
 import LoginForm from "../components/LoginForm";
+import { checkSessionIdAstro } from "../api/frontmatter";
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0"; //super unsafe code here btw
+
+const id: string | undefined = Astro.cookies.get("id").value;
+
+if(id) {
+  try {
+    const result = await checkSessionIdAstro(id);
+    console.log(result)
+    if(result) {
+      return Astro.redirect("/home")
+    }
+  }
+  catch(error) {
+    console.log(error)
+  }
+}
 ---
 
 <LoginLayout title="Login">
