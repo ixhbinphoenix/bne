@@ -3,11 +3,15 @@
 import "../../../styles/SettingsElement.scss";
 import type { JSX } from "preact";
 import { changeEmail } from "../../../api/theBackend";
+import { useState } from "preact/hooks";
 
-export default function ChangePassword(): JSX.Element {
+export default function ChangeEmail(): JSX.Element {
+  const [errorMessage, setErrorMessage] = useState(<p></p>)
   const sendEmailChange = (event: any) => {
     event.preventDefault();
-    changeEmail(event.target[0].value, event.target[1].value);
+    changeEmail(event.target[0].value, event.target[1].value).then(() => { setErrorMessage(<p>Deine E-Mail-Adresse wurde geändert</p>) }, (error) => {
+      setErrorMessage(<p>Etwas ist schief gegangen: {error}</p>)
+    });
   };
   return (
     <div class="page-content">
@@ -24,6 +28,7 @@ export default function ChangePassword(): JSX.Element {
           <input name="new_email" type="email" placeholder="Neue E-Mail-Adresse" autocomplete="email" required />
           <input type="submit" id="submit-button" />
         </form>
+        <div class="error-message">{errorMessage}</div>
       </div>
     </div>
   );

@@ -3,11 +3,20 @@
 import "../../../styles/SettingsElement.scss";
 import type { JSX } from "preact";
 import { deleteAccount } from "../../../api/theBackend";
+import { useState } from "preact/hooks";
 
 export default function DeleteAccount(): JSX.Element {
+  const [errorMessage, setErrorMessage] = useState(<p></p>);
   const sendDeleteAccount = (event: any) => {
     event.preventDefault();
-    deleteAccount(event.target[0].value);
+    deleteAccount(event.target[0].value).then(
+      () => {
+        setErrorMessage(<p>Deine E-Mail-Adresse wurde geändert</p>);
+      },
+      (error) => {
+        setErrorMessage(<p>Etwas ist schief gegangen: {error}</p>);
+      }
+    );;
   };
   return (
     <div class="page-content">
@@ -26,6 +35,7 @@ export default function DeleteAccount(): JSX.Element {
           />
           <input type="submit" id="submit-button" />
         </form>
+        <div class="error-message">{errorMessage}</div>
       </div>
     </div>
   );

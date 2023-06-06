@@ -32,9 +32,10 @@ class Request {
       return Promise.reject(error);
     }
   }
-  public static async Get(path: string): Promise<any> {
+  public static async Get(path: string, headers?: HeadersInit): Promise<any> {
     try {
       let result = await fetch("https://localhost:8080/" + path, {
+        headers,
         method: "GET",
         credentials: "include"
       });
@@ -137,6 +138,30 @@ export async function verifySession() {
     return Promise.resolve();
   } catch (error) {
     deleteLocalUntisCredentials();
+    return Promise.reject(error);
+  }
+}
+export async function resetPassword(uuid: string, password: string) {
+  try {
+    let result = await Request.Post("reset_password", {
+      uuid: uuid,
+      password: password
+    })
+    return Promise.resolve();
+  }
+  catch (error) {
+    return Promise.reject(error);
+  }
+}
+export async function resetEmail(uuid: string, email: string) {
+  try {
+    let result = await Request.Post("reset_email", {
+      uuid: uuid,
+      email: email
+    })
+    return Promise.resolve()
+  }
+  catch (error) {
     return Promise.reject(error);
   }
 }

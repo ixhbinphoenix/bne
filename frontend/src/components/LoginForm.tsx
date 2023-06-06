@@ -6,16 +6,10 @@ import { useEffect, useState } from "preact/hooks";
 import { loginAccount, verifySession } from "../api/theBackend";
 import { fetchJSessionId, saveUntisCredentials } from "../api/untisAPI";
 import { generateKey, passwordDecrypt } from "../api/encryption";
-import { strictEqual } from "assert";
 
 export default function LoginForm(): JSX.Element {
   const [errorMessage, setErrorMessage] = useState<JSX.Element>(<p></p>);
 
-  useEffect(() => {
-    verifySession().then(() => {
-      window.location.href = "/home";
-    });
-  }, []);
   const handleSubmit = (event: any) => {
     event.preventDefault();
     sendLogin(event.target[0].value, event.target[1].value);

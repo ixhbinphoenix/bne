@@ -3,7 +3,7 @@
 import type { TheScheduleObject } from "../../api/main";
 import { SubjectColor } from "../../api/main";
 import { fetchJSessionId } from "../../api/untisAPI";
-import { getLernbueros, verifySession } from "../../api/theBackend";
+import { getLernbueros } from "../../api/theBackend";
 import Popup from "./Popup";
 import type { JSX } from "preact";
 import "../../styles/Stundenplan.scss";
@@ -39,9 +39,6 @@ export default function Lernbueros(): JSX.Element {
   useEffect(() => {
     highlightDates(getMondayAndFridayDates().currentMonday, getMondayAndFridayDates().currentFriday);
 
-    verifySession().catch(() => {
-      window.location.href = "/login"; //bye bye go back to lobby
-    });
     setCurrentDates(getWeekDays(currentWeek.currentMonday));
     getLernbueros(currentWeek.currentMonday, currentWeek.currentFriday).then(
       (lessons) => {

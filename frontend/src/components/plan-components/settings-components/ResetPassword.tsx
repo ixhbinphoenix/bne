@@ -2,25 +2,28 @@
 
 import "../../../styles/SettingsElement.scss";
 import type { JSX } from "preact";
-import { changePassword } from "../../../api/theBackend";
+import { resetPassword } from "../../../api/theBackend";
+import { useState } from "preact/hooks";
+interface IProps {
+  uuid: string
+}
 
-export default function ChangePassword(): JSX.Element {
+
+export default function ResetPassword(props: IProps): JSX.Element {
+  const [errorMessage, setErrorMessage] = useState(<p></p>)
   const sendPasswordChange = (event: any) => {
     event.preventDefault();
-    changePassword(event.target[0].value, event.target[1].value);
+    resetPassword(props.uuid, event.target[0].value).then(() => {
+      setErrorMessage(<p>Dein Passwort wurde geändert</p>)
+    }, (error) => {
+      setErrorMessage(<p>Etwas ist schief gegangen: {error}</p>)
+    });
   };
   return (
     <div class="page-content">
       <div class="form-container">
         <h2>Such dir ein neues Passwort aus</h2>
         <form onSubmit={sendPasswordChange} autocomplete="on">
-          <input
-            name="current_pwd"
-            type="password"
-            placeholder="Aktuelles Passwort"
-            autocomplete="current-password"
-            required
-          />
           <input
             name="new_pwd"
             type="password"
@@ -32,6 +35,7 @@ export default function ChangePassword(): JSX.Element {
           />
           <input type="submit" id="submit-button" />
         </form>
+        <div class="error-message">{errorMessage}</div>
       </div>
     </div>
   );

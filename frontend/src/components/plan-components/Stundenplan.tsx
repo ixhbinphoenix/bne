@@ -3,7 +3,7 @@
 import type { TheScheduleObject } from "../../api/main";
 import { SubjectColor } from "../../api/main";
 import { fetchJSessionId } from "../../api/untisAPI";
-import { getTimetable, verifySession } from "../../api/theBackend";
+import { getTimetable } from "../../api/theBackend";
 import Popup from "./Popup";
 import type { JSX } from "preact";
 import "../../styles/Stundenplan.scss";
@@ -38,9 +38,6 @@ export default function Stundenplan(): JSX.Element {
   useEffect(() => {
     highlightDates(getMondayAndFridayDates().currentMonday, getMondayAndFridayDates().currentFriday);
 
-    verifySession().catch(() => {
-      window.location.href = "/login"; //bye bye go back to lobby
-    });
     setCurrentDates(getWeekDays(currentWeek.currentMonday));
     getTimetable(currentWeek.currentMonday, currentWeek.currentFriday).then(
       (lessons) => {

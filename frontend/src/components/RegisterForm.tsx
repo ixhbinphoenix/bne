@@ -6,16 +6,10 @@ import { useEffect, useState } from "preact/hooks";
 import { registerAccount, verifySession } from "../api/theBackend";
 import { fetchJSessionId, saveUntisCredentials } from "../api/untisAPI";
 import { generateKey, passwordEncrypt } from "../api/encryption";
-import { componentIsHTMLElement } from "astro/dist/runtime/server/render/dom";
 
 export default function LoginForm(): JSX.Element {
   const [errorMessage, setErrorMessage] = useState<JSX.Element>(<p></p>);
 
-  useEffect(() => {
-    verifySession().then(() => {
-      window.location.href = "/home";
-    });
-  }, []);
   const handleSubmit = (event: any) => {
     event.preventDefault();
     saveUntisCredentials(event.target[2].value, event.target[3].value);
