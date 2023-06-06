@@ -1,0 +1,116 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style type="text/css">
+        :root {
+            color-scheme: only light;
+        }
+        html {
+            background-size: 75%;
+            height: 100%;
+            background-color: #262833;
+            background-image: url("https://theschedule.de/index-background.svg");
+        }
+        body {
+            height: 100%;
+            width: 100%;
+            font-family: sans-serif;
+            margin: 0px;
+            color: #a5adcb;
+
+            > center {
+                height: 100%;
+                width: 100%;
+
+                > header {
+                    margin-top: 15px;
+
+                    > h1 {
+                        background: linear-gradient(
+                        90deg,
+                            #c6a0f6 0%,
+                            #ed8796 50%,
+                            #eed49f 100%
+                        );
+                        background-clip: text;
+                        -webkit-background-clip: text;
+                        -webkit-text-fill-color: transparent;
+                        width: fit-content;
+                        font-size: clamp(20px, 5vmin, 120px);
+                        margin: 0px;
+                        padding-top: 1%;
+                    }
+                }
+
+                > .main {
+                    padding-bottom: 3%;
+                    margin: 0px;
+
+                    > h1 {
+                        font-size: clamp(24px, 5.5vmin, 120px);
+                        color: #cad3f5;
+                        padding: 10% 0px 8% 0px;
+                        margin: 0px;
+                        text-transform: uppercase;
+                    }
+
+                    > a {
+                        font-size: clamp(14px, 3vmin, 60px);
+                        text-decoration: none;
+                        color: #b8c0e0;
+                        background-color: #24273aed;
+                        padding: 1.5%;
+                        margin-bottom: 50px;
+                        outline: none;
+                        border: 2px solid #5974e2;
+                        border-radius: 10px;
+                    }
+
+                    > .description {
+                        margin-top: 9%
+                    }
+
+                    > p {
+                        font-size: clamp(14px, 2.5min, 30px);
+                        padding: 0px 8%;
+                    }
+                }
+
+                > footer {
+                    margin-top: 25px;
+                    height: 3%;
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-evenly;
+
+                    > a {
+                        font-size: clamp(10px, 1.35vmin, 20px);
+                        color: #b8c0e0;
+                    }
+                }
+            }
+        }
+    </style>
+</head>
+<body>
+    <center>
+       <header>
+            <h1>TheSchedule</h1>
+        </header>
+        <div class="main">
+            <h1>Hast du deine E-Mail geändert?</h1>
+            <a href="https://coolwebsite.com">Klicke hier um das rückgängig zu machen</a>
+            <p class="description">Wenn du diese Änderung selbst gemacht hast, kannst du diese Mail einfach ignorieren.</p>
+            <p>Wenn du das nicht warst, kannst du diese Änderung rückgängig machen. Dieser Link ist nur 48 Stunden gültig, ändere also sofort die E-Mail-Adresse, wenn du denkst, dass jemand anderes Zugriff auf diesen Account hat</p>
+        </div>
+        <footer>
+            <a href="https://theschedule.de/impressum">Impressum</a>
+            <a href="https://theschedule.de/datenschutz">Datenschutzrichtlinie</a>
+            <a href="https://theschedule.de/nutzungsbedingungen">Nutzungsbedingungen</a>
+        </footer>
+    </center>
+</body>
+</html>
