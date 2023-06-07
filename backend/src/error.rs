@@ -3,7 +3,7 @@
 
 use actix_web::{http::StatusCode, HttpResponse, ResponseError};
 
-use crate::utils::password::PasswordError;
+use crate::{utils::password::PasswordError, mail::error::MailError};
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
@@ -18,6 +18,9 @@ pub enum Error {
 
     #[error(transparent)]
     Password(#[from] PasswordError),
+
+    #[error(transparent)]
+    Mail(#[from] MailError),
 
     #[error(transparent)]
     IO(#[from] std::io::Error),

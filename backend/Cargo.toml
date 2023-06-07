@@ -30,3 +30,5 @@ actix-cors = "0.6.4"
 chrono = "0.4.24"
 anyhow = "1.0.71"
 async-trait = "0.1.68"
+lettre = { version = "0.10.4", default-features = false, features = ["builder", "hostname", "smtp-transport", "tokio1", "tokio1-rustls-tls", "file-transport", "serde", "tracing"] }
+tokio = { version = "1.28.2", features = ["fs"]}

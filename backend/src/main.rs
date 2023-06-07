@@ -3,6 +3,7 @@ mod api;
 mod api_wrapper;
 mod database;
 mod error;
+mod mail;
 mod models;
 mod prelude;
 mod utils;
@@ -22,13 +23,14 @@ use api::{
     check_session::check_session_get, get_lernbueros::get_lernbueros, get_timetable::get_timetable, login::login_post, logout::logout_post, logout_all::logout_all_post, register::register_post
 };
 use dotenv::dotenv;
+use lettre::{transport::smtp::authentication::{Credentials, Mechanism}, AsyncSmtpTransport, Tokio1Executor};
 use log::info;
 use rustls::{Certificate, PrivateKey, ServerConfig};
 use rustls_pemfile::{certs, pkcs8_private_keys};
 use surrealdb::{engine::remote::ws::Ws, opt::auth::Root, Surreal};
 
 use crate::{
-    models::{model::CRUD, user_model::User}, utils::env::{get_env, get_env_or}
+    mail::utils::Mailer, models::{model::CRUD, user_model::User}, utils::env::{get_env, get_env_or}
 };
 
 #[derive(Clone)]
@@ -86,6 +88,20 @@ async fn main() -> io::Result<()> {
 
     session_db.use_ns(db_namespace).use_db(db_database).await.expect("using namespace and db to work");
 
+    info!("Connecting SMTP...");
+
+    let smtp_username = get_env("MAIL_USERNAME");
+    let smtp_password = get_env("MAIL_PASSWORD");
+    let creds = Credentials::new(smtp_username, smtp_password);
+
+    let smtp_server = get_env("MAIL_SERVER");
+    let mailer: Mailer = AsyncSmtpTransport::<Tokio1Executor>::starttls_relay(&smtp_server).expect("SMTP Server to connect")
+        .credentials(creds)
+        .authentication(vec![Mechanism::Plain])
+        .build::<Tokio1Executor>();
+
+    info!("SMTP Connected!");
+
     let school = get_env("UNTIS_SCHOOL");
     let subdomain = get_env("UNTIS_SUBDOMAIN");
 
@@ -141,6 +157,7 @@ async fn main() -> io::Result<()> {
             .wrap(cors)
             .app_data(json_config)
             .app_data(Data::new(db.clone()))
+            .app_data(Data::new(mailer.clone()))
             .app_data(Data::new(untis_data.clone()))
             .service(web::resource("/register").route(web::post().to(register_post)))
             .service(web::resource("/login").route(web::post().to(login_post)))
