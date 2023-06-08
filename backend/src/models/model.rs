@@ -23,6 +23,12 @@ where
         Ok(res)
     }
 
+    async fn create_id(db: ConnectionData, id: Thing, data: D) -> Result<D, Error> {
+        let res: D = db.create(id).content(data).await?;
+
+        Ok(res)
+    }
+
     async fn get_from_id(db: ConnectionData, id: Thing) -> Result<Option<D>, Error> {
         let res: Option<D> = db.select(id).await?;
 
