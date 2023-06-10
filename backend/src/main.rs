@@ -30,7 +30,7 @@ use rustls_pemfile::{certs, pkcs8_private_keys};
 use surrealdb::{engine::remote::ws::Ws, opt::auth::Root, Surreal};
 
 use crate::{
-    mail::utils::Mailer, models::{model::CRUD, user_model::User}, utils::env::{get_env, get_env_or}
+    mail::utils::Mailer, models::{model::CRUD, user_model::User, links_model::Link}, utils::env::{get_env, get_env_or}
 };
 
 #[derive(Clone)]
@@ -75,6 +75,8 @@ async fn main() -> io::Result<()> {
     db.use_ns(db_namespace.clone()).use_db(db_database.clone()).await.expect("using namespace and db to work");
 
     User::init_table(db.clone()).await.expect("Table initialization to work");
+
+    Link::init_table(db.clone()).await.expect("Table initialization to work");
 
     let session_db = Surreal::new::<Ws>(db_location).await.expect("DB to connect");
 
