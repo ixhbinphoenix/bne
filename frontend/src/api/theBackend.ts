@@ -91,16 +91,19 @@ export async function registerAccount(
 }
 export async function getTimetable(monday: string, friday: string): Promise<TheScheduleObject[] | any> {
   try {
+    let body;
+    const searchQuery = `?from=${monday}&until=${friday}`;
     const storedJSessionId = document.cookie.match("(^|;)\\s*" + "JSESSIONID" + "\\s*=\\s*([^;]+)")?.pop() || "";
     if (!storedJSessionId) {
-      fetchJSessionId(localStorage.getItem("untis_username"), localStorage.getItem("untis_password")).then((result) => {
-        if (result.JSessionId) {
-          document.cookie = `JSESSIONID=${result.JSessionId}; max-age=600; secure; samesite=none`;
-        }
-      });
+      const result = await fetchJSessionId(
+        localStorage.getItem("untis_username"),
+        localStorage.getItem("untis_password")
+      );
+      document.cookie = `JSESSIONID=${result.JSessionId}; max-age=600; secure; samesite=none`;
+      body = await Request.Get("get_timetable" + searchQuery);
+    } else {
+      body = await Request.Get("get_timetable" + searchQuery);
     }
-    const searchQuery = `?from=${monday}&until=${friday}`;
-    let body = await Request.Get("get_timetable" + searchQuery);
     return body.lessons;
   } catch (error) {
     return Promise.reject(error);
@@ -108,16 +111,19 @@ export async function getTimetable(monday: string, friday: string): Promise<TheS
 }
 export async function getLernbueros(monday: string, friday: string): Promise<any> {
   try {
+    let body;
+    const searchQuery = `?from=${monday}&until=${friday}`;
     const storedJSessionId = document.cookie.match("(^|;)\\s*" + "JSESSIONID" + "\\s*=\\s*([^;]+)")?.pop() || "";
     if (!storedJSessionId) {
-      fetchJSessionId(localStorage.getItem("untis_username"), localStorage.getItem("untis_password")).then((result) => {
-        if (result.JSessionId) {
-          document.cookie = `JSESSIONID=${result.JSessionId}; max-age=600; secure; samesite=none`;
-        }
-      });
+      const result = await fetchJSessionId(
+        localStorage.getItem("untis_username"),
+        localStorage.getItem("untis_password")
+      );
+      document.cookie = `JSESSIONID=${result.JSessionId}; max-age=600; secure; samesite=none`;
+      body = await Request.Get("get_lernbueros" + searchQuery);
+    } else {
+      body = await Request.Get("get_lernbueros" + searchQuery);
     }
-    const searchQuery = `?from=${monday}&until=${friday}`;
-    let body = await Request.Get("get_lernbueros" + searchQuery);
     return body.lessons;
   } catch (error) {
     return Promise.reject(error);
@@ -146,10 +152,9 @@ export async function resetPassword(uuid: string, password: string) {
     let result = await Request.Post("reset_password", {
       uuid: uuid,
       password: password
-    })
+    });
     return Promise.resolve();
-  }
-  catch (error) {
+  } catch (error) {
     return Promise.reject(error);
   }
 }
@@ -158,10 +163,9 @@ export async function resetEmail(uuid: string, email: string) {
     let result = await Request.Post("reset_email", {
       uuid: uuid,
       email: email
-    })
-    return Promise.resolve()
-  }
-  catch (error) {
+    });
+    return Promise.resolve();
+  } catch (error) {
     return Promise.reject(error);
   }
 }
