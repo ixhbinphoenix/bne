@@ -18,6 +18,7 @@ pub struct Link {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub enum LinkType {
+    EmailChange,
     EmailReset,
     PasswordReset,
     VerifyAccount,
@@ -91,6 +92,7 @@ impl Link {
 
     pub fn construct_link(&self) -> String {
         let typestr = match self.link_type {
+            LinkType::EmailChange => "change-email",
             LinkType::EmailReset => "reset-email",
             LinkType::PasswordReset => "reset-password",
             LinkType::VerifyAccount => "verify",
