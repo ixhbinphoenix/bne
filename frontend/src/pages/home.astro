@@ -6,14 +6,14 @@ process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
 const id: string | undefined = Astro.cookies.get("id").value;
 
-if(id) {
-  const result = await checkSessionIdAstro(id);
-  if(!result) {
-    return Astro.redirect("/login")
+if (id) {
+  try {
+    await checkSessionIdAstro(id);
+  } catch {
+    return Astro.redirect("/login");
   }
-}
-else {
-  return Astro.redirect("/login")
+} else {
+  return Astro.redirect("/login");
 }
 ---
 

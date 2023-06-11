@@ -24,7 +24,7 @@ export default function ChangeUntisData(): JSX.Element {
           (error) => {
             setErrorMessage(<p>Etwas ist schief gegangen: {error}</p>);
           }
-        );;
+        );
       }
     });
   };

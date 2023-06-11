@@ -5,7 +5,7 @@ import type { JSX } from "preact";
 import "../../styles/Settings.scss";
 import { useEffect, useState } from "preact/hooks";
 import ChangePassword from "./settings-components/ChangePassword";
-import ChangeEmail from "./settings-components/ChangeEmail";
+import DemandEmail from "./settings-components/DemandEmail";
 import ChangeUntisData from "./settings-components/ChangeUntisData";
 import DeleteAccount from "./settings-components/DeleteAccount";
 import Logout from "./settings-components/Logout";
@@ -28,7 +28,7 @@ export default function Settings(): JSX.Element {
   const Menu = (
     <div class="menu">
       {MenuButton("Passwort ändern", <ChangePassword />)}
-      {MenuButton("E-Mail ändern", <ChangeEmail />)}
+      {MenuButton("E-Mail ändern", <DemandEmail />)}
       {MenuButton("Untis-Daten ändern", <ChangeUntisData />)}
       {MenuButton("Account löschen", <DeleteAccount />)}
       {MenuButton("Abmelden", <Logout />)}

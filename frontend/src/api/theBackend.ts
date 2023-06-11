@@ -149,19 +149,38 @@ export async function verifySession() {
 }
 export async function resetPassword(uuid: string, password: string) {
   try {
-    let result = await Request.Post("reset_password", {
-      uuid: uuid,
+    let result = await Request.Post(`link/password/reset/${uuid}`, {
       password: password
     });
-    return Promise.resolve();
+    return Promise.resolve(result);
+  } catch (error) {
+    return Promise.reject(error);
+  }
+}
+export async function changePassword(currentPassword: string, newPassword: string) {
+  try {
+    let result = await Request.Post(`link/password/change`, {
+      current_password: currentPassword,
+      new_password: newPassword
+    });
+    return Promise.resolve(result);
+  } catch (error) {
+    return Promise.reject(error);
+  }
+}
+export async function demandEmail(password: string) {
+  try {
+    let result = await Request.Post("link/email/demand", {
+      password: password
+    });
+    return Promise.resolve(result);
   } catch (error) {
     return Promise.reject(error);
   }
 }
 export async function resetEmail(uuid: string, email: string) {
   try {
-    let result = await Request.Post("reset_email", {
-      uuid: uuid,
+    let result = await Request.Post(`link/email/reset/${uuid}`, {
       email: email
     });
     return Promise.resolve();
@@ -169,56 +188,14 @@ export async function resetEmail(uuid: string, email: string) {
     return Promise.reject(error);
   }
 }
-export async function changePassword(currentPassword: string, newPassword: string) {
+export async function changeEmail(uuid: string, email: string) {
   try {
-    let result = await fetch("https://localhost:8080/change_password", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      credentials: "include",
-      body: JSON.stringify({
-        current_password: currentPassword,
-        new_password: newPassword
-      })
+    let result = await Request.Post(`link/email/change/${uuid}`, {
+      email: email
     });
-    if (!result.body) {
-      return {
-        status: 400,
-        message: "No result body found"
-      };
-    }
-  } catch {
-    return {
-      status: 500,
-      message: "Server Connection Failed"
-    };
-  }
-}
-export async function changeEmail(password: string, email: string) {
-  try {
-    let result = await fetch("https://localhost:8080/change_email", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      credentials: "include",
-      body: JSON.stringify({
-        password: password,
-        email: email
-      })
-    });
-    if (!result.body) {
-      return {
-        status: 400,
-        message: "No result body found"
-      };
-    }
-  } catch {
-    return {
-      status: 500,
-      message: "Server Connection Failed"
-    };
+    return Promise.resolve();
+  } catch (error) {
+    return Promise.reject(error);
   }
 }
 export async function changeUntisData(password: string, personId: number, untisCredentialsEncrypted: string) {

@@ -1,6 +1,6 @@
 ---
 import ResetPasswordLayout from "../../layouts/ResetPasswordLayout.astro";
-import ResetEmail from "../../components/plan-components/settings-components/ResetEmail";
+import ChangeEmail from "../../components/plan-components/settings-components/ChangeEmail";
 import { checkUUID } from "../../api/frontmatter";
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
@@ -18,6 +18,6 @@ if (uuid) {
 }
 ---
 
-<ResetPasswordLayout title="E-Mail zurücksetzen">
-  <ResetEmail {uuid} client:load />
+<ResetPasswordLayout title="E-Mail ändern">
+  <ChangeEmail {uuid} client:load />
 </ResetPasswordLayout>

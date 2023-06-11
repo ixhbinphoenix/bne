@@ -19,6 +19,18 @@ pub struct QueryParams {
 }
 
 // Path: /link/email/{uuid}
+
+/*
+Comment-Author: Sxyn
+
+Konzept:
+    1. Mail anfordern über link/email/demand; mit Passwort im body
+    2. Über empfangene Mail E-Mail-Adresse ändern: link/email/change/{uuid}
+    3. Sicherheitsmail an alte Adresse mit link zum zurücksetzen: link/email/reset/uuid
+
+    So weit meine Idee.
+*/
+
 pub async fn email_reset_get(
     path: web::Path<String>, query: web::Query<QueryParams>, db: ConnectionData,
 ) -> Result<impl Responder> {

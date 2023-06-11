@@ -9,14 +9,17 @@ interface IProps {
 }
 
 export default function ResetEmail(props: IProps): JSX.Element {
-    const [errorMessage, setErrorMessage] = useState(<p></p>)
+  const [errorMessage, setErrorMessage] = useState(<p></p>);
   const sendPasswordChange = (event: any) => {
     event.preventDefault();
-      resetEmail(props.uuid, event.target[0].value).then(() => {
-        setErrorMessage(<p>Deine E-Mail-Adresse wurde geändert</p>)
-      }, (error) => {
-        setErrorMessage(<p>Etwas ist schief gelaufen: {error}</p>)
-    });
+    resetEmail(props.uuid, event.target[0].value).then(
+      () => {
+        setErrorMessage(<p>Deine E-Mail-Adresse wurde geändert</p>);
+      },
+      (error) => {
+        setErrorMessage(<p>Etwas ist schief gelaufen: {error}</p>);
+      }
+    );
   };
   return (
     <div class="page-content">

@@ -37,7 +37,6 @@ class Request {
       if (!body.success) {
         return Promise.reject(body.body);
       }
-      console.log(body);
       return body.body;
     } catch (error) {
       return Promise.reject(error);
@@ -62,7 +61,7 @@ export async function checkSessionIdAstro(id: string): Promise<any> {
     let result = await Request.Get("check_session", { Cookie: `id=${id}` });
     return result;
   } catch (error) {
-    return Promise.reject(error)
+    return Promise.reject(error);
   }
 }
 export async function checkUUID(uuid: string): Promise<any> {
@@ -70,8 +69,7 @@ export async function checkUUID(uuid: string): Promise<any> {
   try {
     let result = await Request.Get("check_uuid" + query);
     return result;
-  }
-  catch (error) {
-    return Promise.reject(error)
+  } catch (error) {
+    return Promise.reject(error);
   }
 }

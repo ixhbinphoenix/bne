@@ -2,14 +2,14 @@
 
 import "../../../styles/SettingsElement.scss";
 import type { JSX } from "preact";
-import { deleteAccount } from "../../../api/theBackend";
+import { demandEmail } from "../../../api/theBackend";
 import { useState } from "preact/hooks";
 
-export default function DeleteAccount(): JSX.Element {
+export default function DemandEmail(): JSX.Element {
   const [errorMessage, setErrorMessage] = useState(<p></p>);
-  const sendDeleteAccount = (event: any) => {
+  const sendEmailChange = (event: any) => {
     event.preventDefault();
-    deleteAccount(event.target[0].value).then(
+    demandEmail(event.target[0].value).then(
       () => {
         setErrorMessage(<p>Deine E-Mail-Adresse wurde geändert</p>);
       },
@@ -21,11 +21,8 @@ export default function DeleteAccount(): JSX.Element {
   return (
     <div class="page-content">
       <div class="form-container">
-        <h2>
-          Wenn du deinen Account löschst, <br />
-          kannst du ihn nicht wiederherstellen
-        </h2>
-        <form onSubmit={sendDeleteAccount} autocomplete="on">
+        <h2>Fordere eine E-Mail zum ändern deiner E-Mail-Adresse an</h2>
+        <form onSubmit={sendEmailChange} autocomplete="on">
           <input
             name="current_pwd"
             type="password"
@@ -35,6 +32,11 @@ export default function DeleteAccount(): JSX.Element {
           />
           <input type="submit" id="submit-button" />
         </form>
+        <h4>
+          Wenn du keinen Zugriff mehr auf deine E-Mail-Adresse hast, kannst du uns eine{" "}
+          <a href="mailto:support@theschedule.de?subject=Zugriff auf E-Mail-Adresse verloren">Mail</a> von einer anderen
+          Adresse schicken
+        </h4>
         <div class="error-message">{errorMessage}</div>
       </div>
     </div>
