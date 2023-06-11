@@ -20,17 +20,19 @@ use actix_web::{
     cookie::{time::Duration, Key}, middleware::Logger, web::{self, Data}, App, HttpResponse, HttpServer
 };
 use api::{
-    check_session::check_session_get, get_lernbueros::get_lernbueros, get_timetable::get_timetable, login::login_post, logout::logout_post, logout_all::logout_all_post, register::register_post
+    check_session::check_session_get, get_lernbueros::get_lernbueros, get_timetable::get_timetable, link::email::email_reset_get, login::login_post, logout::logout_post, logout_all::logout_all_post, register::register_post
 };
 use dotenv::dotenv;
-use lettre::{transport::smtp::authentication::{Credentials, Mechanism}, AsyncSmtpTransport, Tokio1Executor};
+use lettre::{
+    transport::smtp::authentication::{Credentials, Mechanism}, AsyncSmtpTransport, Tokio1Executor
+};
 use log::info;
 use rustls::{Certificate, PrivateKey, ServerConfig};
 use rustls_pemfile::{certs, pkcs8_private_keys};
 use surrealdb::{engine::remote::ws::Ws, opt::auth::Root, Surreal};
 
 use crate::{
-    mail::utils::Mailer, models::{model::CRUD, user_model::User, links_model::Link}, utils::env::{get_env, get_env_or}
+    mail::utils::Mailer, models::{links_model::Link, model::CRUD, user_model::User}, utils::env::{get_env, get_env_or}
 };
 
 #[derive(Clone)]
@@ -97,7 +99,8 @@ async fn main() -> io::Result<()> {
     let creds = Credentials::new(smtp_username, smtp_password);
 
     let smtp_server = get_env("MAIL_SERVER");
-    let mailer: Mailer = AsyncSmtpTransport::<Tokio1Executor>::starttls_relay(&smtp_server).expect("SMTP Server to connect")
+    let mailer: Mailer = AsyncSmtpTransport::<Tokio1Executor>::starttls_relay(&smtp_server)
+        .expect("SMTP Server to connect")
         .credentials(creds)
         .authentication(vec![Mechanism::Plain])
         .build::<Tokio1Executor>();
@@ -168,6 +171,7 @@ async fn main() -> io::Result<()> {
             .service(web::resource("/check_session").route(web::get().to(check_session_get)))
             .service(web::resource("/get_timetable").route(web::get().to(get_timetable)))
             .service(web::resource("/get_lernbueros").route(web::get().to(get_lernbueros)))
+            .service(web::scope("/link").service(web::resource("/email/{uuid}").route(web::get().to(email_reset_get))))
     })
     .bind_rustls(format!("127.0.0.1:{port}"), config)?
     .run()

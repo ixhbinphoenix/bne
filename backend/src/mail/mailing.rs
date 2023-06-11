@@ -1,11 +1,11 @@
-use lettre::{Message, message::IntoBody, AsyncTransport};
-
-use crate::prelude::Error;
+use lettre::{message::IntoBody, AsyncTransport, Message};
 
 use super::{error::MailError, utils::Mailer};
+use crate::prelude::Error;
 
 pub fn build_mail<T>(to: &str, subject: &str, body: T) -> Result<Message, Error>
-    where T: IntoBody
+where
+    T: IntoBody,
 {
     Message::builder()
         .from("TheSchedule <noreply@theschedule.de>".parse().unwrap())
@@ -16,7 +16,5 @@ pub fn build_mail<T>(to: &str, subject: &str, body: T) -> Result<Message, Error>
 }
 
 pub async fn send_mail(mailer: actix_web::web::Data<Mailer>, message: Message) -> Result<(), Error> {
-    mailer.send(message).await
-        .map_err(|e| Error::Mail(MailError::SMTP(e)))
-        .map(|_| ())
+    mailer.send(message).await.map_err(|e| Error::Mail(MailError::SMTP(e))).map(|_| ())
 }

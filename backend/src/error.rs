@@ -1,9 +1,6 @@
-// https://github.com/rust-awesome-app/template-app-base/blob/main/src-tauri/src/error.rs
-// Licensed under Apache-2.0 and MIT
-
 use actix_web::{http::StatusCode, HttpResponse, ResponseError};
 
-use crate::{utils::password::PasswordError, mail::error::MailError};
+use crate::{mail::error::MailError, utils::password::PasswordError};
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
