@@ -98,6 +98,6 @@ impl Link {
             LinkType::PasswordReset => "reset-password",
             LinkType::VerifyAccount => "verify",
         };
-        format!("https://theschedule.de/{}/{}", typestr, self.id.id.to_string())
+        format!("https://theschedule.de/{}/{}", typestr, self.id.id.to_raw())
     }
 }
