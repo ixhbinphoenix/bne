@@ -120,8 +120,8 @@ pub async fn email_change_post(
         untis_cypher: None,
     };
 
-    if User::update_merge(db.clone(), user_id.clone(), new_user).await.is_err() {
-        error!("Error updating user email");
+    if let Err(e) = User::update_merge(db.clone(), user_id.clone(), new_user).await {
+        error!("Error updating user email\n{e}");
         return Ok(Response::new_error(500, "There was a database error".into()).into());
     }
 
