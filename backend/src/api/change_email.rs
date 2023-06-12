@@ -31,10 +31,7 @@ pub async fn change_email_get(
 
     let user = match User::get_from_id(
         db.clone(),
-        Thing {
-            tb: "users".to_string(),
-            id: Id::String(id),
-        },
+        Thing::from(id.split_once(":").unwrap())
     )
     .await
     {
