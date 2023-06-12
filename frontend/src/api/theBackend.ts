@@ -1,7 +1,6 @@
 import {
   getLocalUntisCredentials,
   fetchJSessionId,
-  saveUntisCredentials,
   deleteLocalUntisCredentials
 } from "./untisAPI";
 import type { TheScheduleObject } from "./main";
@@ -9,7 +8,7 @@ import type { TheScheduleObject } from "./main";
 class Request {
   //class to handle primitive requests
 
-  public static async Post(path: string, data?: object): Promise<any> {
+  public static async Post<T>(path: string, data?: object): Promise<T> {
     try {
       let result = await fetch("https://localhost:8080/" + path, {
         method: "POST",
@@ -32,7 +31,7 @@ class Request {
       return Promise.reject(error);
     }
   }
-  public static async Get(path: string, headers?: HeadersInit): Promise<any> {
+  public static async Get<T>(path: string, headers?: HeadersInit): Promise<T> {
     try {
       let result = await fetch("https://localhost:8080/" + path, {
         headers,
@@ -65,7 +64,7 @@ class Request {
 
 export async function loginAccount(email: string, password: string) {
   try {
-    const result = await Request.Post("login", { email: email, password: password });
+    const result = await Request.Post<{ untis_cypher: string }>("login", { email: email, password: password });
     return result.untis_cypher;
   } catch (error) {
     return Promise.reject(error);
@@ -89,9 +88,9 @@ export async function registerAccount(
     return Promise.reject(error);
   }
 }
-export async function getTimetable(monday: string, friday: string): Promise<TheScheduleObject[] | any> {
+export async function getTimetable(monday: string, friday: string): Promise<TheScheduleObject[]> {
   try {
-    let body;
+    let body: {lessons: TheScheduleObject[]};
     const searchQuery = `?from=${monday}&until=${friday}`;
     const storedJSessionId = document.cookie.match("(^|;)\\s*" + "JSESSIONID" + "\\s*=\\s*([^;]+)")?.pop() || "";
     if (!storedJSessionId) {
@@ -100,18 +99,18 @@ export async function getTimetable(monday: string, friday: string): Promise<TheS
         localStorage.getItem("untis_password")
       );
       document.cookie = `JSESSIONID=${result.JSessionId}; max-age=600; secure; samesite=none`;
-      body = await Request.Get("get_timetable" + searchQuery);
+      body = await Request.Get<{lessons: TheScheduleObject[]}>("get_timetable" + searchQuery);
     } else {
-      body = await Request.Get("get_timetable" + searchQuery);
+      body = await Request.Get<{lessons: TheScheduleObject[]}>("get_timetable" + searchQuery);
     }
     return body.lessons;
   } catch (error) {
     return Promise.reject(error);
   }
 }
-export async function getLernbueros(monday: string, friday: string): Promise<any> {
+export async function getLernbueros(monday: string, friday: string): Promise<TheScheduleObject[]> {
   try {
-    let body;
+    let body: {lessons: TheScheduleObject[]};
     const searchQuery = `?from=${monday}&until=${friday}`;
     const storedJSessionId = document.cookie.match("(^|;)\\s*" + "JSESSIONID" + "\\s*=\\s*([^;]+)")?.pop() || "";
     if (!storedJSessionId) {
@@ -120,9 +119,9 @@ export async function getLernbueros(monday: string, friday: string): Promise<any
         localStorage.getItem("untis_password")
       );
       document.cookie = `JSESSIONID=${result.JSessionId}; max-age=600; secure; samesite=none`;
-      body = await Request.Get("get_lernbueros" + searchQuery);
+      body = await Request.Get<{ lessons: TheScheduleObject[] }>("get_lernbueros" + searchQuery);
     } else {
-      body = await Request.Get("get_lernbueros" + searchQuery);
+      body = await Request.Get<{ lessons: TheScheduleObject[] }>("get_lernbueros" + searchQuery);
     }
     return body.lessons;
   } catch (error) {
@@ -168,11 +167,9 @@ export async function changePassword(currentPassword: string, newPassword: strin
     return Promise.reject(error);
   }
 }
-export async function demandEmail(password: string) {
+export async function demandEmail() {
   try {
-    let result = await Request.Post("link/email/demand", {
-      password: password
-    });
+    let result = await Request.Get("change_email");
     return Promise.resolve(result);
   } catch (error) {
     return Promise.reject(error);
@@ -180,18 +177,19 @@ export async function demandEmail(password: string) {
 }
 export async function resetEmail(uuid: string, email: string) {
   try {
-    let result = await Request.Post(`link/email/reset/${uuid}`, {
-      email: email
+    let result = await Request.Post(`link/email_reset/${uuid}`, {
+      mail: email
     });
     return Promise.resolve();
   } catch (error) {
     return Promise.reject(error);
   }
 }
-export async function changeEmail(uuid: string, email: string) {
+export async function changeEmail(uuid: string, password: string, email: string) {
   try {
-    let result = await Request.Post(`link/email/change/${uuid}`, {
-      email: email
+    let result = await Request.Post(`link/email_change/${uuid}`, {
+      password: password,
+      mail: email
     });
     return Promise.resolve();
   } catch (error) {

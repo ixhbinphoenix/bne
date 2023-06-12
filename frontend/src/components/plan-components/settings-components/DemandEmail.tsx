@@ -9,12 +9,12 @@ export default function DemandEmail(): JSX.Element {
   const [errorMessage, setErrorMessage] = useState(<p></p>);
   const sendEmailChange = (event: any) => {
     event.preventDefault();
-    demandEmail(event.target[0].value).then(
+    demandEmail().then(
       () => {
-        setErrorMessage(<p>Deine E-Mail-Adresse wurde geändert</p>);
+        setErrorMessage(<p>Du hast eine Mail von uns bekommen</p>);
       },
       (error) => {
-        setErrorMessage(<p>Etwas ist schief gegangen: {error}</p>);
+        setErrorMessage(<p>Etwas ist schief gegangen: {error.message}</p>);
       }
     );
   };
@@ -23,14 +23,7 @@ export default function DemandEmail(): JSX.Element {
       <div class="form-container">
         <h2>Fordere eine E-Mail zum ändern deiner E-Mail-Adresse an</h2>
         <form onSubmit={sendEmailChange} autocomplete="on">
-          <input
-            name="current_pwd"
-            type="password"
-            placeholder="Aktuelles Passwort"
-            autocomplete="current-password"
-            required
-          />
-          <input type="submit" id="submit-button" />
+          <input type="submit" id="submit-button" value="E-Mail anfordern"/>
         </form>
         <h4>
           Wenn du keinen Zugriff mehr auf deine E-Mail-Adresse hast, kannst du uns eine{" "}
