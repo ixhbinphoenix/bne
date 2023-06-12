@@ -141,7 +141,7 @@ export async function verifySession() {
 export async function resetPassword(uuid: string, password: string, untisCypher: string, personId: number) {
   try {
     let result = await Request.Post(`link/password/${uuid}`, {
-      password: password,
+      new_password: password,
       new_untis_cypher: untisCypher,
       new_person_id: personId
     });

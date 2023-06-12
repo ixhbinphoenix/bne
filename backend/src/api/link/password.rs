@@ -22,6 +22,7 @@ use crate::{
 pub struct PasswordChange {
     new_password: String,
     new_untis_cypher: String,
+    new_person_id: i64
 }
 
 // Path: /link/password/{uuid}
@@ -112,7 +113,7 @@ pub async fn reset_password_post(
         id: old_user.id,
         email: old_user.email,
         password_hash: hash,
-        person_id: old_user.person_id,
+        person_id: body.new_person_id.clone(),
         untis_cypher: body.new_untis_cypher.clone(),
     };
 
