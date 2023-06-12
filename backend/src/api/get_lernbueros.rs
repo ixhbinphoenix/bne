@@ -39,7 +39,7 @@ pub async fn get_lernbueros(
     };
 
     let pot_user: Option<User> = User::get_from_id(
-        db,
+        db.clone(),
         match id.unwrap().id() {
             Ok(i) => {
                 let split = i.split_once(':');
@@ -73,6 +73,7 @@ pub async fn get_lernbueros(
         "the-schedule".into(),
         untis_data.school.clone(),
         untis_data.subdomain.clone(),
+        db,
     )
     .await
     {

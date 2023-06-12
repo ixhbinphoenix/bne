@@ -9,14 +9,14 @@ pub struct Teacher {
     pub id: Thing,
     pub shortname: String,
     pub longname: String,
-    pub lessons: Array
+    pub lessons: Vec<String>
 }
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct TeacherCreate {
     pub shortname: String,
     pub longname: String,
-    pub lessons: Array
+    pub lessons: Vec<String>
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -24,7 +24,7 @@ pub struct TeacherPatch {
     pub id: Thing,
     pub shortname: String,
     pub longname: String,
-    pub lessons: Array
+    pub lessons: Vec<String>
 }
 
 #[async_trait::async_trait]
