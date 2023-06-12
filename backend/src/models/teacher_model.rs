@@ -1,5 +1,5 @@
 use serde::{Deserialize, Serialize};
-use surrealdb::sql::{Thing, Array};
+use surrealdb::sql::{Array, Thing};
 
 use super::model::{ConnectionData, DBConnection, CRUD};
 use crate::prelude::Error;
@@ -16,19 +16,11 @@ pub struct Teacher {
 pub struct TeacherCreate {
     pub shortname: String,
     pub longname: String,
-    pub lessons: Vec<String>
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-pub struct TeacherPatch {
-    pub id: Thing,
-    pub shortname: String,
-    pub longname: String,
-    pub lessons: Vec<String>
+    pub lessons: Array,
 }
 
 #[async_trait::async_trait]
-impl CRUD<Teacher, TeacherCreate, TeacherPatch> for Teacher {
+impl CRUD<Teacher, TeacherCreate> for Teacher {
     async fn init_table(db: DBConnection) -> Result<bool, Error> {
         let sql = "DEFINE TABLE teachers SCHEMAFULL;\
             DEFINE FIELD shortname ON teachers TYPE string;\

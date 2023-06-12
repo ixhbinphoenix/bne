@@ -12,7 +12,7 @@ export default function ChangeEmail(props: IProps): JSX.Element {
   const [errorMessage, setErrorMessage] = useState(<p></p>);
   const sendEmailChange = (event: any) => {
     event.preventDefault();
-    changeEmail(props.uuid, event.target[0].value).then(
+    changeEmail(props.uuid, event.target[0].value, event.target[1].value).then(
       () => {
         setErrorMessage(<p>Deine E-Mail-Adresse wurde geändert</p>);
       },
@@ -26,6 +26,13 @@ export default function ChangeEmail(props: IProps): JSX.Element {
       <div class="form-container">
         <h2>Ändere deine E-Mail-Adresse</h2>
         <form onSubmit={sendEmailChange} autocomplete="on">
+          <input
+            name="current_pwd"
+            type="password"
+            placeholder="Aktuelles Passwort"
+            autocomplete="current-password"
+            required
+          />
           <input name="new_email" type="email" placeholder="Neue E-Mail-Adresse" autocomplete="email" required />
           <input type="submit" id="submit-button" />
         </form>

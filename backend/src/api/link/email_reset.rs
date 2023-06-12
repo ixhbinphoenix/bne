@@ -9,7 +9,7 @@ use uuid::Uuid;
 
 use crate::{
     api::response::Response, database::sessions::delete_user_sessions, models::{
-        links_model::{Link, LinkType}, model::{ConnectionData, CRUD}, user_model::{User, UserPatch}
+        links_model::{Link, LinkType}, model::{ConnectionData, CRUD}, user_model::User
     }
 };
 
@@ -63,6 +63,20 @@ pub async fn email_reset_post(
 
     let user_id = link.user;
 
+    let user = match User::get_from_id(db.clone(), user_id.clone()).await {
+        Ok(a) => match a {
+            Some(a) => a,
+            None => {
+                error!("User ID in link is not valid");
+                return Ok(Response::new_error(500, "There was a database error".into()).into());
+            }
+        },
+        Err(e) => {
+            error!("Database error trying to get user from link\n{e}");
+            return Ok(Response::new_error(500, "There was a database error".into()).into());
+        }
+    };
+
     if match User::get_from_email(db.clone(), body.mail.clone()).await {
         Ok(a) => a.is_some(),
         Err(e) => {
@@ -74,15 +88,15 @@ pub async fn email_reset_post(
         return Ok(Response::new_error(403, "Mail already in use".into()).into());
     }
 
-    let new_user = UserPatch {
+    let new_user = User {
         id: user_id.clone(),
-        email: Some(body.mail.clone()),
-        password_hash: None,
-        person_id: None,
-        untis_cypher: None,
+        email: body.mail.clone(),
+        password_hash: user.password_hash,
+        person_id: user.person_id,
+        untis_cypher: user.untis_cypher,
     };
 
-    if User::update_merge(db.clone(), user_id.clone(), new_user).await.is_err() {
+    if User::update_replace(db.clone(), user_id.clone(), new_user).await.is_err() {
         error!("Error updating user email");
         return Ok(Response::new_error(500, "There was a database error".into()).into());
     }

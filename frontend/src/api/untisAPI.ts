@@ -1,6 +1,6 @@
 export async function fetchJSessionId(
-  username: string | null,
-  password: string | null
+  username: string,
+  password: string
 ): Promise<{ JSessionId: string; personId: number } | any> {
   try {
     let resultRaw = await fetch("https://borys.webuntis.com/WebUntis/jsonrpc.do?school=ges-münster", {
@@ -25,7 +25,7 @@ export function saveUntisCredentials(username: string, password: string) {
   localStorage.setItem("untis_username", username);
   localStorage.setItem("untis_password", password);
 }
-export function getLocalUntisCredentials(): { username: string; password: string } | Error {
+export function getLocalUntisCredentials(): { username: string; password: string } {
   const username = localStorage.getItem("untis_username");
   const password = localStorage.getItem("untis_password");
   if (username && password) {

@@ -3,11 +3,27 @@
 import "../../../styles/SettingsElement.scss";
 import type { JSX } from "preact";
 import { changePassword } from "../../../api/theBackend";
+import { useState } from "preact/hooks";
+import { getLocalUntisCredentials } from "../../../api/untisAPI";
+import { generateKey, passwordEncrypt } from "../../../api/encryption";
 
 export default function ChangePassword(): JSX.Element {
+  const [errorMessage, setErrorMessage] = useState(<p></p>);
+
   const sendPasswordChange = (event: any) => {
     event.preventDefault();
-    changePassword(event.target[0].value, event.target[1].value);
+    const key = generateKey(event.target[1].value);
+    const untisCredentials = JSON.stringify(getLocalUntisCredentials());
+    console.log(untisCredentials);
+    const untisCypher = passwordEncrypt(key, untisCredentials).toString();
+    changePassword(event.target[0].value, event.target[1].value, untisCypher).then(
+      () => {
+        setErrorMessage(<p>Dein Passwort wurde geändert</p>);
+      },
+      (error) => {
+        setErrorMessage(<p>Etwas ist schief gegangen: {error.message}</p>);
+      }
+    );
   };
   return (
     <div class="page-content">
@@ -32,6 +48,7 @@ export default function ChangePassword(): JSX.Element {
           />
           <input type="submit" id="submit-button" />
         </form>
+        <div class="error-message">{errorMessage}</div>
       </div>
     </div>
   );

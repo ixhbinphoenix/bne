@@ -72,12 +72,9 @@ pub async fn change_email_get(
         }
     };
 
-    match send_mail(mailer, message).await {
-        Ok(a) => a,
-        Err(e) => {
-            error!("Error sending mail\n{e}");
-            return Ok(Response::new_error(500, "Internal Server Error".into()).into());
-        }
+    if let Err(e) = send_mail(mailer, message).await {
+        error!("Error sending mail\n{e}");
+        return Ok(Response::new_error(500, "Internal Server Error".into()).into());
     };
 
     Ok(web::Json(Response::new_success("Sent E-Mail, check your inbox".to_string())))

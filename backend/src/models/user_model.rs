@@ -4,7 +4,7 @@ use surrealdb::sql::Thing;
 use super::model::{ConnectionData, DBConnection, CRUD};
 use crate::prelude::Error;
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct User {
     pub id: Thing,
     pub email: String,
@@ -13,7 +13,7 @@ pub struct User {
     pub untis_cypher: String,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct UserCreate {
     pub email: String,
     pub person_id: i64,
@@ -21,17 +21,8 @@ pub struct UserCreate {
     pub untis_cypher: String,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct UserPatch {
-    pub id: Thing,
-    pub email: Option<String>,
-    pub person_id: Option<i64>,
-    pub password_hash: Option<String>,
-    pub untis_cypher: Option<String>,
-}
-
 #[async_trait::async_trait]
-impl CRUD<User, UserCreate, UserPatch> for User {
+impl CRUD<User, UserCreate> for User {
     async fn init_table(db: DBConnection) -> Result<bool, Error> {
         let sql = "DEFINE TABLE users SCHEMAFULL;\
                    DEFINE FIELD email ON users TYPE string ASSERT is::email($value);\
