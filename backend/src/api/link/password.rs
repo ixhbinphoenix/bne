@@ -21,6 +21,7 @@ use crate::{
 #[derive(Debug, Deserialize)]
 pub struct PasswordChange {
     new_password: String,
+    new_untis_cypher: String,
 }
 
 // Path: /link/password/{uuid}
@@ -112,7 +113,7 @@ pub async fn reset_password_post(
         email: old_user.email,
         password_hash: hash,
         person_id: old_user.person_id,
-        untis_cypher: old_user.untis_cypher,
+        untis_cypher: body.new_untis_cypher.clone(),
     };
 
     if let Err(e) = User::update_replace(db.clone(), new_user.clone().id, new_user.clone()).await {
