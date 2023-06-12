@@ -21,6 +21,9 @@ pub enum Error {
 
     #[error(transparent)]
     IO(#[from] std::io::Error),
+
+    #[error(transparent)]
+    Reqwest(#[from] reqwest::Error),
 }
 
 impl ResponseError for Error {

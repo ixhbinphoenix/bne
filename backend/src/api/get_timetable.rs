@@ -78,7 +78,7 @@ pub async fn get_timetable(
     {
         Ok(u) => u,
         Err(e) => {
-            if e.is_request() {
+            if let Error::Reqwest(_) = e {
                 return Ok(Response::new_error(400, "You done fucked up".into()).into());
             } else {
                 return Ok(Response::new_error(500, "Untis done fucked up".into()).into());
