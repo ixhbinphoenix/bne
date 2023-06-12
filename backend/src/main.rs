@@ -173,7 +173,7 @@ async fn main() -> io::Result<()> {
             .service(web::resource("/get_lernbueros").route(web::get().to(get_lernbueros)))
             .service(
                 web::scope("/link")
-                    .service(web::resource("/email-change/{uuid}").route(web::post().to(email_change_post))),
+                    .service(web::resource("/email_change/{uuid}").route(web::post().to(email_change_post))),
             )
     })
     .bind_rustls(format!("127.0.0.1:{port}"), config)?

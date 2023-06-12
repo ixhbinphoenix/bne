@@ -1,8 +1,10 @@
 use std::str::FromStr;
 
 use actix_web::{web, Responder, Result};
+use argon2::{Argon2, PasswordVerifier, PasswordHash};
+use chrono::{Utc, Days};
 use lettre::Address;
-use log::{error, warn};
+use log::{error, warn, debug};
 use serde::Deserialize;
 use surrealdb::sql::Thing;
 use uuid::Uuid;
@@ -10,21 +12,22 @@ use uuid::Uuid;
 use crate::{
     api::response::Response, models::{
         links_model::{Link, LinkType}, model::{ConnectionData, CRUD}, user_model::{User, UserPatch}
-    }
+    }, database::sessions::delete_user_sessions, mail::{utils::{load_template, Mailer}, mailing::{build_mail, send_mail}}
 };
 
 #[derive(Deserialize)]
 pub struct NewMail {
     mail: String,
+    password: String
 }
 
 // Konzept:
-// 1. Mail anfordern über /change-mail mit Passwort im body
-// 2. Über empfangene Mail E-Mail-Adresse ändern: link/email-change/{uuid}
-// 3. Sicherheitsmail an alte Adresse mit link zum zurücksetzen: link/email-reset/{uuid}
-// Path: /link/email-change/{uuid}
+// 1. Mail anfordern über /change_mail mit Passwort im body
+// 2. Über empfangene Mail E-Mail-Adresse ändern: /link/email_change/{uuid}
+// 3. Sicherheitsmail an alte Adresse mit link zum zurücksetzen: /link/email_reset/{uuid}
+// Path: /link/email_change/{uuid}
 pub async fn email_change_post(
-    path: web::Path<String>, body: web::Json<NewMail>, db: ConnectionData,
+    path: web::Path<String>, body: web::Json<NewMail>, db: ConnectionData, mailer: web::Data<Mailer>
 ) -> Result<impl Responder> {
     if body.mail.parse::<Address>().is_err() {
         return Ok(web::Json(Response::new_error(400, "Not a valid e-mail".into())));
@@ -67,7 +70,7 @@ pub async fn email_change_post(
 
     let user_id = link.user;
 
-    let _ = match User::get_from_id(db.clone(), user_id.clone()).await {
+    let user = match User::get_from_id(db.clone(), user_id.clone()).await {
         Ok(a) => match a {
             Some(a) => a,
             None => {
@@ -81,6 +84,35 @@ pub async fn email_change_post(
         }
     };
 
+    let argon2 = Argon2::default();
+
+    let db_hash = match PasswordHash::new(&user.password_hash) {
+        Ok(hash) => hash,
+        Err(_) => {
+            error!("Error: Stored hash is not a valid hash. User: {}", user.email);
+            return Ok(Response::new_error(500, "Internal Server Error".to_owned()).into());
+        }
+    };
+
+    match argon2.verify_password(body.password.as_bytes(), &db_hash) {
+        Err(_) => {
+            debug!("Client sent wrong password");
+            return Ok(Response::new_error(403, "Wrong Password".into()).into());
+        },
+        _ => {}
+    };
+
+    if match User::get_from_email(db.clone(), body.mail.clone()).await {
+        Ok(a) => a.is_some(),
+        Err(e) => {
+            error!("Getting potential user from mail failed\n{e}");
+            return Ok(Response::new_error(500, "There was a database error".into()).into());
+        },
+    } {
+        warn!("E-mail is already in use");
+        return Ok(Response::new_error(403, "Mail already in use".into()).into());
+    }
+
     let new_user = UserPatch {
         id: user_id.clone(),
         email: Some(body.mail.clone()),
@@ -89,12 +121,67 @@ pub async fn email_change_post(
         untis_cypher: None,
     };
 
-    if User::update_merge(db, user_id, new_user).await.is_err() {
-        error!("Error trying to update user email");
+    if User::update_merge(db.clone(), user_id.clone(), new_user).await.is_err() {
+        error!("Error updating user email");
         return Ok(Response::new_error(500, "There was a database error".into()).into());
     }
 
-    // TODO: Mail an alte e-mail das die geaendert wurde mit reset link
+    let updated_user = match User::get_from_email(db.clone(), body.mail.clone()).await {
+        Ok(a) => match a {
+            Some(a) => a,
+            None => {
+                error!("Updated e-mail isn't found in the database?");
+                return Ok(Response::new_error(500, "There was a database error".into()).into());
+            },
+        },
+        Err(e) => {
+            error!("Error trying to get updated user from database\n{e}");
+            return Ok(Response::new_error(500, "There was a database error".into()).into());
+        },
+    };
 
-    Ok(web::Json(Response::new_success("Successfully update e-mail".to_string())))
+    // Logout user from all devices
+    match delete_user_sessions(db.clone(), user_id.to_string()).await {
+        Err(e) => {
+            error!("Error deleting user sessions\n{e}");
+            return Ok(Response::new_error(500, "There was a database error".into()).into());
+        },
+        _ => {}
+    };
+
+    let expiry = Utc::now().checked_add_days(Days::new(2)).unwrap();
+
+    let reset_link = match Link::create_from_user(db.clone(), updated_user, expiry, LinkType::EmailReset).await {
+        Ok(a) => a.construct_link(),
+        Err(e) => {
+            error!("Error creating reset link\n{e}");
+            return Ok(Response::new_error(500, "There was an error sending out an e-mail".into()).into());
+        },
+    };
+
+    let template = match load_template("email_changed.html").await {
+        Ok(a) => a.replace("${{RESET_URL}}", &reset_link).replace("${{NEW_MAIL}}", &body.mail),
+        Err(e) => {
+            error!("Error loading mail template\n{e}");
+            return Ok(Response::new_error(500, "There was an error sending out an e-mail".into()).into());
+        },
+    };
+
+    let message = match build_mail(&body.mail, "Deine E-Mail Addresse wurde geändert", template) {
+        Ok(a) => a,
+        Err(e) => {
+            error!("Error constructing message\n{e}");
+            return Ok(Response::new_error(500, "There was an error sending out an e-mail".into()).into());
+        },
+    };
+
+    match send_mail(mailer, message).await {
+        Ok(_) => {},
+        Err(e) => {
+            error!("Error sending mail\n{e}");
+            return Ok(Response::new_error(500, "There was an error sending out an e-mail".into()).into());
+        },
+    };
+
+    Ok(web::Json(Response::new_success("Successfully updated e-mail".to_string())))
 }
