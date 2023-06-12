@@ -1,3 +1,4 @@
+pub mod change_email;
 pub mod check_session;
 pub mod get_lernbueros;
 pub mod get_timetable;

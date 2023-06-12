@@ -1,24 +1,26 @@
 use std::str::FromStr;
 
 use actix_web::{web, Responder, Result};
-use argon2::{Argon2, PasswordVerifier, PasswordHash};
-use chrono::{Utc, Days};
+use argon2::{Argon2, PasswordHash, PasswordVerifier};
+use chrono::{Days, Utc};
 use lettre::Address;
-use log::{error, warn, debug};
+use log::{debug, error, warn};
 use serde::Deserialize;
 use surrealdb::sql::Thing;
 use uuid::Uuid;
 
 use crate::{
-    api::response::Response, models::{
+    api::response::Response, database::sessions::delete_user_sessions, mail::{
+        mailing::{build_mail, send_mail}, utils::{load_template, Mailer}
+    }, models::{
         links_model::{Link, LinkType}, model::{ConnectionData, CRUD}, user_model::{User, UserPatch}
-    }, database::sessions::delete_user_sessions, mail::{utils::{load_template, Mailer}, mailing::{build_mail, send_mail}}
+    }
 };
 
 #[derive(Deserialize)]
 pub struct NewMail {
     mail: String,
-    password: String
+    password: String,
 }
 
 // Konzept:
@@ -27,7 +29,7 @@ pub struct NewMail {
 // 3. Sicherheitsmail an alte Adresse mit link zum zurücksetzen: /link/email_reset/{uuid}
 // Path: /link/email_change/{uuid}
 pub async fn email_change_post(
-    path: web::Path<String>, body: web::Json<NewMail>, db: ConnectionData, mailer: web::Data<Mailer>
+    path: web::Path<String>, body: web::Json<NewMail>, db: ConnectionData, mailer: web::Data<Mailer>,
 ) -> Result<impl Responder> {
     if body.mail.parse::<Address>().is_err() {
         return Ok(web::Json(Response::new_error(400, "Not a valid e-mail".into())));
@@ -94,12 +96,9 @@ pub async fn email_change_post(
         }
     };
 
-    match argon2.verify_password(body.password.as_bytes(), &db_hash) {
-        Err(_) => {
-            debug!("Client sent wrong password");
-            return Ok(Response::new_error(403, "Wrong Password".into()).into());
-        },
-        _ => {}
+    if argon2.verify_password(body.password.as_bytes(), &db_hash).is_err() {
+        debug!("Client sent wrong password");
+        return Ok(Response::new_error(403, "Wrong Password".into()).into());
     };
 
     if match User::get_from_email(db.clone(), body.mail.clone()).await {
@@ -107,7 +106,7 @@ pub async fn email_change_post(
         Err(e) => {
             error!("Getting potential user from mail failed\n{e}");
             return Ok(Response::new_error(500, "There was a database error".into()).into());
-        },
+        }
     } {
         warn!("E-mail is already in use");
         return Ok(Response::new_error(403, "Mail already in use".into()).into());
@@ -132,21 +131,18 @@ pub async fn email_change_post(
             None => {
                 error!("Updated e-mail isn't found in the database?");
                 return Ok(Response::new_error(500, "There was a database error".into()).into());
-            },
+            }
         },
         Err(e) => {
             error!("Error trying to get updated user from database\n{e}");
             return Ok(Response::new_error(500, "There was a database error".into()).into());
-        },
+        }
     };
 
     // Logout user from all devices
-    match delete_user_sessions(db.clone(), user_id.to_string()).await {
-        Err(e) => {
-            error!("Error deleting user sessions\n{e}");
-            return Ok(Response::new_error(500, "There was a database error".into()).into());
-        },
-        _ => {}
+    if let Err(e) = delete_user_sessions(db.clone(), user_id.to_string()).await {
+        error!("Error deleting user sessions\n{e}");
+        return Ok(Response::new_error(500, "There was a database error".into()).into());
     };
 
     let expiry = Utc::now().checked_add_days(Days::new(2)).unwrap();
@@ -156,7 +152,7 @@ pub async fn email_change_post(
         Err(e) => {
             error!("Error creating reset link\n{e}");
             return Ok(Response::new_error(500, "There was an error sending out an e-mail".into()).into());
-        },
+        }
     };
 
     let template = match load_template("email_changed.html").await {
@@ -164,7 +160,7 @@ pub async fn email_change_post(
         Err(e) => {
             error!("Error loading mail template\n{e}");
             return Ok(Response::new_error(500, "There was an error sending out an e-mail".into()).into());
-        },
+        }
     };
 
     let message = match build_mail(&body.mail, "Deine E-Mail Addresse wurde geändert", template) {
@@ -172,15 +168,15 @@ pub async fn email_change_post(
         Err(e) => {
             error!("Error constructing message\n{e}");
             return Ok(Response::new_error(500, "There was an error sending out an e-mail".into()).into());
-        },
+        }
     };
 
     match send_mail(mailer, message).await {
-        Ok(_) => {},
+        Ok(_) => {}
         Err(e) => {
             error!("Error sending mail\n{e}");
             return Ok(Response::new_error(500, "There was an error sending out an e-mail".into()).into());
-        },
+        }
     };
 
     Ok(web::Json(Response::new_success("Successfully updated e-mail".to_string())))
