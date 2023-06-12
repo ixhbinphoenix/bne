@@ -9,11 +9,10 @@ pub type ConnectionData = actix_web::web::Data<DBConnection>;
 
 #[async_trait]
 #[allow(clippy::upper_case_acronyms)]
-pub trait CRUD<D, C, P>
+pub trait CRUD<D, C>
 where
     D: Serialize + Send + Sync + for<'de> Deserialize<'de> + 'static,
     C: Serialize + Send + Sync + for<'de> Deserialize<'de> + 'static,
-    P: Serialize + Send + Sync + for<'de> Deserialize<'de> + 'static,
 {
     async fn init_table(db: DBConnection) -> Result<bool, Error>;
 
@@ -35,14 +34,8 @@ where
         Ok(res)
     }
 
-    async fn update_replace(db: ConnectionData, id: Thing, data: C) -> Result<bool, Error> {
-        db.update(id).merge(data).await?;
-
-        Ok(true)
-    }
-
-    async fn update_merge(db: ConnectionData, id: Thing, data: P) -> Result<bool, Error> {
-        db.update(id).merge(data).await?;
+    async fn update_replace(db: ConnectionData, id: Thing, data: D) -> Result<bool, Error> {
+        let _: D = db.update(id).content(data).await?;
 
         Ok(true)
     }

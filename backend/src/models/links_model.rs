@@ -26,15 +26,8 @@ pub enum LinkType {
 
 pub type LinkCreate = Link;
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct LinkPatch {
-    pub id: Thing,
-    pub user: Option<Thing>,
-    pub link_type: Option<Thing>,
-}
-
 #[async_trait::async_trait]
-impl CRUD<Link, LinkCreate, LinkPatch> for Link {
+impl CRUD<Link, LinkCreate> for Link {
     async fn init_table(db: DBConnection) -> Result<bool, Error> {
         let sql = "DEFINE TABLE links SCHEMAFULL;\
                    DEFINE FIELD user ON links TYPE record(users);\

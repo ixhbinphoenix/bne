@@ -13,7 +13,7 @@ use crate::{
     api::response::Response, database::sessions::delete_user_sessions, mail::{
         mailing::{build_mail, send_mail}, utils::{load_template, Mailer}
     }, models::{
-        links_model::{Link, LinkType}, model::{ConnectionData, CRUD}, user_model::{User, UserPatch}
+        links_model::{Link, LinkType}, model::{ConnectionData, CRUD}, user_model::User
     }
 };
 
@@ -112,15 +112,15 @@ pub async fn email_change_post(
         return Ok(Response::new_error(403, "Mail already in use".into()).into());
     }
 
-    let new_user = UserPatch {
+    let new_user = User {
         id: user_id.clone(),
-        email: Some(body.mail.clone()),
-        password_hash: None,
-        person_id: None,
-        untis_cypher: None,
+        email: body.mail.clone(),
+        password_hash: user.password_hash,
+        person_id: user.person_id,
+        untis_cypher: user.untis_cypher,
     };
 
-    if let Err(e) = User::update_merge(db.clone(), user_id.clone(), new_user).await {
+    if let Err(e) = User::update_replace(db.clone(), user_id.clone(), new_user).await {
         error!("Error updating user email\n{e}");
         return Ok(Response::new_error(500, "There was a database error".into()).into());
     }
@@ -163,7 +163,7 @@ pub async fn email_change_post(
         }
     };
 
-    let message = match build_mail(&body.mail, "Deine E-Mail Addresse wurde geändert", ContentType::TEXT_HTML, template)
+    let message = match build_mail(&user.email, "Deine E-Mail Addresse wurde geändert", ContentType::TEXT_HTML, template)
     {
         Ok(a) => a,
         Err(e) => {

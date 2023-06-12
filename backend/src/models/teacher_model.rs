@@ -19,16 +19,8 @@ pub struct TeacherCreate {
     pub lessons: Array
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct TeacherPatch {
-    pub id: Thing,
-    pub shortname: String,
-    pub longname: String,
-    pub lessons: Array
-}
-
 #[async_trait::async_trait]
-impl CRUD<Teacher, TeacherCreate, TeacherPatch> for Teacher {
+impl CRUD<Teacher, TeacherCreate> for Teacher {
     async fn init_table(db: DBConnection) -> Result<bool, Error> {
         let sql = "DEFINE TABLE teachers SCHEMAFULL;\
             DEFINE FIELD shortname ON teachers TYPE string;\
