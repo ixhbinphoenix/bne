@@ -23,7 +23,7 @@ export default function DemandEmail(): JSX.Element {
       <div class="form-container">
         <h2>Fordere eine E-Mail zum ändern deiner E-Mail-Adresse an</h2>
         <form onSubmit={sendEmailChange} autocomplete="on">
-          <input type="submit" id="submit-button" value="E-Mail anfordern"/>
+          <input type="submit" id="submit-button" value="E-Mail anfordern" />
         </form>
         <h4>
           Wenn du keinen Zugriff mehr auf deine E-Mail-Adresse hast, kannst du uns eine{" "}

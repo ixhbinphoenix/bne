@@ -2,8 +2,8 @@
 
 import "../styles/LoginForm.scss";
 import type { JSX } from "preact";
-import { useEffect, useState } from "preact/hooks";
-import { loginAccount, verifySession } from "../api/theBackend";
+import { useState } from "preact/hooks";
+import { loginAccount } from "../api/theBackend";
 import { fetchJSessionId, saveUntisCredentials } from "../api/untisAPI";
 import { generateKey, passwordDecrypt } from "../api/encryption";
 
