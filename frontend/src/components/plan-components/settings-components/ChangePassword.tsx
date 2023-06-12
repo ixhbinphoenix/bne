@@ -12,15 +12,18 @@ export default function ChangePassword(): JSX.Element {
 
   const sendPasswordChange = (event: any) => {
     event.preventDefault();
-    const key = generateKey(event.target[1].value)
-    const untisCredentials = JSON.stringify(getLocalUntisCredentials())
-    console.log(untisCredentials)
-    const untisCypher = passwordEncrypt(key, untisCredentials).toString()
-    changePassword(event.target[0].value, event.target[1].value, untisCypher).then(() => {
-      setErrorMessage(<p>Dein Passwort wurde geändert</p>)
-    }, (error) => {
-      setErrorMessage(<p>Etwas ist schief gegangen: {error.message}</p>)
-    });
+    const key = generateKey(event.target[1].value);
+    const untisCredentials = JSON.stringify(getLocalUntisCredentials());
+    console.log(untisCredentials);
+    const untisCypher = passwordEncrypt(key, untisCredentials).toString();
+    changePassword(event.target[0].value, event.target[1].value, untisCypher).then(
+      () => {
+        setErrorMessage(<p>Dein Passwort wurde geändert</p>);
+      },
+      (error) => {
+        setErrorMessage(<p>Etwas ist schief gegangen: {error.message}</p>);
+      }
+    );
   };
   return (
     <div class="page-content">

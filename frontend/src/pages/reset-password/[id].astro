@@ -11,10 +11,10 @@ if (uuid) {
     const result = await checkUUID(uuid);
     console.log(result);
   } catch (error) {
-    return Astro.redirect("/404");
+    //return Astro.redirect("/404");
   }
 } else {
-  return Astro.redirect("/404");
+  //return Astro.redirect("/404");
 }
 ---
 
