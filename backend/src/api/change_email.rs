@@ -1,8 +1,9 @@
 use actix_identity::Identity;
 use actix_web::{web, Responder, Result};
-use chrono::{Days, Utc};
+use chrono::{DateTime, Days, Utc};
+use lettre::message::header::ContentType;
 use log::error;
-use surrealdb::sql::{Id, Thing};
+use surrealdb::sql::Thing;
 
 use super::response::Response;
 use crate::{
@@ -29,12 +30,7 @@ pub async fn change_email_get(
         }
     };
 
-    let user = match User::get_from_id(
-        db.clone(),
-        Thing::from(id.split_once(":").unwrap())
-    )
-    .await
-    {
+    let user = match User::get_from_id(db.clone(), Thing::from(id.split_once(':').unwrap())).await {
         Ok(a) => match a {
             Some(a) => a,
             None => {
@@ -50,7 +46,7 @@ pub async fn change_email_get(
 
     let mail = user.email.clone();
 
-    let expiry = Utc::now().checked_add_days(Days::new(2)).unwrap();
+    let expiry: DateTime<Utc> = Utc::now().checked_add_days(Days::new(2)).unwrap();
 
     let link = match Link::create_from_user(db, user, expiry, LinkType::EmailChange).await {
         Ok(a) => a.construct_link(),
@@ -68,7 +64,7 @@ pub async fn change_email_get(
         }
     };
 
-    let message = match build_mail(&mail, "E-Mail Änderung", template) {
+    let message = match build_mail(&mail, "E-Mail Änderung", ContentType::TEXT_HTML, template) {
         Ok(a) => a,
         Err(e) => {
             error!("Error building message\n{e}");

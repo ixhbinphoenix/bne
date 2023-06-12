@@ -38,7 +38,8 @@ impl CRUD<Link, LinkCreate, LinkPatch> for Link {
     async fn init_table(db: DBConnection) -> Result<bool, Error> {
         let sql = "DEFINE TABLE links SCHEMAFULL;\
                    DEFINE FIELD user ON links TYPE record(users);\
-                   DEFINE FIELD link_type ON links TYPE string;";
+                   DEFINE FIELD link_type ON links TYPE string;\
+                   DEFINE FIELD expiry ON links TYPE datetime;";
         db.query(sql).await?;
         Ok(true)
     }
@@ -69,7 +70,7 @@ impl CRUD<Link, LinkCreate, LinkPatch> for Link {
 #[allow(unused)]
 impl Link {
     pub async fn create_from_user(
-        db: ConnectionData, user: User, expiry: DateTime<Utc>, link_type: LinkType,
+        db: ConnectionData, user: User, expiry_time: DateTime<Utc>, link_type: LinkType,
     ) -> Result<Self, Error> {
         let link_id = random_id();
         let user_id = user.id;
@@ -82,7 +83,7 @@ impl Link {
             id: db_id.clone(),
             user: user_id,
             link_type,
-            expiry: expiry.into(),
+            expiry: expiry_time.into(),
         };
 
         let res: Self = db.create(db_id).content(link).await?;

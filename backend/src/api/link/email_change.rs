@@ -3,7 +3,7 @@ use std::str::FromStr;
 use actix_web::{web, Responder, Result};
 use argon2::{Argon2, PasswordHash, PasswordVerifier};
 use chrono::{Days, Utc};
-use lettre::Address;
+use lettre::{message::header::ContentType, Address};
 use log::{debug, error, warn};
 use serde::Deserialize;
 use surrealdb::sql::Thing;
@@ -163,7 +163,8 @@ pub async fn email_change_post(
         }
     };
 
-    let message = match build_mail(&body.mail, "Deine E-Mail Addresse wurde geändert", template) {
+    let message = match build_mail(&body.mail, "Deine E-Mail Addresse wurde geändert", ContentType::TEXT_HTML, template)
+    {
         Ok(a) => a,
         Err(e) => {
             error!("Error constructing message\n{e}");

@@ -1,9 +1,11 @@
-use lettre::{message::IntoBody, AsyncTransport, Message};
+use lettre::{
+    message::{header::ContentType, IntoBody}, AsyncTransport, Message
+};
 
 use super::{error::MailError, utils::Mailer};
 use crate::prelude::Error;
 
-pub fn build_mail<T>(to: &str, subject: &str, body: T) -> Result<Message, Error>
+pub fn build_mail<T>(to: &str, subject: &str, content_type: ContentType, body: T) -> Result<Message, Error>
 where
     T: IntoBody,
 {
@@ -11,6 +13,7 @@ where
         .from("TheSchedule <noreply@theschedule.de>".parse().unwrap())
         .to(to.parse().map_err(|_| Error::Mail(MailError::InvalidAddress(to.into())))?)
         .subject(subject)
+        .header(content_type)
         .body(body)
         .map_err(|e| MailError::MessageCreation(e).into())
 }

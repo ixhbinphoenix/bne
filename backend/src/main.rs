@@ -20,7 +20,7 @@ use actix_web::{
     cookie::{time::Duration, Key}, middleware::Logger, web::{self, Data}, App, HttpResponse, HttpServer
 };
 use api::{
-    change_email::change_email_get, check_session::check_session_get, get_lernbueros::get_lernbueros, get_timetable::get_timetable, link::email_change::email_change_post, login::login_post, logout::logout_post, logout_all::logout_all_post, register::register_post
+    change_email::change_email_get, check_session::check_session_get, get_lernbueros::get_lernbueros, get_timetable::get_timetable, link::{email_change::email_change_post, email_reset::email_reset_post}, login::login_post, logout::logout_post, logout_all::logout_all_post, register::register_post
 };
 use dotenv::dotenv;
 use lettre::{
@@ -171,10 +171,11 @@ async fn main() -> io::Result<()> {
             .service(web::resource("/check_session").route(web::get().to(check_session_get)))
             .service(web::resource("/get_timetable").route(web::get().to(get_timetable)))
             .service(web::resource("/get_lernbueros").route(web::get().to(get_lernbueros)))
-            .service(web::resource("/chane_email").route(web::get().to(change_email_get)))
+            .service(web::resource("/change_email").route(web::get().to(change_email_get)))
             .service(
                 web::scope("/link")
-                    .service(web::resource("/email_change/{uuid}").route(web::post().to(email_change_post))),
+                    .service(web::resource("/email_change/{uuid}").route(web::post().to(email_change_post)))
+                    .service(web::resource("/email_reset/{uuid}").route(web::post().to(email_reset_post))),
             )
     })
     .bind_rustls(format!("127.0.0.1:{port}"), config)?
