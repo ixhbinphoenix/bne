@@ -1,8 +1,4 @@
-import {
-  getLocalUntisCredentials,
-  fetchJSessionId,
-  deleteLocalUntisCredentials
-} from "./untisAPI";
+import { getLocalUntisCredentials, fetchJSessionId, deleteLocalUntisCredentials } from "./untisAPI";
 import type { TheScheduleObject } from "./main";
 
 class Request {
@@ -90,7 +86,7 @@ export async function registerAccount(
 }
 export async function getTimetable(monday: string, friday: string): Promise<TheScheduleObject[]> {
   try {
-    let body: {lessons: TheScheduleObject[]};
+    let body: { lessons: TheScheduleObject[] };
     const searchQuery = `?from=${monday}&until=${friday}`;
     const storedJSessionId = document.cookie.match("(^|;)\\s*" + "JSESSIONID" + "\\s*=\\s*([^;]+)")?.pop() || "";
     if (!storedJSessionId) {
@@ -99,9 +95,9 @@ export async function getTimetable(monday: string, friday: string): Promise<TheS
         localStorage.getItem("untis_password")
       );
       document.cookie = `JSESSIONID=${result.JSessionId}; max-age=600; secure; samesite=none`;
-      body = await Request.Get<{lessons: TheScheduleObject[]}>("get_timetable" + searchQuery);
+      body = await Request.Get<{ lessons: TheScheduleObject[] }>("get_timetable" + searchQuery);
     } else {
-      body = await Request.Get<{lessons: TheScheduleObject[]}>("get_timetable" + searchQuery);
+      body = await Request.Get<{ lessons: TheScheduleObject[] }>("get_timetable" + searchQuery);
     }
     return body.lessons;
   } catch (error) {
@@ -110,7 +106,7 @@ export async function getTimetable(monday: string, friday: string): Promise<TheS
 }
 export async function getLernbueros(monday: string, friday: string): Promise<TheScheduleObject[]> {
   try {
-    let body: {lessons: TheScheduleObject[]};
+    let body: { lessons: TheScheduleObject[] };
     const searchQuery = `?from=${monday}&until=${friday}`;
     const storedJSessionId = document.cookie.match("(^|;)\\s*" + "JSESSIONID" + "\\s*=\\s*([^;]+)")?.pop() || "";
     if (!storedJSessionId) {
@@ -156,11 +152,12 @@ export async function resetPassword(uuid: string, password: string) {
     return Promise.reject(error);
   }
 }
-export async function changePassword(currentPassword: string, newPassword: string) {
+export async function changePassword(currentPassword: string, newPassword: string, untisCypher: string) {
   try {
-    let result = await Request.Post(`link/password/change`, {
-      current_password: currentPassword,
-      new_password: newPassword
+    let result = await Request.Post(`change_password`, {
+      old_password: currentPassword,
+      new_password: newPassword,
+      new_untis_cypher: untisCypher
     });
     return Promise.resolve(result);
   } catch (error) {
