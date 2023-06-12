@@ -163,14 +163,14 @@ pub async fn email_change_post(
         }
     };
 
-    let message = match build_mail(&user.email, "Deine E-Mail Addresse wurde geändert", ContentType::TEXT_HTML, template)
-    {
-        Ok(a) => a,
-        Err(e) => {
-            error!("Error constructing message\n{e}");
-            return Ok(Response::new_error(500, "There was an error sending out an e-mail".into()).into());
-        }
-    };
+    let message =
+        match build_mail(&user.email, "Deine E-Mail Addresse wurde geändert", ContentType::TEXT_HTML, template) {
+            Ok(a) => a,
+            Err(e) => {
+                error!("Error constructing message\n{e}");
+                return Ok(Response::new_error(500, "There was an error sending out an e-mail".into()).into());
+            }
+        };
 
     match send_mail(mailer, message).await {
         Ok(_) => {}

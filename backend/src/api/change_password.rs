@@ -1,24 +1,33 @@
 use actix_identity::Identity;
-use actix_web::{Result, Responder, web::{self, Json}};
-use argon2::{Argon2, PasswordHash, PasswordVerifier, password_hash::SaltString, PasswordHasher};
-use chrono::{Utc, Days};
+use actix_web::{
+    web::{self, Json}, Responder, Result
+};
+use argon2::{password_hash::SaltString, Argon2, PasswordHash, PasswordHasher, PasswordVerifier};
+use chrono::{Days, Utc};
 use lettre::message::header::ContentType;
-use serde::Deserialize;
-use log::{error, debug};
+use log::{debug, error};
 use rand_core::OsRng;
+use serde::Deserialize;
 use surrealdb::sql::Thing;
 
-use crate::{models::{model::{ConnectionData, CRUD}, user_model::User, links_model::{Link, LinkType}}, mail::{utils::{Mailer, load_template}, mailing::{build_mail, send_mail}}, utils::password::valid_password, prelude::Error};
-
 use super::response::Response;
+use crate::{
+    database::sessions::delete_user_sessions, mail::{
+        mailing::{build_mail, send_mail}, utils::{load_template, Mailer}
+    }, models::{
+        links_model::{Link, LinkType}, model::{ConnectionData, CRUD}, user_model::User
+    }, prelude::Error, utils::password::valid_password
+};
 
 #[derive(Debug, Deserialize)]
 pub struct PasswordChange {
     old_password: String,
-    new_password: String
+    new_password: String,
 }
 
-pub async fn change_password_post(body: Json<PasswordChange>, id: Option<Identity>, db: ConnectionData, mailer: web::Data<Mailer>) -> Result<impl Responder> {
+pub async fn change_password_post(
+    body: Json<PasswordChange>, id: Option<Identity>, db: ConnectionData, mailer: web::Data<Mailer>,
+) -> Result<impl Responder> {
     if id.is_none() {
         return Ok(web::Json(Response::new_error(403, "Not logged in".into())));
     }
@@ -29,7 +38,7 @@ pub async fn change_password_post(body: Json<PasswordChange>, id: Option<Identit
         Err(e) => {
             error!("Error trying to get id\n{e}");
             return Ok(Response::new_error(500, "Internal Server Error".into()).into());
-        },
+        }
     };
 
     let user = match User::get_from_id(db.clone(), Thing::from(id.split_once(':').unwrap())).await {
@@ -38,12 +47,12 @@ pub async fn change_password_post(body: Json<PasswordChange>, id: Option<Identit
             None => {
                 error!("User not found?");
                 return Ok(Response::new_error(500, "Internal Server Error".into()).into());
-            },
+            }
         },
         Err(e) => {
             error!("Error trying to get user\n{e}");
             return Ok(Response::new_error(500, "Interal Server Error".into()).into());
-        },
+        }
     };
 
     if let Err(e) = valid_password(&body.new_password) {
@@ -76,7 +85,7 @@ pub async fn change_password_post(body: Json<PasswordChange>, id: Option<Identit
         Err(e) => {
             error!("Error hashing password\n{e}");
             return Ok(Response::new_error(500, "Internal Server Error".into()).into());
-        },
+        }
     };
 
     let old_user = user.clone();
@@ -86,11 +95,16 @@ pub async fn change_password_post(body: Json<PasswordChange>, id: Option<Identit
         email: user.email,
         password_hash: hash.to_string(),
         person_id: user.person_id,
-        untis_cypher: user.untis_cypher
+        untis_cypher: user.untis_cypher,
     };
 
     if let Err(e) = User::update_replace(db.clone(), old_user.id, new_user.clone()).await {
         error!("Error updating user\n{e}");
+        return Ok(Response::new_error(500, "Internal Server Error".into()).into());
+    }
+
+    if let Err(e) = delete_user_sessions(db.clone(), new_user.clone().id.to_string()).await {
+        error!("Error logging user out\n{e}");
         return Ok(Response::new_error(500, "Internal Server Error".into()).into());
     }
 
@@ -100,8 +114,8 @@ pub async fn change_password_post(body: Json<PasswordChange>, id: Option<Identit
         Ok(a) => a.construct_link(),
         Err(e) => {
             error!("Error creating link\n{e}");
-            return Ok(Response::new_error(500, "Error sending mail".into()).into())
-        },
+            return Ok(Response::new_error(500, "Error sending mail".into()).into());
+        }
     };
 
     let template = match load_template("password_changed.html").await {
@@ -109,16 +123,17 @@ pub async fn change_password_post(body: Json<PasswordChange>, id: Option<Identit
         Err(e) => {
             error!("Error loading template\n{e}");
             return Ok(Response::new_error(500, "Error sending mail".into()).into());
-        },
+        }
     };
 
-    let message = match build_mail(&new_user.clone().email, "Dein Passwort wurde geändert", ContentType::TEXT_HTML, template) {
-        Ok(a) => a,
-        Err(e) => {
-            error!("Error building mail\n{e}");
-            return Ok(Response::new_error(500, "Error sending mail".into()).into());
-        },
-    };
+    let message =
+        match build_mail(&new_user.clone().email, "Dein Passwort wurde geändert", ContentType::TEXT_HTML, template) {
+            Ok(a) => a,
+            Err(e) => {
+                error!("Error building mail\n{e}");
+                return Ok(Response::new_error(500, "Error sending mail".into()).into());
+            }
+        };
 
     if let Err(e) = send_mail(mailer, message).await {
         error!("Error sending mail\n{e}");

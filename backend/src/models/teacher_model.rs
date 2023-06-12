@@ -1,5 +1,5 @@
 use serde::{Deserialize, Serialize};
-use surrealdb::sql::{Thing, Array};
+use surrealdb::sql::{Array, Thing};
 
 use super::model::{ConnectionData, DBConnection, CRUD};
 use crate::prelude::Error;
@@ -9,14 +9,14 @@ pub struct Teacher {
     pub id: Thing,
     pub shortname: String,
     pub longname: String,
-    pub lessons: Array
+    pub lessons: Array,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct TeacherCreate {
     pub shortname: String,
     pub longname: String,
-    pub lessons: Array
+    pub lessons: Array,
 }
 
 #[async_trait::async_trait]
