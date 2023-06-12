@@ -4,7 +4,7 @@ use surrealdb::sql::Thing;
 use super::model::{ConnectionData, DBConnection, CRUD};
 use crate::prelude::Error;
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct User {
     pub id: Thing,
     pub email: String,
@@ -13,7 +13,7 @@ pub struct User {
     pub untis_cypher: String,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct UserCreate {
     pub email: String,
     pub person_id: i64,
