@@ -1,6 +1,6 @@
 use actix_identity::Identity;
 use actix_web::{web, Responder, Result};
-use log::error;
+use log::{error, warn};
 use serde::Deserialize;
 use surrealdb::sql::Thing;
 
@@ -8,7 +8,7 @@ use super::response::Response;
 use crate::{
     internalError, models::{
         model::{ConnectionData, CRUD}, user_model::User
-    }
+    }, database::sessions::delete_user_sessions
 };
 
 #[derive(Debug, Deserialize)]
@@ -61,9 +61,13 @@ pub async fn change_untis_data_post(
         person_id: body.person_id,
     };
 
-    if let Err(e) = User::update_replace(db, id, new_user).await {
+    if let Err(e) = User::update_replace(db.clone(), id.clone(), new_user).await {
         error!("Error updating user\n{e}");
         internalError!()
+    }
+
+    if let Err(e) = delete_user_sessions(db, id.to_string()).await {
+        warn!("Error deleting user sessions, ignoring\n{e}");
     }
 
     Ok(web::Json(Response::new_success("Successfully changed Untis Data".to_string())))
