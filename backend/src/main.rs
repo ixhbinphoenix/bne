@@ -35,6 +35,7 @@ use surrealdb::{engine::remote::ws::Ws, opt::auth::Root, Surreal};
 
 use crate::{
     mail::utils::Mailer, models::{links_model::Link, model::CRUD, user_model::User}, utils::env::{get_env, get_env_or}
+
 };
 
 #[derive(Clone)]
@@ -152,6 +153,7 @@ async fn main() -> io::Result<()> {
                     cookie_key.clone(),
                 )
                 .cookie_same_site(actix_web::cookie::SameSite::None)
+
                 .cookie_secure(true)
                 .cookie_http_only(true)
                 .session_lifecycle(

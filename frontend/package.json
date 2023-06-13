@@ -12,18 +12,18 @@
     "format": "prettier -w --plugin-search-dir=. ."
   },
   "dependencies": {
-    "@astrojs/preact": "^1.2.0",
-    "@astrojs/vercel": "^2.3.4",
-    "@fontsource/inter": "^4.5.15",
-    "astro": "^1.6.9",
+    "@astrojs/preact": "^2.2.1",
+    "@astrojs/vercel": "^3.4.1",
+    "@fontsource/inter": "^5.0.2",
+    "astro": "^2.5.7",
     "crypto-js": "^4.1.1",
-    "preact": "^10.6.5"
+    "preact": "^10.15.1"
   },
   "devDependencies": {
     "@types/crypto-js": "^4.1.1",
-    "@types/node": "^18.15.11",
+    "@types/node": "^20.2.5",
     "prettier": "^2.8.8",
-    "prettier-plugin-astro": "^0.8.0",
-    "sass": "^1.56.1"
+    "prettier-plugin-astro": "^0.10.0",
+    "sass": "^1.62.1"
   }
 }
