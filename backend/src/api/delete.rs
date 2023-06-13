@@ -1,17 +1,23 @@
 use actix_identity::Identity;
-use actix_web::{Result, Responder, web};
+use actix_web::{web, Responder, Result};
 use log::{error, warn};
 use serde::Deserialize;
 use surrealdb::sql::Thing;
 
-use crate::{models::{model::{CRUD, ConnectionData}, user_model::User}, internalError, api::response::Response, database::sessions::delete_user_sessions};
+use crate::{
+    api::response::Response, database::sessions::delete_user_sessions, internalError, models::{
+        model::{ConnectionData, CRUD}, user_model::User
+    }
+};
 
 #[derive(Debug, Deserialize)]
 pub struct DeleteBody {
-    password: String
+    password: String,
 }
 
-pub async fn delete_post(body: web::Json<DeleteBody>, id: Option<Identity>, db: ConnectionData) -> Result<impl Responder> {
+pub async fn delete_post(
+    body: web::Json<DeleteBody>, id: Option<Identity>, db: ConnectionData,
+) -> Result<impl Responder> {
     if id.is_none() {
         return Ok(web::Json(Response::new_error(403, "Not logged in".into())));
     }

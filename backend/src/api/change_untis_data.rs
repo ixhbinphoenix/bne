@@ -1,21 +1,26 @@
 use actix_identity::Identity;
-use actix_web::{Result, Responder, web};
+use actix_web::{web, Responder, Result};
 use log::error;
 use serde::Deserialize;
 use surrealdb::sql::Thing;
 
-use crate::{models::{user_model::User, model::{CRUD, ConnectionData}}, internalError};
-
 use super::response::Response;
+use crate::{
+    internalError, models::{
+        model::{ConnectionData, CRUD}, user_model::User
+    }
+};
 
 #[derive(Debug, Deserialize)]
 pub struct UntisData {
     password: String,
     untis_cypher: String,
-    person_id: i64
+    person_id: i64,
 }
 
-pub async fn change_untis_data_post(body: web::Json<UntisData>, db: ConnectionData, id: Option<Identity>) -> Result<impl Responder> {
+pub async fn change_untis_data_post(
+    body: web::Json<UntisData>, db: ConnectionData, id: Option<Identity>,
+) -> Result<impl Responder> {
     if id.is_none() {
         return Ok(web::Json(Response::new_error(403, "Not logged in".into())));
     }
@@ -53,7 +58,7 @@ pub async fn change_untis_data_post(body: web::Json<UntisData>, db: ConnectionDa
         password_hash: user.password_hash,
         verified: user.verified,
         untis_cypher: body.untis_cypher.clone(),
-        person_id: body.person_id
+        person_id: body.person_id,
     };
 
     if let Err(e) = User::update_replace(db, id, new_user).await {

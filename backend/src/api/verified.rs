@@ -1,11 +1,14 @@
-use actix_web::{Result, Responder, web};
 use actix_identity::Identity;
+use actix_web::{web, Responder, Result};
 use log::error;
 use surrealdb::sql::Thing;
 
-use crate::{models::{model::{ConnectionData, CRUD}, user_model::User}, internalError};
-
 use super::response::Response;
+use crate::{
+    internalError, models::{
+        model::{ConnectionData, CRUD}, user_model::User
+    }
+};
 
 pub async fn verified_get(id: Option<Identity>, db: ConnectionData) -> Result<impl Responder> {
     if id.is_none() {
@@ -13,13 +16,11 @@ pub async fn verified_get(id: Option<Identity>, db: ConnectionData) -> Result<im
     }
 
     let id = match id.unwrap().id() {
-        Ok(a) => {
-            Thing::from(a.split_once(':').unwrap())
-        },
+        Ok(a) => Thing::from(a.split_once(':').unwrap()),
         Err(e) => {
             error!("Error getting id.id()\n{e}");
             internalError!()
-        },
+        }
     };
 
     let user = match User::get_from_id(db, id).await {
@@ -28,12 +29,12 @@ pub async fn verified_get(id: Option<Identity>, db: ConnectionData) -> Result<im
             None => {
                 error!("User not found?");
                 internalError!()
-            },
+            }
         },
         Err(e) => {
             error!("Error getting user from id\n{e}");
             internalError!("There was a database error")
-        },
+        }
     };
 
     Ok(web::Json(Response::new_success(user.verified)))

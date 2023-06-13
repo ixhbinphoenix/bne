@@ -67,7 +67,11 @@ pub async fn get_lernbueros(
     };
 
     if !user.verified {
-        return Ok(Response::new_error(403, "Account not verified! Check your E-Mails for a verification link".to_string()).into());
+        return Ok(Response::new_error(
+            403,
+            "Account not verified! Check your E-Mails for a verification link".to_string(),
+        )
+        .into());
     }
 
     let untis = match UntisClient::unsafe_init(

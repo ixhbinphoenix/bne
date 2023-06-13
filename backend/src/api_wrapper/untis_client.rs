@@ -3,8 +3,8 @@ use std::{collections::HashMap, sync::Arc};
 use actix_web::web;
 use actix_web_lab::__reexports::tokio::task::JoinSet;
 use chrono::{Days, NaiveDate};
-use reqwest::{Client, Response};
 use log::debug;
+use reqwest::{Client, Response};
 
 use super::utils::{
     self, day_of_week, DetailedSubject, FormattedLesson, Holidays, Klasse, LoginResults, PeriodObject, Schoolyear, Substitution, TimegridUnits, TimetableParameter, UntisArrayResponse
@@ -128,7 +128,6 @@ impl UntisClient {
             .ok_or("Couldn't find Q1")
             .map_err(|_| Error::UntisError)?;
         let q2_id = klassen
-            
             .into_iter()
             .find(|klasse| klasse.name == "Q2")
             .ok_or("Couldn't find Q2")
@@ -441,10 +440,7 @@ impl UntisClient {
         Ok(formatted)
     }
 
-    pub async fn get_lernbueros(
-        &self, mut parameter: TimetableParameter,
-    ) -> Result<Vec<FormattedLesson>, Error> {
-
+    pub async fn get_lernbueros(&self, mut parameter: TimetableParameter) -> Result<Vec<FormattedLesson>, Error> {
         let mut all_lbs: Vec<FormattedLesson> = vec![];
         let mut future_lessons = JoinSet::new();
 
@@ -487,7 +483,7 @@ impl UntisClient {
 
         let mut additional_lbs: Vec<FormattedLesson> = vec![];
 
-        for lb in all_lbs.clone(){
+        for lb in all_lbs.clone() {
             let mut new_room = "".to_string();
             if let Some(sub) = lb.clone().substitution {
                 if sub.clone().cancelled {
@@ -567,10 +563,12 @@ impl UntisClient {
                 let mut sub = "".to_string();
                 let mut rooms = "".to_string();
                 let mut cancelled = false;
-                for subject in lesson.1{
-                    if teachers.contains(&subject.clone().0) || (lesson.0 == "IF" && (*"O 2-16NT" != subject.1.clone() && *"H NT" != subject.1.clone())){ 
+                for subject in lesson.1 {
+                    if teachers.contains(&subject.clone().0)
+                        || (lesson.0 == "IF" && (*"O 2-16NT" != subject.1.clone() && *"H NT" != subject.1.clone()))
+                    {
                         cancelled = true;
-                        continue; 
+                        continue;
                     }
                     if !sub.is_empty() {
                         teachers += ", ";
@@ -584,7 +582,7 @@ impl UntisClient {
                             cancelled = true;
                         }
                         if let Some(t) = sub.teacher {
-                            if t == *"---"{
+                            if t == *"---" {
                                 cancelled = true;
                             }
                         }
@@ -594,18 +592,18 @@ impl UntisClient {
                     }
                     if cancelled {
                         continue;
-                    }
-                    else{
+                    } else {
                         teachers += &subject.0;
                         rooms += &new_room;
                     }
                 }
-                if cancelled { continue; }
-                if rooms == *""{
+                if cancelled {
                     continue;
                 }
-                else{
-                    every_lb.push(FormattedLesson { 
+                if rooms == *"" {
+                    continue;
+                } else {
+                    every_lb.push(FormattedLesson {
                         teacher: teachers,
                         is_lb: true,
                         start,
@@ -614,7 +612,7 @@ impl UntisClient {
                         subject: lesson.0.clone(),
                         subject_short: lesson.0.clone(),
                         room: rooms,
-                        substitution: None
+                        substitution: None,
                     });
                 }
             }
@@ -626,7 +624,7 @@ impl UntisClient {
             .map_err(|_| Error::UntisError)?;
 
         every_lb.append(&mut formatted_holidays);
-        
+
         Ok(every_lb)
     }
 

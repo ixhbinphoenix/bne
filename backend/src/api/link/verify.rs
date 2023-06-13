@@ -5,7 +5,11 @@ use log::{error, warn};
 use surrealdb::sql::Thing;
 use uuid::Uuid;
 
-use crate::{models::{model::{CRUD, ConnectionData}, links_model::{LinkType, Link}, user_model::User}, internalError, api::response::Response};
+use crate::{
+    api::response::Response, internalError, models::{
+        links_model::{Link, LinkType}, model::{ConnectionData, CRUD}, user_model::User
+    }
+};
 
 
 pub async fn verify_get(path: web::Path<String>, db: ConnectionData) -> Result<impl Responder> {
@@ -56,7 +60,7 @@ pub async fn verify_get(path: web::Path<String>, db: ConnectionData) -> Result<i
         Err(e) => {
             error!("Error getting user from id\n{e}");
             internalError!()
-        },
+        }
     };
 
     let new_user = User {

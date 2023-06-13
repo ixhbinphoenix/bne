@@ -1,16 +1,18 @@
 use actix_identity::Identity;
 use actix_web::{web, HttpMessage, HttpRequest, Responder, Result};
 use argon2::{password_hash::SaltString, Argon2, PasswordHasher};
-use chrono::{Utc, Months};
-use lettre::{Address, message::header::ContentType};
+use chrono::{Months, Utc};
+use lettre::{message::header::ContentType, Address};
 use log::error;
 use rand_core::OsRng;
 use serde::Deserialize;
 
 use crate::{
-    api::response::Response, models::{
-        model::{DBConnection, CRUD}, user_model::{User, UserCreate}, links_model::{Link, LinkType}
-    }, prelude::Error, utils::password::valid_password, mail::{utils::{Mailer, load_template}, mailing::{build_mail, send_mail}}, internalError
+    api::response::Response, internalError, mail::{
+        mailing::{build_mail, send_mail}, utils::{load_template, Mailer}
+    }, models::{
+        links_model::{Link, LinkType}, model::{DBConnection, CRUD}, user_model::{User, UserCreate}
+    }, prelude::Error, utils::password::valid_password
 };
 
 #[derive(Deserialize)]
@@ -22,7 +24,7 @@ pub struct RegisterData {
 }
 
 pub async fn register_post(
-    data: web::Json<RegisterData>, db: web::Data<DBConnection>, request: HttpRequest, mailer: web::Data<Mailer>
+    data: web::Json<RegisterData>, db: web::Data<DBConnection>, request: HttpRequest, mailer: web::Data<Mailer>,
 ) -> Result<impl Responder> {
     if data.email.clone().parse::<Address>().is_err() {
         return Ok(Response::new_error(400, "Not a valid email address".into()).into());
@@ -52,7 +54,7 @@ pub async fn register_post(
         person_id: data.person_id,
         password_hash,
         untis_cypher: data.untis_cypher.clone(),
-        verified: false
+        verified: false,
     };
 
     let ret_user = match User::create(db.clone(), "users".to_owned(), db_user).await {
@@ -67,7 +69,7 @@ pub async fn register_post(
         Err(e) => {
             error!("Error creating link\n{e}");
             internalError!()
-        },
+        }
     };
 
     let template = match load_template("verify.html").await {
@@ -75,7 +77,7 @@ pub async fn register_post(
         Err(e) => {
             error!("Error loading template\n{e}");
             internalError!()
-        },
+        }
     };
 
     let message = match build_mail(&ret_user.clone().email, "Accountverifizierung", ContentType::TEXT_HTML, template) {
@@ -83,7 +85,7 @@ pub async fn register_post(
         Err(e) => {
             error!("Error building message\n{e}");
             internalError!()
-        },
+        }
     };
 
     if let Err(e) = send_mail(mailer, message).await {

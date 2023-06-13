@@ -106,7 +106,7 @@ pub async fn reset_password_post(
         password_hash: hash,
         person_id: body.new_person_id,
         untis_cypher: body.new_untis_cypher.clone(),
-        verified: old_user.verified
+        verified: old_user.verified,
     };
 
     if let Err(e) = User::update_replace(db.clone(), new_user.clone().id, new_user.clone()).await {
