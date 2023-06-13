@@ -38,6 +38,7 @@ impl CRUD<User, UserCreate> for User {
         db.query(sql).await?;
 
         Ok(())
+
     }
 }
 
@@ -63,5 +64,6 @@ impl User {
         let hash = PasswordHash::new(&self.password_hash)?;
 
         argon2.verify_password(password.as_bytes(), &hash)
+
     }
 }

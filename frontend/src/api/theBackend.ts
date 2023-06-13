@@ -69,6 +69,7 @@ export async function loginAccount(email: string, password: string) {
 export async function registerAccount(
   email: string,
   password: string,
+
   personId: number,
   untisCredentialsEncrypted: string
 ) {
@@ -78,6 +79,7 @@ export async function registerAccount(
       password: password,
       person_id: personId,
       untis_cypher: untisCredentialsEncrypted
+
     });
     return Promise.resolve();
   } catch (error) {

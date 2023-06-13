@@ -33,6 +33,7 @@ pub async fn register_post(
     let pot_user = User::get_from_email(db.clone(), data.email.clone()).await;
     if pot_user.is_ok() && pot_user.unwrap().is_some() {
         return Ok(web::Json(Response::new_error(403, "E-mail already associated to account!".to_string())));
+
     }
     if let Err(e) = valid_password(&data.password) {
         return Err(Error::from(e).try_into()?);
@@ -82,6 +83,7 @@ pub async fn register_post(
 
     let message = match build_mail(&ret_user.clone().email, "Accountverifizierung", ContentType::TEXT_HTML, template) {
         Ok(a) => a,
+
         Err(e) => {
             error!("Error building message\n{e}");
             internalError!()
