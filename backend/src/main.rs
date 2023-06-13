@@ -20,7 +20,7 @@ use actix_web::{
     cookie::{time::Duration, Key}, middleware::Logger, web::{self, Data}, App, HttpResponse, HttpServer
 };
 use api::{
-    change_email::change_email_get, change_password::change_password_post, check_session::check_session_get, delete::delete_post, forgot_password::forgot_password_post, get_lernbueros::get_lernbueros, get_timetable::get_timetable, link::{email_change::email_change_post, email_reset::email_reset_post, password::reset_password_post, verify::verify_get}, login::login_post, logout::logout_post, logout_all::logout_all_post, register::register_post, verified::verified_get
+    change_email::change_email_get, change_password::change_password_post, change_untisdata::change_untisdata_post, check_session::check_session_get, delete::delete_post, forgot_password::forgot_password_post, get_lernbueros::get_lernbueros, get_timetable::get_timetable, link::{email_change::email_change_post, email_reset::email_reset_post, password::reset_password_post, verify::verify_get}, login::login_post, logout::logout_post, logout_all::logout_all_post, register::register_post, verified::verified_get
 };
 use dotenv::dotenv;
 use lettre::{
@@ -175,6 +175,7 @@ async fn main() -> io::Result<()> {
             .service(web::resource("/change_email").route(web::get().to(change_email_get)))
             .service(web::resource("/change_password").route(web::post().to(change_password_post)))
             .service(web::resource("/forgot_password").route(web::post().to(forgot_password_post)))
+            .service(web::resource("/change_untis_data").route(web::post().to(change_untisdata_post)))
             .service(web::resource("/verified").route(web::get().to(verified_get)))
             .service(
                 web::scope("/link")
