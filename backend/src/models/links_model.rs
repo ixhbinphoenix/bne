@@ -16,7 +16,7 @@ pub struct Link {
     pub expiry: surrealdb::sql::Datetime,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Eq)]
 pub enum LinkType {
     EmailChange,
     EmailReset,

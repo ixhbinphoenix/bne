@@ -21,7 +21,7 @@ use actix_web::{
 };
 use api::{
     change_email::change_email_get, change_password::change_password_post, change_untis_data::change_untis_data_post, check_session::check_session_get, delete::delete_post, forgot_password::forgot_password_post, get_lernbueros::get_lernbueros, get_timetable::get_timetable, link::{
-        email_change::email_change_post, email_reset::email_reset_post, password::reset_password_post, verify::verify_get
+        check_uuid::check_uuid_get, email_change::email_change_post, email_reset::email_reset_post, password::reset_password_post, verify::verify_get
     }, login::login_post, logout::logout_post, logout_all::logout_all_post, register::register_post, verified::verified_get
 };
 use dotenv::dotenv;
@@ -186,7 +186,8 @@ async fn main() -> io::Result<()> {
                     .service(web::resource("/email_change/{uuid}").route(web::post().to(email_change_post)))
                     .service(web::resource("/email_reset/{uuid}").route(web::post().to(email_reset_post)))
                     .service(web::resource("/password/{uuid}").route(web::post().to(reset_password_post)))
-                    .service(web::resource("/verify/{uuid}").route(web::get().to(verify_get))),
+                    .service(web::resource("/verify/{uuid}").route(web::get().to(verify_get)))
+                    .service(web::resource("/check_uuid/{uuid}").route(web::get().to(check_uuid_get))),
             )
     })
     .bind_rustls(format!("127.0.0.1:{port}"), config)?
