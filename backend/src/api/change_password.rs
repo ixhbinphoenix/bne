@@ -2,7 +2,7 @@ use actix_identity::Identity;
 use actix_web::{
     web::{self, Json}, Responder, Result
 };
-use argon2::{password_hash::SaltString, Argon2, PasswordHash, PasswordHasher, PasswordVerifier};
+use argon2::{password_hash::SaltString, Argon2, PasswordHasher};
 use chrono::{Days, Utc};
 use lettre::message::header::ContentType;
 use log::{debug, error};
@@ -64,11 +64,12 @@ pub async fn change_password_post(
         return Ok(Response::new_error(400, "New Password can't be Old Password".into()).into());
     }
 
-    if user.verify_password(body.old_password).is_err() {
+    if user.verify_password(body.old_password.clone()).is_err() {
         debug!("Wrong password");
         return Ok(Response::new_error(403, "Wrong password".into()).into());
     }
 
+    let argon2 = Argon2::default();
     let salt = SaltString::generate(OsRng);
 
     let hash = match argon2.hash_password(body.new_password.as_bytes(), &salt) {

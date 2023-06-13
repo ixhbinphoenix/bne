@@ -1,7 +1,6 @@
 use std::str::FromStr;
 
 use actix_web::{web, Responder, Result};
-use argon2::{Argon2, PasswordHash, PasswordVerifier};
 use chrono::{Days, Utc};
 use lettre::{message::header::ContentType, Address};
 use log::{debug, error, warn};

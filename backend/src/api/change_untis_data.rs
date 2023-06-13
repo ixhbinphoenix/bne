@@ -53,7 +53,7 @@ pub async fn change_untis_data_post(body: web::Json<UntisData>, db: ConnectionDa
         password_hash: user.password_hash,
         verified: user.verified,
         untis_cypher: body.untis_cypher.clone(),
-        person_id: body.person_id.clone()
+        person_id: body.person_id
     };
 
     if let Err(e) = User::update_replace(db, id, new_user).await {

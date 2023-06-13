@@ -1,6 +1,5 @@
 use actix_identity::Identity;
 use actix_web::{Result, Responder, web};
-use argon2::{Argon2, PasswordHash, PasswordVerifier};
 use log::{error, warn};
 use serde::Deserialize;
 use surrealdb::sql::Thing;

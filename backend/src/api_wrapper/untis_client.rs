@@ -528,6 +528,7 @@ impl UntisClient {
             .await
             .map_err(|_| Error::UntisError)?;
 
+        #[allow(clippy::type_complexity)]
         let mut lbs_per_week: HashMap<String, HashMap<String, Vec<(String, String, Option<Substitution>)>>> =
             HashMap::new();
 

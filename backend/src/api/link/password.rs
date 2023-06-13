@@ -5,7 +5,7 @@
 use std::str::FromStr;
 
 use actix_web::{web, Responder, Result};
-use argon2::{password_hash::SaltString, Argon2, PasswordHash, PasswordHasher, PasswordVerifier};
+use argon2::{password_hash::SaltString, Argon2, PasswordHasher};
 use log::{error, warn};
 use rand_core::OsRng;
 use serde::Deserialize;
@@ -86,16 +86,7 @@ pub async fn reset_password_post(
 
     let argon2 = Argon2::default();
 
-    let db_hash_str = user.clone().password_hash;
-    let db_hash = match PasswordHash::new(&db_hash_str) {
-        Ok(a) => a,
-        Err(e) => {
-            error!("Invalid hash in database\n{e}");
-            return Ok(Response::new_error(500, "There was a database error".into()).into());
-        }
-    };
-
-    if argon2.verify_password(body.new_password.as_bytes(), &db_hash).is_ok() {
+    if user.verify_password(body.new_password.clone()).is_ok() {
         return Ok(Response::new_error(400, "New Password can't be Old Password".into()).into());
     }
 
