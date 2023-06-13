@@ -3,7 +3,7 @@
 import "../../../styles/SettingsElement.scss";
 import type { JSX } from "preact";
 import { changeUntisData } from "../../../api/theBackend";
-import { fetchJSessionId, saveUntisCredentials } from "../../../api/untisAPI";
+import { fetchJSessionId, getLocalUntisCredentials, saveUntisCredentials } from "../../../api/untisAPI";
 import { generateKey, passwordEncrypt } from "../../../api/encryption";
 import { useState } from "preact/hooks";
 
@@ -15,7 +15,7 @@ export default function ChangeUntisData(): JSX.Element {
       saveUntisCredentials(event.target[1].value, event.target[2].value);
       document.cookie = `JSESSIONID=${result.JSessionId}; max-age=600; secure; samesite=none`;
       const key = generateKey(event.target[0].value);
-      const untisCredentials = JSON.stringify({ username: event.target[1], password: event.target[2].value });
+      const untisCredentials = JSON.stringify({ username: event.target[1].value, password: event.target[2].value });
       const untisCredentialsEncrtypted = passwordEncrypt(key, untisCredentials).toString();
       changeUntisData(event.target[0].value, result.personId, untisCredentialsEncrtypted).then(
         () => {
@@ -40,7 +40,7 @@ export default function ChangeUntisData(): JSX.Element {
             required
           />
 
-          <input type="username" name="new_untis_username" placeholder="Neuer Untis-Nutzername" autocomplete="off" />
+          <input type="username" name="new_untis_username" placeholder="Neuer Untis-Nutzername" autocomplete="off" required/>
           <input name="new_untis_pwd" type="password" placeholder="Neues Untis-Passwort" autocomplete="off" required />
           <input type="submit" id="submit-button" />
         </form>
