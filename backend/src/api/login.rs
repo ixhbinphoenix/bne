@@ -32,7 +32,7 @@ pub async fn login_post(
         } {
             Some(u) => u,
             None => {
-                return Ok(Response::new_error(500, "E-Mail or Password is incorrect!".to_owned()).into());
+                return Ok(Response::new_error(403, "E-Mail or Password is incorrect!".to_owned()).into());
             }
         }
     };
@@ -58,6 +58,6 @@ pub async fn login_post(
                 Ok(Response::new_error(500, "Internal Server Error".to_owned()).into())
             }
         },
-        Err(_) => Ok(Response::new_error(403, "Username or Password is incorrect!".to_owned()).into()),
+        Err(_) => Ok(Response::new_error(403, "E-Mail or Password is incorrect!".to_owned()).into()),
     }
 }

@@ -66,6 +66,10 @@ pub async fn get_lernbueros(
         }
     };
 
+    if !user.verified {
+        return Ok(Response::new_error(403, "Account not verified! Check your E-Mails for a verification link".to_string()).into());
+    }
+
     let untis = match UntisClient::unsafe_init(
         jsessionid,
         user.person_id.try_into().expect("the database to not store numbers bigger than u16"),
