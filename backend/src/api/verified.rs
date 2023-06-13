@@ -36,5 +36,5 @@ pub async fn verified_get(id: Option<Identity>, db: ConnectionData) -> Result<im
         },
     };
 
-    return Ok(web::Json(Response::new_success(user.verified)));
+    Ok(web::Json(Response::new_success(user.verified)))
 }
