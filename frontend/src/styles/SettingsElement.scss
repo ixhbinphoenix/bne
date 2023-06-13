@@ -30,17 +30,11 @@
       margin: 1.5% 0px;
       outline: none;
       border: 2px solid;
-      border-image: linear-gradient(
-          90deg,
-          rgba(198, 160, 246, 1) 0%,
-          rgba(237, 135, 150, 1) 50%,
-          rgba(238, 212, 159, 1) 100%
-        )
-        1;
+      border-image: var(--text-gradient) 1;
       &:hover {
         border-image: none;
-        border-color: #5974e2;
-        background-color: #5974e2;
+        border-color: var(--highlight-blue);
+        background-color: var(--highlight-blue);
       }
     }
     & > form {
@@ -55,8 +49,8 @@
 
         &:hover {
           border-image: none;
-          border-color: #5974e2;
-          background-color: #5974e2;
+          border-color: var(--highlight-blue);
+          background-color: var(--highlight-blue);
         }
       }
       & > input {
@@ -68,20 +62,14 @@
         margin: 1.5% 0px;
         outline: none;
         border: 2px solid;
-        border-image: linear-gradient(
-            90deg,
-            rgba(198, 160, 246, 1) 0%,
-            rgba(237, 135, 150, 1) 50%,
-            rgba(238, 212, 159, 1) 100%
-          )
-          1;
+        border-image: var(--text-gradient) 1;
         &:focus {
           border-image: none;
-          border-color: #5974e2;
+          border-color: var(--highlight-blue);
         }
         &:invalid {
-          border-color: rgb(228, 64, 64);
-          color: rgb(228, 64, 64);
+          border-color: var(--highlight-red);
+          color: var(--highlight-red);
         }
       }
     }
