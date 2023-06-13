@@ -207,10 +207,10 @@ export async function changeUntisData(
   untisCredentialsEncrypted: string
 ): Promise<string> {
   try {
-    let result = await Request.Post<string>("change_untis_cypher", {
+    let result = await Request.Post<string>("change_untis_data", {
       password: password,
-      new_person_id: personId,
-      new_untis_cypher: untisCredentialsEncrypted
+      person_id: personId,
+      untis_cypher: untisCredentialsEncrypted
     });
     return result;
   } catch (error) {
