@@ -86,17 +86,7 @@ pub async fn email_change_post(
         }
     };
 
-    let argon2 = Argon2::default();
-
-    let db_hash = match PasswordHash::new(&user.password_hash) {
-        Ok(hash) => hash,
-        Err(_) => {
-            error!("Error: Stored hash is not a valid hash. User: {}", user.email);
-            return Ok(Response::new_error(500, "Internal Server Error".to_owned()).into());
-        }
-    };
-
-    if argon2.verify_password(body.password.as_bytes(), &db_hash).is_err() {
+    if user.verify_password(body.password.clone()).is_err() {
         debug!("Client sent wrong password");
         return Ok(Response::new_error(403, "Wrong Password".into()).into());
     };

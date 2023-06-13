@@ -1,6 +1,5 @@
 use actix_identity::Identity;
 use actix_web::{web, HttpMessage, HttpRequest, Responder, Result};
-use argon2::{Argon2, PasswordHash, PasswordVerifier};
 use log::error;
 use serde::{Deserialize, Serialize};
 
@@ -37,17 +36,7 @@ pub async fn login_post(
         }
     };
 
-    let argon2 = Argon2::default();
-
-    let db_hash = match PasswordHash::new(&db_user.password_hash) {
-        Ok(hash) => hash,
-        Err(_) => {
-            error!("Error: Stored hash is not a valid hash. User: {}", db_user.email);
-            return Ok(Response::new_error(500, "Internal Server Error".to_owned()).into());
-        }
-    };
-
-    match argon2.verify_password(data.password.as_str().as_bytes(), &db_hash) {
+    match db_user.verify_password(data.password.clone()) {
         Ok(_) => match Identity::login(&req.extensions(), db_user.id.to_string()) {
             Ok(_) => Ok(Response::<LoginResponse>::new_success(LoginResponse {
                 untis_cypher: db_user.untis_cypher.clone(),

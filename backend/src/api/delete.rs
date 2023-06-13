@@ -40,17 +40,7 @@ pub async fn delete_post(body: web::Json<DeleteBody>, id: Option<Identity>, db: 
         }
     };
 
-    let argon2 = Argon2::default();
-
-    let db_hash = match PasswordHash::new(&user.password_hash) {
-        Ok(a) => a,
-        Err(e) => {
-            error!("Error hashing password\n{e}");
-            internalError!()
-        },
-    };
-
-    if argon2.verify_password(body.password.as_bytes(), &db_hash).is_err() {
+    if user.verify_password(body.password.clone()).is_err() {
         warn!("Incorrect password");
         return Ok(web::Json(Response::new_error(403, "Incorrect Password".into())));
     }
