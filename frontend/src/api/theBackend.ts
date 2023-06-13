@@ -166,11 +166,10 @@ export async function forgotPassword(email: string): Promise<any> {
   try {
     let result = Request.Post("forgot_password", {
       mail: email
-    })
-    return result
-  }
-  catch (error) {
-    return Promise.reject(error)
+    });
+    return result;
+  } catch (error) {
+    return Promise.reject(error);
   }
 }
 export async function demandEmail() {

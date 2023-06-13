@@ -75,7 +75,7 @@ h1 {
   color: var(--highlight-red);
 }
 .active {
-  color: var(--highlight-red)
+  color: var(--highlight-red);
 }
 p {
   margin: 0px;
