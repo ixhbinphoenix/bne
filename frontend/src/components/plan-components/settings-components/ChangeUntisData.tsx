@@ -13,6 +13,7 @@ export default function ChangeUntisData(): JSX.Element {
     event.preventDefault();
     fetchJSessionId(event.target[1].value, event.target[2].value).then((result) => {
       saveUntisCredentials(event.target[1].value, event.target[2].value);
+      document.cookie = `JSESSIONID=${result.JSessionId}; max-age=600; secure; samesite=none`;
       const key = generateKey(event.target[0].value);
       const untisCredentials = JSON.stringify({ username: event.target[1], password: event.target[2].value });
       const untisCredentialsEncrtypted = passwordEncrypt(key, untisCredentials).toString();
