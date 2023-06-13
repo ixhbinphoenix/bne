@@ -41,7 +41,7 @@ where
     }
 
     async fn delete(db: ConnectionData, id: Thing) -> Result<(), Error> {
-        db.delete(id).await?;
+        let _: D = db.delete(id).await?;
 
         Ok(())
     }

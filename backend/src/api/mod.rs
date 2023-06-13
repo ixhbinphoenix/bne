@@ -11,3 +11,4 @@ pub mod logout_all;
 pub mod register;
 pub mod response;
 pub mod verified;
+pub mod delete;

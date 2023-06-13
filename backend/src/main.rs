@@ -20,7 +20,7 @@ use actix_web::{
     cookie::{time::Duration, Key}, middleware::Logger, web::{self, Data}, App, HttpResponse, HttpServer
 };
 use api::{
-    change_email::change_email_get, change_password::change_password_post, check_session::check_session_get, forgot_password::forgot_password_post, get_lernbueros::get_lernbueros, get_timetable::get_timetable, link::{email_change::email_change_post, email_reset::email_reset_post, password::reset_password_post, verify::verify_get}, login::login_post, logout::logout_post, logout_all::logout_all_post, register::register_post, verified::verified_get
+    change_email::change_email_get, change_password::change_password_post, check_session::check_session_get, delete::delete_post, forgot_password::forgot_password_post, get_lernbueros::get_lernbueros, get_timetable::get_timetable, link::{email_change::email_change_post, email_reset::email_reset_post, password::reset_password_post, verify::verify_get}, login::login_post, logout::logout_post, logout_all::logout_all_post, register::register_post, verified::verified_get
 };
 use dotenv::dotenv;
 use lettre::{
@@ -168,6 +168,7 @@ async fn main() -> io::Result<()> {
             .service(web::resource("/login").route(web::post().to(login_post)))
             .service(web::resource("/logout").route(web::post().to(logout_post)))
             .service(web::resource("/logout_all").route(web::post().to(logout_all_post)))
+            .service(web::resource("/delete").route(web::post().to(delete_post)))
             .service(web::resource("/check_session").route(web::get().to(check_session_get)))
             .service(web::resource("/get_timetable").route(web::get().to(get_timetable)))
             .service(web::resource("/get_lernbueros").route(web::get().to(get_lernbueros)))
