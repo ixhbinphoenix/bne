@@ -57,6 +57,10 @@
       color: #ff4d17;
       margin-top: 3%;
     }
+    &> a {
+      text-align: center;
+      color: #5974e2;
+    }
     & > form {
       display: flex;
       flex-direction: column;
