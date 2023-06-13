@@ -63,6 +63,7 @@ export default function LoginForm(): JSX.Element {
           </div>
         </form>
         <div class="error-message">{errorMessage}</div>
+        <a href="/passwort-vergessen">Passwort vergessen</a>
       </div>
     </div>
   );

@@ -1,6 +1,7 @@
 :root {
   --spacing-left: clamp(28px, 1.5vw, 55px);
   --spacing-top: clamp(4%, 4%, 35px);
+  --text-color: #cad3f5;
 }
 
 .table-layout {
@@ -9,6 +10,14 @@
   min-width: 85%;
   width: 100%;
   background-color: #363a4f;
+  position: relative;
+
+  & > #filter-icon {
+    position: absolute;
+    margin: 3.5px;
+    width: var(--spacing-left);
+    color: var(--text-color);
+  }
 
   .table-top {
     position: relative;
@@ -26,7 +35,7 @@
       font-size: clamp(0.55rem, 125%, 1vh);
     }
     & > span.highlighted {
-      color: rgb(228, 64, 64);
+      color: var(--highlight-red);
     }
   }
   .table-body {
@@ -44,7 +53,7 @@
       justify-content: space-around;
 
       & > span.highlighted {
-        color: rgb(228, 64, 64);
+        color: var(--highlight-red);
       }
       span {
         text-align: center;
@@ -63,7 +72,7 @@
       .bar {
         user-select: none;
         cursor: pointer;
-        color: #cad3f5;
+        color: var(--text-color);
         font-size: clamp(7px, 2.75rem, 3.5vh);
         display: flex;
         align-items: center;
@@ -109,7 +118,7 @@
             display: flex;
             align-items: center;
             justify-content: space-around;
-            background-color: rgb(228, 64, 64);
+            background-color: var(--highlight-red);
             font-size: clamp(25%, calc(65%), 30px);
 
             & > h2 {

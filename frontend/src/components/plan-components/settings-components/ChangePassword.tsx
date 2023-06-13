@@ -14,7 +14,6 @@ export default function ChangePassword(): JSX.Element {
     event.preventDefault();
     const key = generateKey(event.target[1].value);
     const untisCredentials = JSON.stringify(getLocalUntisCredentials());
-    console.log(untisCredentials);
     const untisCypher = passwordEncrypt(key, untisCredentials).toString();
     changePassword(event.target[0].value, event.target[1].value, untisCypher).then(
       () => {

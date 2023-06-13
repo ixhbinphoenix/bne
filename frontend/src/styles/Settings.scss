@@ -53,7 +53,7 @@
     width: 100%;
 
     & > a {
-      color: #8aadf4;
+      color: var(--highlight-blue);
       font-size: clamp(8px, 2vmin, 14px);
     }
   }

@@ -1,7 +1,5 @@
 //Yeah this is total Chat-GPT magic here
 
-import { dir } from "console";
-
 interface Options {
   direction: "left" | "right";
   renew?: boolean;
@@ -51,16 +49,13 @@ export function onSwipe(query: string, { direction, renew = false }: Options, ca
       Math.abs(swipeDistanceX) / swipeDuration > minSwipeSpeed
     ) {
       if (swipeDistanceX > 0 && direction == "right") {
-        console.info("right");
         callback();
       } else if (swipeDistanceX < 0 && direction == "left") {
-        console.info("left");
         callback();
       } else if (
         (swipeDistanceX < 0 && direction == "right" && renew) ||
         (swipeDistanceX > 0 && direction == "left" && renew)
       ) {
-        console.info("restart");
         destination?.addEventListener("touchstart", handleTouchStart, { passive: true, once: true });
         destination?.addEventListener("touchend", handleTouchEnd, { passive: true, once: true });
       }

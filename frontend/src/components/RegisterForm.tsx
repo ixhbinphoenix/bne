@@ -27,7 +27,6 @@ export default function LoginForm(): JSX.Element {
         }
       },
       (error) => {
-        console.error(error);
         setErrorMessage(error.message);
       }
     );

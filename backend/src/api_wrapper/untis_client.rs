@@ -8,7 +8,9 @@ use reqwest::{Client, Response};
 use super::utils::{
     self, day_of_week, DetailedSubject, FormattedLesson, Holidays, Klasse, LoginResults, PeriodObject, Schoolyear, Substitution, TimegridUnits, TimetableParameter, UntisArrayResponse
 };
-use crate::{api_wrapper::utils::UntisResponse, prelude::Error, models::{teacher_model::Teacher, model::DBConnection}};
+use crate::{
+    api_wrapper::utils::UntisResponse, models::{model::DBConnection, teacher_model::Teacher}, prelude::Error
+};
 
 #[derive(Clone)]
 pub struct UntisClient {
@@ -58,7 +60,7 @@ impl UntisClient {
             client: Client::new(),
             jsessionid: "".to_string(),
             ids: HashMap::new(),
-            db
+            db,
         };
 
         untis_client.login(user, password).await.map_err(|_| Error::UntisError)?;
@@ -68,7 +70,8 @@ impl UntisClient {
     }
 
     pub async fn unsafe_init(
-        jsessionid: String, person_id: u16, person_type: u16, id: String, school: String, subdomain: String, db: web::Data<DBConnection>,
+        jsessionid: String, person_id: u16, person_type: u16, id: String, school: String, subdomain: String,
+        db: web::Data<DBConnection>,
     ) -> Result<Self, Error> {
         let client = Client::new();
 
@@ -81,7 +84,7 @@ impl UntisClient {
             client,
             jsessionid,
             ids: HashMap::new(),
-            db
+            db,
         };
 
         untis_client.ids = untis_client.get_ids().await?;
@@ -440,7 +443,6 @@ impl UntisClient {
     pub async fn get_lernbueros(
         &self, mut parameter: TimetableParameter,
     ) -> Result<Vec<FormattedLesson>, Error> {
-        let start_time = SystemTime::now();
 
         let mut all_lbs: Vec<FormattedLesson> = vec![];
         let mut future_lessons = JoinSet::new();
@@ -448,8 +450,6 @@ impl UntisClient {
         let ef_id = self.ids.get(&"EF".to_string()).ok_or("Couldn't find field EF").map_err(|_| Error::UntisError)?;
         let q1_id = self.ids.get(&"Q1".to_string()).ok_or("Couldn't find field Q1").map_err(|_| Error::UntisError)?;
         let q2_id = self.ids.get(&"Q2".to_string()).ok_or("Couldn't find field Q2").map_err(|_| Error::UntisError)?;
-
-        println!("1: {:#?}", start_time.elapsed());
 
         parameter.options.element.r#type = 1;
 
@@ -468,15 +468,11 @@ impl UntisClient {
         let q2_client = Arc::new(self.clone());
         future_lessons.spawn(async move { q2_client.clone().get_timetable(q2_parameter).await });
 
-        println!("2: {:#?}", start_time.elapsed());
-
         let mut lessons: Vec<Vec<FormattedLesson>> = vec![];
 
         while let Some(res) = future_lessons.join_next().await {
             lessons.push(res.map_err(|_| Error::UntisError)?.map_err(|_| Error::UntisError)?)
         }
-
-        println!("3: {:#?}", start_time.elapsed());
 
         all_lbs.append(
             &mut lessons[0].clone().into_iter().filter(|lesson| lesson.is_lb == true).collect::<Vec<FormattedLesson>>(),
@@ -490,13 +486,13 @@ impl UntisClient {
 
         let mut additional_lbs: Vec<FormattedLesson> = vec![];
 
-        println!("4: {:#?}", start_time.elapsed());
-
         for lb in all_lbs.clone(){
             let mut new_room = "".to_string();
-            match lb.clone().substitution{
+            match lb.clone().substitution {
                 Some(sub) => {
-                    if sub.clone().cancelled {continue;}
+                    if sub.clone().cancelled {
+                        continue;
+                    }
                     match sub.room {
                         Some(r) => {
                             new_room = r;
@@ -509,8 +505,8 @@ impl UntisClient {
             let pot_teacher = Teacher::get_from_shortname(self.db.clone(), lb.clone().teacher).await.expect("gg");
             match pot_teacher {
                 Some(teacher) => {
-                    for lesson in teacher.lessons{
-                        additional_lbs.push(FormattedLesson { 
+                    for lesson in teacher.lessons {
+                        additional_lbs.push(FormattedLesson {
                             teacher: teacher.shortname.clone(),
                             is_lb: true,
                             start: lb.clone().start,
@@ -518,16 +514,18 @@ impl UntisClient {
                             day: lb.clone().day,
                             subject: lesson.to_string(),
                             subject_short: lesson.to_string(),
-                            room: if new_room.clone() == "" { lb.clone().room } else { new_room.clone() },
-                            substitution: lb.clone().substitution
+                            room: if new_room.clone() == "" {
+                                lb.clone().room
+                            } else {
+                                new_room.clone()
+                            },
+                            substitution: lb.clone().substitution,
                         });
                     }
                 }
                 None => {}
             }
         }
-
-        println!("5: {:#?}", start_time.elapsed());
 
         all_lbs = additional_lbs;
 
@@ -539,36 +537,39 @@ impl UntisClient {
             .await
             .map_err(|_| Error::UntisError)?;
 
-        println!("6: {:#?}", start_time.elapsed());
+        let mut lbs_per_week: HashMap<String, HashMap<String, Vec<(String, String, Option<Substitution>)>>> =
+            HashMap::new();
 
-        let mut lbs_per_week: HashMap<String, HashMap<String, Vec<(String, String, Option<Substitution>)>>> = HashMap::new();
-
-        for lb in all_lbs{
-            if !lb.is_lb { continue };
-            lbs_per_week.entry(lb.day.to_string() + ";" + &lb.start.to_string())
-            .and_modify(|lessons| {
-                lessons.entry(lb.clone().subject_short)
-                .and_modify(|subject| {
-                    subject.push((lb.teacher.to_string(), lb.room.to_string(), lb.clone().substitution))
+        for lb in all_lbs {
+            if !lb.is_lb {
+                continue;
+            };
+            lbs_per_week
+                .entry(lb.day.to_string() + ";" + &lb.start.to_string())
+                .and_modify(|lessons| {
+                    println!("4 {:#?}", lessons);
+                    lessons
+                        .entry(lb.clone().subject_short)
+                        .and_modify(|subject| {
+                            subject.push((lb.teacher.to_string(), lb.room.to_string(), lb.clone().substitution))
+                        })
+                        .or_insert(vec![(lb.teacher.to_string(), lb.room.to_string(), lb.clone().substitution)]);
                 })
-                .or_insert(vec![(lb.teacher.to_string(), lb.room.to_string(), lb.clone().substitution)]);
-            })
-            .or_insert( HashMap::from([
-                (lb.clone().subject_short, vec![(lb.teacher.to_string(), lb.room.to_string(), lb.clone().substitution)])
-            ]));
+                .or_insert(HashMap::from([(
+                    lb.clone().subject_short,
+                    vec![(lb.teacher.to_string(), lb.room.to_string(), lb.clone().substitution)],
+                )]));
         }
-
-        println!("7: {:#?}", start_time.elapsed());
 
         let mut every_lb: Vec<FormattedLesson> = vec![];
 
-        for week_lesson in lbs_per_week{
+        for week_lesson in lbs_per_week {
             let lessons = week_lesson.1;
             let time: Vec<&str> = week_lesson.0.split(";").collect();
             let day = time[0].parse::<u8>().map_err(|_| Error::UntisError)?;
             let start = time[1].parse::<u8>().map_err(|_| Error::UntisError)?;
 
-            for lesson in lessons{
+            for lesson in lessons {
                 let mut teachers = "".to_string();
                 let mut sub = "".to_string();
                 let mut rooms = "".to_string();
@@ -581,8 +582,7 @@ impl UntisClient {
                     if sub != "" {
                         teachers += ", ";
                         rooms += ", ";
-                    }
-                    else {
+                    } else {
                         sub = subject.0.clone();
                     }
                     let mut new_room = subject.1;
@@ -643,8 +643,6 @@ impl UntisClient {
             .map_err(|_| Error::UntisError)?;
 
         every_lb.append(&mut formatted_holidays);
-
-        println!("8: {:#?}", start_time.elapsed());
         
         Ok(every_lb)
     }

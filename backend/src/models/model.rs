@@ -14,7 +14,7 @@ where
     D: Serialize + Send + Sync + for<'de> Deserialize<'de> + 'static,
     C: Serialize + Send + Sync + for<'de> Deserialize<'de> + 'static,
 {
-    async fn init_table(db: DBConnection) -> Result<bool, Error>;
+    async fn init_table(db: DBConnection) -> Result<(), Error>;
 
     async fn create(db: ConnectionData, tb: String, data: C) -> Result<D, Error> {
         let res: D = db.create(tb).content(data).await?;
@@ -34,10 +34,10 @@ where
         Ok(res)
     }
 
-    async fn update_replace(db: ConnectionData, id: Thing, data: D) -> Result<bool, Error> {
+    async fn update_replace(db: ConnectionData, id: Thing, data: D) -> Result<(), Error> {
         let _: D = db.update(id).content(data).await?;
 
-        Ok(true)
+        Ok(())
     }
 
     async fn delete(db: ConnectionData, id: Thing) -> Result<(), Error> {

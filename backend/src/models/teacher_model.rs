@@ -9,7 +9,7 @@ pub struct Teacher {
     pub id: Thing,
     pub shortname: String,
     pub longname: String,
-    pub lessons: Vec<String>
+    pub lessons: Vec<String>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -21,7 +21,7 @@ pub struct TeacherCreate {
 
 #[async_trait::async_trait]
 impl CRUD<Teacher, TeacherCreate> for Teacher {
-    async fn init_table(db: DBConnection) -> Result<bool, Error> {
+    async fn init_table(db: DBConnection) -> Result<(), Error> {
         let sql = "DEFINE TABLE teachers SCHEMAFULL;\
             DEFINE FIELD shortname ON teachers TYPE string;\
             DEFINE INDEX shortname ON teachers COLUMNS shortname UNIQUE;\
@@ -31,7 +31,7 @@ impl CRUD<Teacher, TeacherCreate> for Teacher {
             DEFINE FIELD lessons.* ON teachers TYPE string;";
         db.query(sql).await?;
 
-        Ok(true)
+        Ok(())
     }
 }
 

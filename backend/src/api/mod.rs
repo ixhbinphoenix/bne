@@ -1,6 +1,7 @@
 pub mod change_email;
 pub mod change_password;
 pub mod check_session;
+pub mod forgot_password;
 pub mod get_lernbueros;
 pub mod get_timetable;
 pub mod link;
@@ -9,3 +10,4 @@ pub mod logout;
 pub mod logout_all;
 pub mod register;
 pub mod response;
+pub mod verified;

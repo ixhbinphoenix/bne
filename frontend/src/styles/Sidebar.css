@@ -27,7 +27,7 @@ h1 {
   -webkit-user-select: none;
   user-select: none;
   background: rgb(198, 160, 246);
-  background: linear-gradient(90deg, rgb(199, 160, 246) 0%, rgb(237, 135, 150) 50%, rgb(238, 212, 159) 100%);
+  background: var(--text-gradient);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -72,10 +72,10 @@ h1 {
   text-align: center;
 }
 .sidebar-element:active {
-  color: rgb(228, 64, 64);
+  color: var(--highlight-red);
 }
 .active {
-  color: rgb(228, 64, 64);
+  color: var(--highlight-red);
 }
 p {
   margin: 0px;

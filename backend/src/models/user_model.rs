@@ -11,6 +11,7 @@ pub struct User {
     pub person_id: i64,
     pub password_hash: String,
     pub untis_cypher: String,
+    pub verified: bool,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -19,21 +20,23 @@ pub struct UserCreate {
     pub person_id: i64,
     pub password_hash: String,
     pub untis_cypher: String,
+    pub verified: bool
 }
 
 #[async_trait::async_trait]
 impl CRUD<User, UserCreate> for User {
-    async fn init_table(db: DBConnection) -> Result<bool, Error> {
+    async fn init_table(db: DBConnection) -> Result<(), Error> {
         let sql = "DEFINE TABLE users SCHEMAFULL;\
                    DEFINE FIELD email ON users TYPE string ASSERT is::email($value);\
                    DEFINE INDEX email ON TABLE users COLUMNS email UNIQUE;\
                    DEFINE FIELD person_id ON users TYPE number;\
                    DEFINE INDEX person_id ON TABLE users COLUMNS person_id UNIQUE;\
                    DEFINE FIELD password_hash ON users TYPE string;\
-                   DEFINE FIELD untis_cypher ON users TYPE string;";
+                   DEFINE FIELD untis_cypher ON users TYPE string;\
+                   DEFINE FIELD verified ON users TYPE bool;";
         db.query(sql).await?;
 
-        Ok(true)
+        Ok(())
     }
 }
 
