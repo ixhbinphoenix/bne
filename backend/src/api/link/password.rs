@@ -113,7 +113,7 @@ pub async fn reset_password_post(
         id: old_user.id,
         email: old_user.email,
         password_hash: hash,
-        person_id: body.new_person_id.clone(),
+        person_id: body.new_person_id,
         untis_cypher: body.new_untis_cypher.clone(),
         verified: old_user.verified
     };

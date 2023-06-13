@@ -1,4 +1,4 @@
-use std::{collections::HashMap, sync::Arc, time::SystemTime};
+use std::{collections::HashMap, sync::Arc};
 
 use actix_web::web;
 use actix_web_lab::__reexports::tokio::task::JoinSet;
@@ -43,7 +43,7 @@ impl UntisClient {
             .header("Cookie", "JSESSIONID=".to_owned() + &self.jsessionid)
             .send()
             .await
-            .map_err(|err| Error::Reqwest(err))?;
+            .map_err(Error::Reqwest)?;
 
         Ok(response)
     }
@@ -127,7 +127,7 @@ impl UntisClient {
             .ok_or("Couldn't find Q1")
             .map_err(|_| Error::UntisError)?;
         let q2_id = klassen
-            .clone()
+            
             .into_iter()
             .find(|klasse| klasse.name == "Q2")
             .ok_or("Couldn't find Q2")
@@ -475,55 +475,46 @@ impl UntisClient {
         }
 
         all_lbs.append(
-            &mut lessons[0].clone().into_iter().filter(|lesson| lesson.is_lb == true).collect::<Vec<FormattedLesson>>(),
+            &mut lessons[0].clone().into_iter().filter(|lesson| lesson.is_lb).collect::<Vec<FormattedLesson>>(),
         );
         all_lbs.append(
-            &mut lessons[1].clone().into_iter().filter(|lesson| lesson.is_lb == true).collect::<Vec<FormattedLesson>>(),
+            &mut lessons[1].clone().into_iter().filter(|lesson| lesson.is_lb).collect::<Vec<FormattedLesson>>(),
         );
         all_lbs.append(
-            &mut lessons[2].clone().into_iter().filter(|lesson| lesson.is_lb == true).collect::<Vec<FormattedLesson>>(),
+            &mut lessons[2].clone().into_iter().filter(|lesson| lesson.is_lb).collect::<Vec<FormattedLesson>>(),
         );
 
         let mut additional_lbs: Vec<FormattedLesson> = vec![];
 
         for lb in all_lbs.clone(){
             let mut new_room = "".to_string();
-            match lb.clone().substitution {
-                Some(sub) => {
-                    if sub.clone().cancelled {
-                        continue;
-                    }
-                    match sub.room {
-                        Some(r) => {
-                            new_room = r;
-                        }
-                        None => {}
-                    }
+            if let Some(sub) = lb.clone().substitution {
+                if sub.clone().cancelled {
+                    continue;
                 }
-                None => {}
+                if let Some(r) = sub.room {
+                    new_room = r;
+                }
             }
             let pot_teacher = Teacher::get_from_shortname(self.db.clone(), lb.clone().teacher).await.expect("gg");
-            match pot_teacher {
-                Some(teacher) => {
-                    for lesson in teacher.lessons {
-                        additional_lbs.push(FormattedLesson {
-                            teacher: teacher.shortname.clone(),
-                            is_lb: true,
-                            start: lb.clone().start,
-                            length: 1,
-                            day: lb.clone().day,
-                            subject: lesson.to_string(),
-                            subject_short: lesson.to_string(),
-                            room: if new_room.clone() == "" {
-                                lb.clone().room
-                            } else {
-                                new_room.clone()
-                            },
-                            substitution: lb.clone().substitution,
-                        });
-                    }
+            if let Some(teacher) = pot_teacher {
+                for lesson in teacher.lessons {
+                    additional_lbs.push(FormattedLesson {
+                        teacher: teacher.shortname.clone(),
+                        is_lb: true,
+                        start: lb.clone().start,
+                        length: 1,
+                        day: lb.clone().day,
+                        subject: lesson.to_string(),
+                        subject_short: lesson.to_string(),
+                        room: if new_room.clone() == "" {
+                            lb.clone().room
+                        } else {
+                            new_room.clone()
+                        },
+                        substitution: lb.clone().substitution,
+                    });
                 }
-                None => {}
             }
         }
 
@@ -565,7 +556,7 @@ impl UntisClient {
 
         for week_lesson in lbs_per_week {
             let lessons = week_lesson.1;
-            let time: Vec<&str> = week_lesson.0.split(";").collect();
+            let time: Vec<&str> = week_lesson.0.split(';').collect();
             let day = time[0].parse::<u8>().map_err(|_| Error::UntisError)?;
             let start = time[1].parse::<u8>().map_err(|_| Error::UntisError)?;
 
@@ -575,39 +566,29 @@ impl UntisClient {
                 let mut rooms = "".to_string();
                 let mut cancelled = false;
                 for subject in lesson.1{
-                    if teachers.contains(&subject.clone().0) || (lesson.0 == "IF" && ("O 2-16NT".to_string() != subject.1.clone() && "H NT".to_string() != subject.1.clone())){ 
+                    if teachers.contains(&subject.clone().0) || (lesson.0 == "IF" && (*"O 2-16NT" != subject.1.clone() && *"H NT" != subject.1.clone())){ 
                         cancelled = true;
                         continue; 
                     }
-                    if sub != "" {
+                    if !sub.is_empty() {
                         teachers += ", ";
                         rooms += ", ";
                     } else {
                         sub = subject.0.clone();
                     }
                     let mut new_room = subject.1;
-                    match subject.2 {
-                        Some(sub) => {
-                            println!("{:#?}", sub);
-                            if sub.cancelled {
+                    if let Some(sub) = subject.2 {
+                        if sub.cancelled {
+                            cancelled = true;
+                        }
+                        if let Some(t) = sub.teacher {
+                            if t == *"---"{
                                 cancelled = true;
                             }
-                            match sub.teacher{
-                                Some(t) => {
-                                    if t == "---".to_string(){
-                                        cancelled = true;
-                                    }
-                                }
-                                None => {}
-                            }
-                            match sub.room {
-                                Some(room) => {
-                                    new_room = room;
-                                }
-                                None => {}
-                            }
                         }
-                        None => {}
+                        if let Some(room) = sub.room {
+                            new_room = room;
+                        }
                     }
                     if cancelled {
                         continue;
@@ -618,7 +599,7 @@ impl UntisClient {
                     }
                 }
                 if cancelled { continue; }
-                if rooms == "".to_string(){
+                if rooms == *""{
                     continue;
                 }
                 else{
