@@ -1,15 +1,16 @@
 use actix_identity::Identity;
 use actix_web::{web, HttpMessage, HttpRequest, Responder, Result};
 use argon2::{password_hash::SaltString, Argon2, PasswordHasher};
-use lettre::Address;
+use chrono::{Utc, Months};
+use lettre::{Address, message::header::ContentType};
 use log::error;
 use rand_core::OsRng;
 use serde::Deserialize;
 
 use crate::{
     api::response::Response, models::{
-        model::{DBConnection, CRUD}, user_model::{User, UserCreate}
-    }, prelude::Error, utils::password::valid_password
+        model::{DBConnection, CRUD}, user_model::{User, UserCreate}, links_model::{Link, LinkType}
+    }, prelude::Error, utils::password::valid_password, mail::{utils::{Mailer, load_template}, mailing::{build_mail, send_mail}}, internalError
 };
 
 #[derive(Deserialize)]
@@ -21,7 +22,7 @@ pub struct RegisterData {
 }
 
 pub async fn register_post(
-    data: web::Json<RegisterData>, db: web::Data<DBConnection>, request: HttpRequest,
+    data: web::Json<RegisterData>, db: web::Data<DBConnection>, request: HttpRequest, mailer: web::Data<Mailer>
 ) -> Result<impl Responder> {
     if data.email.clone().parse::<Address>().is_err() {
         return Ok(Response::new_error(400, "Not a valid email address".into()).into());
@@ -42,7 +43,7 @@ pub async fn register_post(
         Ok(str) => str.to_string(),
         Err(e) => {
             error!("Error: Unknown error trying to hash password\n{}", e);
-            return Ok(Response::new_error(500, "Unknown error trying to hash password".to_string()).into());
+            internalError!("Error trying to hash password")
         }
     };
 
@@ -54,17 +55,45 @@ pub async fn register_post(
         verified: false
     };
 
-    let ret_user = match User::create(db, "users".to_owned(), db_user).await {
+    let ret_user = match User::create(db.clone(), "users".to_owned(), db_user).await {
         Ok(a) => a,
         Err(e) => return Err(e.try_into()?),
     };
 
-    match Identity::login(&request.extensions(), ret_user.id.to_string()) {
-        Ok(_) => {}
+    let expiry_time = Utc::now().checked_add_months(Months::new(1)).unwrap();
+
+    let link = match Link::create_from_user(db, ret_user.clone(), expiry_time, LinkType::VerifyAccount).await {
+        Ok(a) => a.construct_link(),
         Err(e) => {
-            error!("Error trying to log into Identity\n{}", e);
-            return Ok(Response::new_error(500, "Error trying to login, please retry".to_string()).into());
-        }
+            error!("Error creating link\n{e}");
+            internalError!()
+        },
+    };
+
+    let template = match load_template("verify.html").await {
+        Ok(a) => a.replace("${{VERIFY_URL}}", &link),
+        Err(e) => {
+            error!("Error loading template\n{e}");
+            internalError!()
+        },
+    };
+
+    let message = match build_mail(&ret_user.clone().email, "Accountverifizierung", ContentType::TEXT_HTML, template) {
+        Ok(a) => a,
+        Err(e) => {
+            error!("Error building message\n{e}");
+            internalError!()
+        },
+    };
+
+    if let Err(e) = send_mail(mailer, message).await {
+        error!("Error sending mail\n{e}");
+        internalError!()
+    }
+
+    if let Err(e) = Identity::login(&request.extensions(), ret_user.id.to_string()) {
+        error!("Error trying to log into Identity\n{}", e);
+        internalError!("Error trying to log in, please try again")
     };
 
     Ok(Response::new_success("Account successfully registered".to_string()).into())
