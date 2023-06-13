@@ -10,6 +10,7 @@ use super::response::Response;
 
 #[derive(Debug, Deserialize)]
 pub struct UntisData {
+    password: String,
     untis_cypher: String,
     person_id: i64
 }
@@ -41,6 +42,10 @@ pub async fn change_untis_data_post(body: web::Json<UntisData>, db: ConnectionDa
             internalError!()
         }
     };
+
+    if user.verify_password(body.password.clone()).is_err() {
+        return Ok(web::Json(Response::new_error(403, "Incorrect Password".to_string())));
+    }
 
     let new_user = User {
         id: user.id,
