@@ -2,7 +2,7 @@
 
 import type { TheScheduleObject } from "../../api/main";
 import { SubjectColor } from "../../api/main";
-import { fetchJSessionId } from "../../api/untisAPI";
+import { fetchJSessionId, getLocalUntisCredentials } from "../../api/untisAPI";
 import { getLernbueros } from "../../api/theBackend";
 import Popup from "./Popup";
 import type { JSX } from "preact";
@@ -51,6 +51,12 @@ export default function Lernbueros(): JSX.Element {
       },
       (error) => {
         console.error(error);
+        setPopupContent(
+          <div>
+            <h1 style="text-align: center;">{error.message}</h1>
+          </div>
+        );
+        openPopup();
       }
     );
   }, []);
@@ -76,6 +82,12 @@ export default function Lernbueros(): JSX.Element {
       },
       (error) => {
         console.error(error);
+        setPopupContent(
+          <div>
+            <h1 style="text-align: center;">{error.message}</h1>
+          </div>
+        );
+        openPopup();
       }
     );
     setCurrentWeek(week);
@@ -96,6 +108,12 @@ export default function Lernbueros(): JSX.Element {
       },
       (error) => {
         console.error(error);
+        setPopupContent(
+          <div>
+            <h1 style="text-align: center;">{error.message}</h1>
+          </div>
+        );
+        openPopup();
       }
     );
     setCurrentWeek(week);
@@ -116,6 +134,12 @@ export default function Lernbueros(): JSX.Element {
       },
       (error) => {
         console.error(error);
+        setPopupContent(
+          <div>
+            <h1 style="text-align: center;">{error.message}</h1>
+          </div>
+        );
+        openPopup();
       }
     );
   };
@@ -124,7 +148,7 @@ export default function Lernbueros(): JSX.Element {
     if (storedJSessionId) {
       return storedJSessionId;
     } else {
-      fetchJSessionId(localStorage.getItem("units_username"), localStorage.getItem("untis_password")).then((result) => {
+      fetchJSessionId(getLocalUntisCredentials().username, getLocalUntisCredentials().password).then((result) => {
         if (result.JSessionId) {
           document.cookie = `JSESSIONID=${result.JSessionId}; max-age=600; secure; samesite=strict`;
           return result.JSessionId;
@@ -261,6 +285,7 @@ export default function Lernbueros(): JSX.Element {
   const [tableDays, setTableDays] = useState<Array<JSX.Element>>([]);
   return (
     <div className="table-layout">
+      {/*<img id="filter-icon" src="/filter.svg" alt="filter icon" />*/}
       <div className="table-top">
         <span id="day1" class="day">
           {currentDates[0]}
