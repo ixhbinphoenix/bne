@@ -20,7 +20,7 @@ use actix_web::{
     cookie::{time::Duration, Key}, middleware::Logger, web::{self, Data}, App, HttpResponse, HttpServer
 };
 use api::{
-    change_email::change_email_get, change_password::change_password_post, check_session::check_session_get, get_lernbueros::get_lernbueros, get_timetable::get_timetable, link::{email_change::email_change_post, email_reset::email_reset_post, password::reset_password_post}, login::login_post, logout::logout_post, logout_all::logout_all_post, register::register_post, forgot_password::forgot_password_post
+    change_email::change_email_get, change_password::change_password_post, check_session::check_session_get, forgot_password::forgot_password_post, get_lernbueros::get_lernbueros, get_timetable::get_timetable, link::{email_change::email_change_post, email_reset::email_reset_post, password::reset_password_post}, login::login_post, logout::logout_post, logout_all::logout_all_post, register::register_post
 };
 use dotenv::dotenv;
 use lettre::{

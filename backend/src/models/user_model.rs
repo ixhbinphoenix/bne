@@ -23,7 +23,7 @@ pub struct UserCreate {
 
 #[async_trait::async_trait]
 impl CRUD<User, UserCreate> for User {
-    async fn init_table(db: DBConnection) -> Result<bool, Error> {
+    async fn init_table(db: DBConnection) -> Result<(), Error> {
         let sql = "DEFINE TABLE users SCHEMAFULL;\
                    DEFINE FIELD email ON users TYPE string ASSERT is::email($value);\
                    DEFINE INDEX email ON TABLE users COLUMNS email UNIQUE;\
@@ -33,7 +33,7 @@ impl CRUD<User, UserCreate> for User {
                    DEFINE FIELD untis_cypher ON users TYPE string;";
         db.query(sql).await?;
 
-        Ok(true)
+        Ok(())
     }
 }
 

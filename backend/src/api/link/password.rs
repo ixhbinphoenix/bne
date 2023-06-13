@@ -22,7 +22,7 @@ use crate::{
 pub struct PasswordChange {
     new_password: String,
     new_untis_cypher: String,
-    new_person_id: i64
+    new_person_id: i64,
 }
 
 // Path: /link/password/{uuid}
