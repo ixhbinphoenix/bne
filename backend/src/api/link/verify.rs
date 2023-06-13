@@ -68,9 +68,13 @@ pub async fn verify_get(path: web::Path<String>, db: ConnectionData) -> Result<i
         verified: true,
     };
 
-    if let Err(e) = User::update_replace(db, link.user, new_user).await {
+    if let Err(e) = User::update_replace(db.clone(), link.user, new_user).await {
         error!("Updating user failed\n{e}");
         internalError!()
+    }
+
+    if let Err(e) = Link::delete(db, link.id).await {
+        warn!("Failed to delete link, ignoring\n{e}");
     }
 
     Ok(web::Json(Response::new_success("Successfully verified!".to_string())))

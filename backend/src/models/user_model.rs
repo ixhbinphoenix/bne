@@ -1,8 +1,9 @@
+use argon2::{Argon2, PasswordHash, PasswordVerifier};
 use serde::{Deserialize, Serialize};
 use surrealdb::sql::Thing;
 
 use super::model::{ConnectionData, DBConnection, CRUD};
-use crate::prelude::Error;
+use crate::{prelude::Error, utils::password::PasswordError};
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct User {
@@ -54,5 +55,13 @@ impl User {
         let user: Option<User> = res.take(0)?;
 
         Ok(user)
+    }
+
+    pub fn verify_password(&self, password: String) -> Result<(), argon2::password_hash::Error> {
+        let argon2 = Argon2::default();
+        
+        let hash = PasswordHash::new(&self.password_hash)?;
+
+        argon2.verify_password(password.as_bytes(), &hash)
     }
 }

@@ -102,6 +102,10 @@ pub async fn email_reset_post(
         return Ok(Response::new_error(500, "There was a database error".into()).into());
     }
 
+    if let Err(e) = Link::delete(db.clone(), link.id).await {
+        warn!("Failed to delete link, ignoring\n{e}");
+    }
+
     // Logout user from all devices
     if let Err(e) = delete_user_sessions(db.clone(), user_id.to_string()).await {
         error!("Error deleting user sessions\n{e}");

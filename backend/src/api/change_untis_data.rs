@@ -10,11 +10,12 @@ use super::response::Response;
 
 #[derive(Debug, Deserialize)]
 pub struct UntisData {
+    password: String,
     untis_cypher: String,
     person_id: i64
 }
 
-pub async fn change_untisdata_post(body: web::Json<UntisData>, db: ConnectionData, id: Option<Identity>) -> Result<impl Responder> {
+pub async fn change_untis_data_post(body: web::Json<UntisData>, db: ConnectionData, id: Option<Identity>) -> Result<impl Responder> {
     if id.is_none() {
         return Ok(web::Json(Response::new_error(403, "Not logged in".into())));
     }
@@ -41,6 +42,10 @@ pub async fn change_untisdata_post(body: web::Json<UntisData>, db: ConnectionDat
             internalError!()
         }
     };
+
+    if user.verify_password(body.password.clone()).is_err() {
+        return Ok(web::Json(Response::new_error(403, "Incorrect Password".to_string())));
+    }
 
     let new_user = User {
         id: user.id,

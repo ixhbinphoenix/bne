@@ -1,6 +1,6 @@
 pub mod change_email;
 pub mod change_password;
-pub mod change_untisdata;
+pub mod change_untis_data;
 pub mod check_session;
 pub mod forgot_password;
 pub mod get_lernbueros;

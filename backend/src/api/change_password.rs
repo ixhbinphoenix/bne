@@ -64,17 +64,7 @@ pub async fn change_password_post(
         return Ok(Response::new_error(400, "New Password can't be Old Password".into()).into());
     }
 
-    let argon2 = Argon2::default();
-
-    let db_hash = match PasswordHash::new(&user.password_hash) {
-        Ok(hash) => hash,
-        Err(_) => {
-            error!("Error: Stored hash is not a valid hash. User: {}", user.email);
-            return Ok(Response::new_error(500, "Internal Server Error".to_owned()).into());
-        }
-    };
-
-    if argon2.verify_password(body.old_password.as_bytes(), &db_hash).is_err() {
+    if user.verify_password(body.old_password).is_err() {
         debug!("Wrong password");
         return Ok(Response::new_error(403, "Wrong password".into()).into());
     }
