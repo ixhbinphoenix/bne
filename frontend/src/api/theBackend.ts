@@ -164,7 +164,7 @@ export async function changePassword(currentPassword: string, newPassword: strin
 }
 export async function forgotPassword(email: string): Promise<any> {
   try {
-    let result = Request.Post("forgot_password", {
+    let result = await Request.Post("forgot_password", {
       mail: email
     });
     return result;
@@ -201,63 +201,38 @@ export async function changeEmail(uuid: string, password: string, email: string)
     return Promise.reject(error);
   }
 }
-export async function changeUntisData(password: string, personId: number, untisCredentialsEncrypted: string) {
+export async function changeUntisData(
+  password: string,
+  personId: number,
+  untisCredentialsEncrypted: string
+): Promise<string> {
   try {
-    let result = await fetch("https://localhost:8080/change_untis_data", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      credentials: "include",
-      body: JSON.stringify({
-        password: password,
-        person_id: personId,
-        untis_cypher: untisCredentialsEncrypted
-      })
+    let result = await Request.Post<string>("change_untis_cypher", {
+      password: password,
+      new_person_id: personId,
+      new_untis_cypher: untisCredentialsEncrypted
     });
-    if (!result.body) {
-      return {
-        status: 400,
-        message: "No result body found"
-      };
-    }
-    let body: ReadableStream<Uint8Array> = result.body;
-    let stream = await readStream(body);
-    let requestResult = stream.split("\n");
-    return {
-      status: requestResult[0],
-      message: requestResult[1]
-    };
-  } catch {
-    return {
-      status: 500,
-      message: "Server Connection Failed"
-    };
+    return result;
+  } catch (error) {
+    return Promise.reject(error);
+  }
+}
+export async function verifyAccount(uuid: string): Promise<string> {
+  try {
+    let result = await Request.Get<string>(`link/verify/${uuid}`);
+    return result;
+  } catch (error) {
+    return Promise.reject(error);
   }
 }
 export async function deleteAccount(password: string) {
   try {
-    let result = await fetch("https://localhost:8080/delete_account", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      credentials: "include",
-      body: JSON.stringify({
-        password: password
-      })
+    let result = await Request.Post("delete", {
+      password: password
     });
-    if (!result.body) {
-      return {
-        status: 400,
-        message: "No result body found"
-      };
-    }
-  } catch {
-    return {
-      status: 500,
-      message: "Server Connection Failed"
-    };
+    return result;
+  } catch (error) {
+    return Promise.reject(error);
   }
 }
 export async function logout() {

@@ -11,7 +11,7 @@ export default function DeleteAccount(): JSX.Element {
     event.preventDefault();
     deleteAccount(event.target[0].value).then(
       () => {
-        setErrorMessage(<p>Deine E-Mail-Adresse wurde geändert</p>);
+        setErrorMessage(<p>Deine Account wurde gelöscht</p>);
       },
       (error) => {
         setErrorMessage(<p>Etwas ist schief gegangen: {error}</p>);

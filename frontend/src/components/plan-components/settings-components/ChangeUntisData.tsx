@@ -12,20 +12,18 @@ export default function ChangeUntisData(): JSX.Element {
   const sendUntisDataChange = (event: any) => {
     event.preventDefault();
     fetchJSessionId(event.target[1].value, event.target[2].value).then((result) => {
-      if (result.JSessionId && result.personId) {
-        saveUntisCredentials(event.target[1].value, event.target[2].value);
-        const key = generateKey(event.target[0].value);
-        const untisCredentials = JSON.stringify({ username: event.target[1], password: event.target[2].value });
-        const untisCredentialsEncrtypted = passwordEncrypt(key, untisCredentials).toString();
-        changeUntisData(event.target[0].value, result.personId, untisCredentialsEncrtypted).then(
-          () => {
-            setErrorMessage(<p>Deine Untis-Daten wurden geändert</p>);
-          },
-          (error) => {
-            setErrorMessage(<p>Etwas ist schief gegangen: {error}</p>);
-          }
-        );
-      }
+      saveUntisCredentials(event.target[1].value, event.target[2].value);
+      const key = generateKey(event.target[0].value);
+      const untisCredentials = JSON.stringify({ username: event.target[1], password: event.target[2].value });
+      const untisCredentialsEncrtypted = passwordEncrypt(key, untisCredentials).toString();
+      changeUntisData(event.target[0].value, result.personId, untisCredentialsEncrtypted).then(
+        () => {
+          setErrorMessage(<p>Deine Untis-Daten wurden geändert</p>);
+        },
+        (error) => {
+          setErrorMessage(<p>Etwas ist schief gegangen: {error}</p>);
+        }
+      );
     });
   };
   return (
