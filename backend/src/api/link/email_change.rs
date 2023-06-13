@@ -118,6 +118,7 @@ pub async fn email_change_post(
         password_hash: user.password_hash,
         person_id: user.person_id,
         untis_cypher: user.untis_cypher,
+        verified: user.verified
     };
 
     if let Err(e) = User::update_replace(db.clone(), user_id.clone(), new_user).await {

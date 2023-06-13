@@ -11,6 +11,7 @@ pub struct User {
     pub person_id: i64,
     pub password_hash: String,
     pub untis_cypher: String,
+    pub verified: bool,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -19,6 +20,7 @@ pub struct UserCreate {
     pub person_id: i64,
     pub password_hash: String,
     pub untis_cypher: String,
+    pub verified: bool
 }
 
 #[async_trait::async_trait]

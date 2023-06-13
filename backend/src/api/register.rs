@@ -51,6 +51,7 @@ pub async fn register_post(
         person_id: data.person_id,
         password_hash,
         untis_cypher: data.untis_cypher.clone(),
+        verified: false
     };
 
     let ret_user = match User::create(db, "users".to_owned(), db_user).await {
