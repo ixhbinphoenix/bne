@@ -9,7 +9,6 @@ const id: string | undefined = Astro.cookies.get("id").value;
 if (id) {
   try {
     const result = await checkSessionIdAstro(id);
-    console.log(result);
     if (result) {
       return Astro.redirect("/home");
     }
