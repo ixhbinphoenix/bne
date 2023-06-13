@@ -1,4 +1,4 @@
-use std::{collections::HashMap, sync::Arc};
+use std::{collections::HashMap, sync::Arc, time::SystemTime};
 
 use actix_web::web;
 use actix_web_lab::__reexports::tokio::task::JoinSet;
@@ -440,12 +440,16 @@ impl UntisClient {
     pub async fn get_lernbueros(
         &self, mut parameter: TimetableParameter,
     ) -> Result<Vec<FormattedLesson>, Error> {
+        let start_time = SystemTime::now();
+
         let mut all_lbs: Vec<FormattedLesson> = vec![];
         let mut future_lessons = JoinSet::new();
 
         let ef_id = self.ids.get(&"EF".to_string()).ok_or("Couldn't find field EF").map_err(|_| Error::UntisError)?;
         let q1_id = self.ids.get(&"Q1".to_string()).ok_or("Couldn't find field Q1").map_err(|_| Error::UntisError)?;
         let q2_id = self.ids.get(&"Q2".to_string()).ok_or("Couldn't find field Q2").map_err(|_| Error::UntisError)?;
+
+        println!("1: {:#?}", start_time.elapsed());
 
         parameter.options.element.r#type = 1;
 
@@ -464,11 +468,15 @@ impl UntisClient {
         let q2_client = Arc::new(self.clone());
         future_lessons.spawn(async move { q2_client.clone().get_timetable(q2_parameter).await });
 
+        println!("2: {:#?}", start_time.elapsed());
+
         let mut lessons: Vec<Vec<FormattedLesson>> = vec![];
 
         while let Some(res) = future_lessons.join_next().await {
             lessons.push(res.map_err(|_| Error::UntisError)?.map_err(|_| Error::UntisError)?)
         }
+
+        println!("3: {:#?}", start_time.elapsed());
 
         all_lbs.append(
             &mut lessons[0].clone().into_iter().filter(|lesson| lesson.is_lb == true).collect::<Vec<FormattedLesson>>(),
@@ -482,8 +490,9 @@ impl UntisClient {
 
         let mut additional_lbs: Vec<FormattedLesson> = vec![];
 
+        println!("4: {:#?}", start_time.elapsed());
+
         for lb in all_lbs.clone(){
-            println!("{:#?}", lb);
             let mut new_room = "".to_string();
             match lb.clone().substitution{
                 Some(sub) => {
@@ -498,7 +507,6 @@ impl UntisClient {
                 None => {}
             }
             let pot_teacher = Teacher::get_from_shortname(self.db.clone(), lb.clone().teacher).await.expect("gg");
-            println!("{:#?}", pot_teacher);
             match pot_teacher {
                 Some(teacher) => {
                     for lesson in teacher.lessons{
@@ -519,6 +527,8 @@ impl UntisClient {
             }
         }
 
+        println!("5: {:#?}", start_time.elapsed());
+
         all_lbs = additional_lbs;
 
         let holidays = self
@@ -529,12 +539,7 @@ impl UntisClient {
             .await
             .map_err(|_| Error::UntisError)?;
 
-        let mut formatted_holidays = self
-            .format_lessons(holidays, parameter.options.start_date.parse::<u32>().map_err(|_| Error::UntisError)?)
-            .await
-            .map_err(|_| Error::UntisError)?;
-
-        all_lbs.append(&mut formatted_holidays);
+        println!("6: {:#?}", start_time.elapsed());
 
         let mut lbs_per_week: HashMap<String, HashMap<String, Vec<(String, String, Option<Substitution>)>>> = HashMap::new();
 
@@ -542,7 +547,6 @@ impl UntisClient {
             if !lb.is_lb { continue };
             lbs_per_week.entry(lb.day.to_string() + ";" + &lb.start.to_string())
             .and_modify(|lessons| {
-                println!("4 {:#?}", lessons);
                 lessons.entry(lb.clone().subject_short)
                 .and_modify(|subject| {
                     subject.push((lb.teacher.to_string(), lb.room.to_string(), lb.clone().substitution))
@@ -553,6 +557,8 @@ impl UntisClient {
                 (lb.clone().subject_short, vec![(lb.teacher.to_string(), lb.room.to_string(), lb.clone().substitution)])
             ]));
         }
+
+        println!("7: {:#?}", start_time.elapsed());
 
         let mut every_lb: Vec<FormattedLesson> = vec![];
 
@@ -568,7 +574,10 @@ impl UntisClient {
                 let mut rooms = "".to_string();
                 let mut cancelled = false;
                 for subject in lesson.1{
-                    if teachers.contains(&subject.clone().0) { continue; }
+                    if teachers.contains(&subject.clone().0) || (lesson.0 == "IF" && ("O 2-16NT".to_string() != subject.1.clone() && "H NT".to_string() != subject.1.clone())){ 
+                        cancelled = true;
+                        continue; 
+                    }
                     if sub != "" {
                         teachers += ", ";
                         rooms += ", ";
@@ -579,9 +588,17 @@ impl UntisClient {
                     let mut new_room = subject.1;
                     match subject.2 {
                         Some(sub) => {
+                            println!("{:#?}", sub);
                             if sub.cancelled {
                                 cancelled = true;
-                                continue;
+                            }
+                            match sub.teacher{
+                                Some(t) => {
+                                    if t == "---".to_string(){
+                                        cancelled = true;
+                                    }
+                                }
+                                None => {}
                             }
                             match sub.room {
                                 Some(room) => {
@@ -592,23 +609,42 @@ impl UntisClient {
                         }
                         None => {}
                     }
-                    teachers += &subject.0;
-                    rooms += &new_room;
+                    if cancelled {
+                        continue;
+                    }
+                    else{
+                        teachers += &subject.0;
+                        rooms += &new_room;
+                    }
                 }
                 if cancelled { continue; }
-                every_lb.push(FormattedLesson { 
-                    teacher: teachers,
-                    is_lb: true,
-                    start,
-                    length: 1,
-                    day,
-                    subject: lesson.0.clone(),
-                    subject_short: lesson.0.clone(),
-                    room: rooms,
-                    substitution: None
-                })
+                if rooms == "".to_string(){
+                    continue;
+                }
+                else{
+                    every_lb.push(FormattedLesson { 
+                        teacher: teachers,
+                        is_lb: true,
+                        start,
+                        length: 1,
+                        day,
+                        subject: lesson.0.clone(),
+                        subject_short: lesson.0.clone(),
+                        room: rooms,
+                        substitution: None
+                    });
+                }
             }
         }
+
+        let mut formatted_holidays = self
+            .format_lessons(holidays, parameter.options.start_date.parse::<u32>().map_err(|_| Error::UntisError)?)
+            .await
+            .map_err(|_| Error::UntisError)?;
+
+        every_lb.append(&mut formatted_holidays);
+
+        println!("8: {:#?}", start_time.elapsed());
         
         Ok(every_lb)
     }
