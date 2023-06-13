@@ -126,6 +126,10 @@ pub async fn email_change_post(
         return Ok(Response::new_error(500, "There was a database error".into()).into());
     }
 
+    if let Err(e) = Link::delete(db.clone(), link.id).await {
+        warn!("Failed to delete link, ignoring\n{e}");
+    }
+
     let updated_user = match User::get_from_email(db.clone(), body.mail.clone()).await {
         Ok(a) => match a {
             Some(a) => a,

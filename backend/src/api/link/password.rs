@@ -123,6 +123,10 @@ pub async fn reset_password_post(
         return Ok(Response::new_error(500, "Internal Server Error".into()).into());
     }
 
+    if let Err(e) = Link::delete(db.clone(), link.id).await {
+        warn!("Failed to delete link, ignoring\n{e}");
+    }
+
     if let Err(e) = delete_user_sessions(db.clone(), new_user.id.to_string()).await {
         error!("Error logging user out\n{e}");
         return Ok(Response::new_error(500, "Internal Server Error".into()).into());

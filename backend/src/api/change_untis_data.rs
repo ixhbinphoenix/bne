@@ -14,7 +14,7 @@ pub struct UntisData {
     person_id: i64
 }
 
-pub async fn change_untisdata_post(body: web::Json<UntisData>, db: ConnectionData, id: Option<Identity>) -> Result<impl Responder> {
+pub async fn change_untis_data_post(body: web::Json<UntisData>, db: ConnectionData, id: Option<Identity>) -> Result<impl Responder> {
     if id.is_none() {
         return Ok(web::Json(Response::new_error(403, "Not logged in".into())));
     }
