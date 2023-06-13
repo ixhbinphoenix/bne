@@ -4,6 +4,7 @@ use actix_web::web;
 use actix_web_lab::__reexports::tokio::task::JoinSet;
 use chrono::{Days, NaiveDate};
 use reqwest::{Client, Response};
+use log::debug;
 
 use super::utils::{
     self, day_of_week, DetailedSubject, FormattedLesson, Holidays, Klasse, LoginResults, PeriodObject, Schoolyear, Substitution, TimegridUnits, TimetableParameter, UntisArrayResponse
@@ -539,7 +540,7 @@ impl UntisClient {
             lbs_per_week
                 .entry(lb.day.to_string() + ";" + &lb.start.to_string())
                 .and_modify(|lessons| {
-                    println!("4 {:#?}", lessons);
+                    debug!("4 {:#?}", lessons);
                     lessons
                         .entry(lb.clone().subject_short)
                         .and_modify(|subject| {
