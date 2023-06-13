@@ -91,6 +91,10 @@ impl Link {
             LinkType::PasswordReset => "reset-password",
             LinkType::VerifyAccount => "verify",
         };
-        format!("https://theschedule.de/{}/{}", typestr, self.id.id.to_raw())
+        if cfg!(debug_assertions) {
+            format!("http://localhost:3000/{}/{}", typestr, self.id.id.to_raw())
+        } else {
+            format!("https://theschedule.de/{}/{}", typestr, self.id.id.to_raw())
+        }
     }
 }
