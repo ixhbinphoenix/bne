@@ -3,11 +3,21 @@
 import "../../../styles/SettingsElement.scss";
 import type { JSX } from "preact";
 import { forgotPassword } from "../../../api/theBackend";
+import { useState } from "preact/hooks";
+import { error } from "console";
 
 export default function ForgotPassword(): JSX.Element {
+  const [errorMessage, setErrorMessage] = useState(<p></p>);
   const handleSubmit = (event: any) => {
     event.preventDefault();
-    forgotPassword(event.target[0].value);
+    forgotPassword(event.target[0].value).then(
+      () => {
+        setErrorMessage(<p>Du hast eine E-Mail von uns bekommen</p>);
+      },
+      (error) => {
+        setErrorMessage(<p>Etwas ist schief gegangen: {error.message}</p>);
+      }
+    );
   };
 
   return (
@@ -27,6 +37,7 @@ export default function ForgotPassword(): JSX.Element {
           />
           <input type="submit" value="E-Mail anfordern" id="submit-button" />
         </form>
+        <div class="error-message">{errorMessage}</div>
       </div>
     </div>
   );

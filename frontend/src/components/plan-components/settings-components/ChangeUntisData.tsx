@@ -22,7 +22,7 @@ export default function ChangeUntisData(): JSX.Element {
           setErrorMessage(<p>Deine Untis-Daten wurden geändert</p>);
         },
         (error) => {
-          setErrorMessage(<p>Etwas ist schief gegangen: {error}</p>);
+          setErrorMessage(<p>Etwas ist schief gegangen: {error.message}</p>);
         }
       );
     });
@@ -40,7 +40,13 @@ export default function ChangeUntisData(): JSX.Element {
             required
           />
 
-          <input type="username" name="new_untis_username" placeholder="Neuer Untis-Nutzername" autocomplete="off" required/>
+          <input
+            type="username"
+            name="new_untis_username"
+            placeholder="Neuer Untis-Nutzername"
+            autocomplete="off"
+            required
+          />
           <input name="new_untis_pwd" type="password" placeholder="Neues Untis-Passwort" autocomplete="off" required />
           <input type="submit" id="submit-button" />
         </form>

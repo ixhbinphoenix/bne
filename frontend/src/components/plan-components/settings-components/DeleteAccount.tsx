@@ -14,7 +14,7 @@ export default function DeleteAccount(): JSX.Element {
         setErrorMessage(<p>Deine Account wurde gelöscht, du kannst diese Seite jetzt neu laden</p>);
       },
       (error) => {
-        setErrorMessage(<p>Etwas ist schief gegangen: {error}</p>);
+        setErrorMessage(<p>Etwas ist schief gegangen: {error.message}</p>);
       }
     );
   };

@@ -17,7 +17,7 @@ export default function ResetEmail(props: IProps): JSX.Element {
         setErrorMessage(<p>Deine E-Mail-Adresse wurde geändert</p>);
       },
       (error) => {
-        setErrorMessage(<p>Etwas ist schief gelaufen: {error}</p>);
+        setErrorMessage(<p>Etwas ist schief gelaufen: {error.message}</p>);
       }
     );
   };
