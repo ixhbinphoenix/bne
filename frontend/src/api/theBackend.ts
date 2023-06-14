@@ -79,7 +79,6 @@ export async function registerAccount(
       password: password,
       person_id: personId,
       untis_cypher: untisCredentialsEncrypted
-
     });
     return Promise.resolve();
   } catch (error) {
@@ -137,6 +136,15 @@ export async function verifySession() {
     return Promise.resolve();
   } catch (error) {
     deleteLocalUntisCredentials();
+    return Promise.reject(error);
+  }
+}
+export async function accountIsVerified(): Promise<boolean> {
+  try {
+    let result = await Request.Get("verified");
+    console.log("verified");
+    return Promise.resolve(true);
+  } catch (error) {
     return Promise.reject(error);
   }
 }
