@@ -21,6 +21,13 @@ import { onSwipe } from "../../api/Touch";
 export default function Stundenplan(): JSX.Element {
   const [currentWeek, setCurrentWeek] = useState(getMondayAndFridayDates());
 
+  if(sessionStorage.getItem("monday") && currentWeek.currentMonday != sessionStorage.getItem("monday")){
+      setCurrentWeek(getMondayAndFridayDates(sessionStorage.getItem("monday")!))
+  }
+  else{
+    sessionStorage.setItem("monday", currentWeek.currentMonday);
+  }
+
   const highlightDates = (currentMonday: string, currentFriday: string) => {
     const days = document.getElementsByClassName("day");
     Array.from(days).forEach((day) => {
@@ -89,6 +96,7 @@ export default function Stundenplan(): JSX.Element {
         openPopup();
       }
     );
+    sessionStorage.setItem("monday", week.currentMonday);
     setCurrentWeek(week);
   };
   const previousWeek = () => {
@@ -115,6 +123,7 @@ export default function Stundenplan(): JSX.Element {
         openPopup();
       }
     );
+    sessionStorage.setItem("monday", week.currentMonday);
     setCurrentWeek(week);
   };
   const goToCurrentWeek = () => {

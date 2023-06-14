@@ -21,6 +21,13 @@ import { onSwipe } from "../../api/Touch";
 export default function Lernbueros(): JSX.Element {
   const [currentWeek, setCurrentWeek] = useState(getMondayAndFridayDates());
 
+  if(sessionStorage.getItem("monday") && currentWeek.currentMonday != sessionStorage.getItem("monday")){
+      setCurrentWeek(getMondayAndFridayDates(sessionStorage.getItem("monday")!))
+  }
+  else{
+    sessionStorage.setItem("monday", currentWeek.currentMonday);
+  }
+
   const highlightDates = (currentMonday: string, currentFriday: string) => {
     const days = document.getElementsByClassName("day");
     Array.from(days).forEach((day) => {
@@ -37,7 +44,7 @@ export default function Lernbueros(): JSX.Element {
     currentLesson?.classList.add("highlighted");
   };
   useEffect(() => {
-    highlightDates(getMondayAndFridayDates().currentMonday, getMondayAndFridayDates().currentFriday);
+    highlightDates(currentWeek.currentMonday, currentWeek.currentFriday);
 
     setCurrentDates(getWeekDays(currentWeek.currentMonday));
     getLernbueros(currentWeek.currentMonday, currentWeek.currentFriday).then(
@@ -90,6 +97,7 @@ export default function Lernbueros(): JSX.Element {
         openPopup();
       }
     );
+    sessionStorage.setItem("monday", week.currentMonday);
     setCurrentWeek(week);
   };
   const previousWeek = () => {
@@ -116,6 +124,7 @@ export default function Lernbueros(): JSX.Element {
         openPopup();
       }
     );
+    sessionStorage.setItem("monday", week.currentMonday);
     setCurrentWeek(week);
   };
   const goToCurrentWeek = () => {
@@ -185,7 +194,8 @@ export default function Lernbueros(): JSX.Element {
               subjectType = lessons[k].subject_short;
             }
             const objectStyle = {
-              backgroundColor: SubjectColor[lessons[k].subject_short]
+              backgroundColor: SubjectColor[lessons[k].subject_short],
+              cursor: "pointer"
             };
             let roomStyle = {
               textDecoration: "none"
@@ -222,9 +232,7 @@ export default function Lernbueros(): JSX.Element {
                       </div>
                     );
                   }}>
-                  <p>{lessons[k].room}</p>
                   <h2>{subjectType}</h2>
-                  <p>{lessons[k].teacher}</p>
                 </div>
               );
             } else {
@@ -265,11 +273,7 @@ export default function Lernbueros(): JSX.Element {
                       </div>
                     );
                   }}>
-                  <p style={roomStyle}>{lessons[k].room}</p>
-                  <p style={substitutionRoomStyle}>{lessons[k].substitution?.room}</p>
                   <h2>{subjectType}</h2>
-                  <p style={teacherStyle}>{lessons[k].teacher}</p>
-                  <p style={substitutionTeacherStyle}>{lessons[k].substitution?.teacher}</p>
                 </div>
               );
             }
