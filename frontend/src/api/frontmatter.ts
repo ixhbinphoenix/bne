@@ -64,10 +64,12 @@ export async function checkSessionIdAstro(id: string): Promise<any> {
     return Promise.reject(error);
   }
 }
-export async function checkUUID(uuid: string): Promise<any> {
-  const query = `?uuid=${uuid}`;
+
+type LinkType = "EmailChange" | "EmailReset" | "PasswordReset" | "VerifyAccount";
+
+export async function checkUUID(uuid: string, type: LinkType): Promise<any> {
   try {
-    let result = await Request.Get("check_uuid" + query);
+    let result = await Request.Get(`link/check_uuid/${uuid}?type=${type}`);
     return result;
   } catch (error) {
     return Promise.reject(error);
