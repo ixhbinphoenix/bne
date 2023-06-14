@@ -14,9 +14,9 @@ Wir erlauben Ihnen unsere Dienste zu nutzen, sowie unseren Quellcode zu verände
 
 Wenn Sie diese Nutzungsbedingungen akzeptieren, stimmen Sie zu, dass wir Ihre Untis-Nutzerdaten speichern und verwenden dürfen.
 Damit erhalten wir ebenfalls den Zugriff auf Ihren Untis Account.
-Wir tun das ausschließlich um Ihnen unsere Dienste anbieten zu können und geben Ihre Daten niemals an Dritte, abgesehen von der Untis GmbH, weiter. 
+Wir tun das ausschließlich um Ihnen unsere Dienste anbieten zu können und geben Ihre Daten niemals an Dritte, abgesehen von der Untis GmbH, weiter.
 
-Desweiteren liegen Ihre Zugangsdaten auf unseren Systemen unter keinen Umständen im Klartext vor, sondern sind zu jeder Zeit verschlüsselt, sodass selbst wir sie aus unseren Systemen nicht auslesen können. Wenn Sie mehr über den Umgang mit Ihren Daten erfahren möchten, können Sie sich unser [Sicherheitskonzept](sicherheit) 
+Desweiteren liegen Ihre Zugangsdaten auf unseren Systemen unter keinen Umständen im Klartext vor, sondern sind zu jeder Zeit verschlüsselt, sodass selbst wir sie aus unseren Systemen nicht auslesen können. Wenn Sie mehr über den Umgang mit Ihren Daten erfahren möchten, können Sie sich unser [Sicherheitskonzept](sicherheit)
 anschauen.
 
 #### Speicherung von Nutzerdaten
@@ -27,7 +27,7 @@ Neben diesen Daten speichern wir auch bestimmte Personenbezogendaten. Welche das
 
 Wir behalten uns das Recht vor, einzelne oder alle von Ihren bei uns gespeicherten Daten ohne Vorwarnung und Begründung zu löschen.
 
-#### Haftung 
+#### Haftung
 
 Wir übernehmen keinerlei Haftung für Inhalte, die von Ihnen erstellt oder verändert wurden. Sie verpflichten sich dazu, unsere Dienste nur zu legal Zwecken zu nutzen
 
@@ -38,18 +38,19 @@ Wenn Sie Verbraucher aus dem Europäischen Wirtschaftsraum sind, haben Sie jeder
 Dazu müssen Sie das Musterformular ausfüllen und per E-Mail oder Post an uns senden.
 
 #### Muster-Widerrufsformular
+
 (Wenn Sie den Vertrag widerrufen wollen, dann füllen Sie bitte dieses Formular aus und senden Sie es zurück)
 
 — An Herrn Sascha Thiel, Beethovenstraße 18, 48165 Münster, Nordrhein-Westfalen, Deutschland, support@theschedule.de:
 
-— Hiermit widerrufe ich den von mir abgeschlossenen Vertrag über die Erbringung der folgenden Dienstleistung _____________
+— Hiermit widerrufe ich den von mir abgeschlossenen Vertrag über die Erbringung der folgenden Dienstleistung ******\_******
 
-– Bestellt am _____________
+– Bestellt am ******\_******
 
-— Name des Verbrauchers _____________
+— Name des Verbrauchers ******\_******
 
-— Anschrift des Verbrauchers _____________
+— Anschrift des Verbrauchers ******\_******
 
-— Unterschrift des Verbrauchers (nur bei Mitteilung auf Papier) _____________
+— Unterschrift des Verbrauchers (nur bei Mitteilung auf Papier) ******\_******
 
-— Datum _____________
+— Datum ******\_******

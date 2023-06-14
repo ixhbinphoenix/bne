@@ -2,8 +2,8 @@
 layout: "../layouts/StaticContentLayout.astro"
 title: "Datenschutzerklärung"
 ---
-# Datenschutzerklärung
 
+# Datenschutzerklärung
 
 #### 1. Allgemeine Hinweise
 
