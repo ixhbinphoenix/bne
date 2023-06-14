@@ -4,7 +4,6 @@ import "../../../styles/SettingsElement.scss";
 import type { JSX } from "preact";
 import { forgotPassword } from "../../../api/theBackend";
 import { useState } from "preact/hooks";
-import { error } from "console";
 
 export default function ForgotPassword(): JSX.Element {
   const [errorMessage, setErrorMessage] = useState(<p></p>);

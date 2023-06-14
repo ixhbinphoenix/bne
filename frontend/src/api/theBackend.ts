@@ -142,7 +142,6 @@ export async function verifySession() {
 export async function accountIsVerified(): Promise<boolean> {
   try {
     let result = await Request.Get("verified");
-    console.log("verified");
     return Promise.resolve(true);
   } catch (error) {
     return Promise.reject(error);
