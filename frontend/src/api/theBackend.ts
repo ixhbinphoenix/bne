@@ -228,10 +228,10 @@ export async function changeUntisData(
 }
 export async function resendVerifyEmail() {
   try {
-    let result = await Request.Get("resend_mail")
-    return result
+    let result = await Request.Get("resend_mail");
+    return result;
   } catch (error) {
-    return Promise.reject(error)
+    return Promise.reject(error);
   }
 }
 export async function verifyAccount(uuid: string): Promise<string> {
@@ -254,11 +254,10 @@ export async function deleteAccount(password: string) {
 }
 export async function GDPRData() {
   try {
-    let result = await Request.Get("gdpr_data_compliance")
-    return result
-  }
-  catch (error) {
-    return Promise.reject(error)
+    let result = await Request.Get("gdpr_data_compliance");
+    return result;
+  } catch (error) {
+    return Promise.reject(error);
   }
 }
 export async function logout() {

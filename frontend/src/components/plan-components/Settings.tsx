@@ -9,29 +9,32 @@ import DemandEmail from "./settings-components/DemandEmail";
 import ChangeUntisData from "./settings-components/ChangeUntisData";
 import DeleteAccount from "./settings-components/DeleteAccount";
 import Logout from "./settings-components/Logout";
-import UserData from "./settings-components/UserData"
+import UserData from "./settings-components/UserData";
 import { onSwipe } from "../../api/Touch";
 import { accountIsVerified, resendVerifyEmail } from "../../api/theBackend";
 
 export default function Settings(): JSX.Element {
-  const [resendMessage, setResendMessage] = useState("Link erneut versenden")
+  const [resendMessage, setResendMessage] = useState("Link erneut versenden");
   const [NotVerifiedMessage, setNotVerifiedMessage] = useState({ display: "none" });
   const [TopbarColor, setTopbarColor] = useState({ "background-color": "var(--highlight-blue)" });
   const showNotVerifiedMessage = () => {
-    console.log("verifying")
+    console.log("verifying");
     accountIsVerified().catch((error) => {
-      console.log(error)
+      console.log(error);
       setNotVerifiedMessage({ display: "block" });
       setTopbarColor({ "background-color": "var(--highlight-red)" });
     });
   };
   const sendLink = () => {
-    resendVerifyEmail().then(() => {
-      setResendMessage("Link versendet")
-    }, (error) => {
-      setResendMessage(`Etwas ist schief gegangen: ${error.message}`)
-    })
-  }
+    resendVerifyEmail().then(
+      () => {
+        setResendMessage("Link versendet");
+      },
+      (error) => {
+        setResendMessage(`Etwas ist schief gegangen: ${error.message}`);
+      }
+    );
+  };
   const notVerifiedMessageDiv = (
     <div style={NotVerifiedMessage}>
       <p style="margin-bottom: 1vmin; text-align: center">

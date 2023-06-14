@@ -13,7 +13,7 @@ export default function ChangePassword(): JSX.Element {
   const sendPasswordChange = (event: any) => {
     event.preventDefault();
     if (event.target[1].value !== event.target[2].value) {
-      return setErrorMessage(<p>Deine Passwörter stimmen nicht überein</p>)
+      return setErrorMessage(<p>Deine Passwörter stimmen nicht überein</p>);
     }
     const key = generateKey(event.target[1].value);
     const untisCredentials = JSON.stringify(getLocalUntisCredentials());

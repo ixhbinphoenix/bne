@@ -15,7 +15,7 @@ export default function ResetPassword(props: IProps): JSX.Element {
   const sendPasswordChange = (event: any) => {
     event.preventDefault();
     if (event.target[0].value !== event.target[1].value) {
-      return setErrorMessage(<p>Deine Passwörter stimmen nicht überein</p>)
+      return setErrorMessage(<p>Deine Passwörter stimmen nicht überein</p>);
     }
     const key = generateKey(event.target[0].value);
     const untisCredentials = { username: event.target[2].value, password: event.target[3].value };

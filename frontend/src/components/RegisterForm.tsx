@@ -13,7 +13,7 @@ export default function LoginForm(): JSX.Element {
   const handleSubmit = (event: any) => {
     event.preventDefault();
     if (event.target[1].value !== event.target[2].value) {
-      return setErrorMessage(<p>Deine Passwörter stimmen nicht überein</p>)
+      return setErrorMessage(<p>Deine Passwörter stimmen nicht überein</p>);
     }
     saveUntisCredentials(event.target[3].value, event.target[4].value);
     fetchJSessionId(event.target[3].value, event.target[4].value).then(
