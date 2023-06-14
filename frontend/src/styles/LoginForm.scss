@@ -60,6 +60,31 @@
       display: flex;
       flex-direction: column;
 
+      & > .password-notice {
+        margin: 1% 0px;
+        white-space: pre-line;
+        color: #ff4d17;
+        text-align: center;
+        & > p {
+          font-size: clamp(10px, 1.75rem, 1.5vh);
+          margin: 0px;
+          opacity: 0;
+        }
+      }
+      & > div {
+        margin: 1vmin 0px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        &> #checkbox {
+          margin-right: 1%;
+          width: 1.25vmin;
+          height: 1.25vmin;
+          cursor: pointer;          
+        }
+      }
+
       & > input {
         font-family: Inter, sans-serif;
         color: #b8c0e0;

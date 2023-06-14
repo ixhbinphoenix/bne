@@ -115,6 +115,10 @@ export default function LoginForm(): JSX.Element {
             autocomplete="off"
             required
           />
+          <div>
+            <input type="checkbox" id="checkbox" required/>
+            <label htmlFor="checkbox">Ich akzeptiere die <a href="/datenschutz" style="color: var(--highlight-blue);">Datenschutzbestimmung</a> und die <a href="/nutzungsbedingungen" style="color: var(--highlight-blue);">Nutzungsbedingungen</a></label>
+          </div>
           <div className="button-container">
             <input type="submit" id="submit-button" value="Absenden" />
           </div>
