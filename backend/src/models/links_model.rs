@@ -84,6 +84,30 @@ impl Link {
         Ok(res)
     }
 
+    pub async fn get_from_user(db: ConnectionData, user: User) -> Result<Vec<Self>, Error> {
+        let sql = "SELECT * FROM links WHERE user=$user;";
+
+        let res: Vec<Self> = db.query(sql).bind(("user", user.id)).await?.take(0)?;
+
+        Ok(res)
+    }
+
+    pub async fn get_from_user_type(db: ConnectionData, user: User, link_type: LinkType) -> Result<Vec<Self>, Error> {
+        let sql = "SELECT * FROM links WHERE user=$user AND link_type=$link_type;";
+
+        let res: Vec<Self> = db.query(sql).bind(("user", user.id)).bind(("link_type", link_type)).await?.take(0)?;
+
+        Ok(res)
+    }
+
+    pub async fn delete_from_user_type(db: ConnectionData, user: User, link_type: LinkType) -> Result<(), Error> {
+        let sql = "DELETE links WHERE user=$user AND link_type=$link_type;";
+
+        let res: Vec<Self> = db.query(sql).bind(("user", user.id)).bind(("link_type", link_type)).await?.take(0)?;
+
+        Ok(())
+    }
+
     pub fn construct_link(&self) -> String {
         let typestr = match self.link_type {
             LinkType::EmailChange => "change-email",
