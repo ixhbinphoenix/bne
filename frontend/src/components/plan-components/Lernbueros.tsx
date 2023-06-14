@@ -232,7 +232,9 @@ export default function Lernbueros(): JSX.Element {
                       </div>
                     );
                   }}>
+                  <p style={roomStyle}>{lessons[k].room}</p>
                   <h2>{subjectType}</h2>
+                  <p style={teacherStyle}>{lessons[k].teacher}</p>
                 </div>
               );
             } else {
@@ -288,7 +290,6 @@ export default function Lernbueros(): JSX.Element {
             );
           } else {
             flexStyle.flexDirection = "column"
-            console.log(lessonElements[0].props.children)
             lessonElements.forEach(lesson => {
               lesson.props.children.shift();
               lesson.props.children.pop();
