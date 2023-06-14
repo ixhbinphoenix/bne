@@ -10,8 +10,26 @@ import ChangeUntisData from "./settings-components/ChangeUntisData";
 import DeleteAccount from "./settings-components/DeleteAccount";
 import Logout from "./settings-components/Logout";
 import { onSwipe } from "../../api/Touch";
+import { accountIsVerified } from "../../api/theBackend";
 
 export default function Settings(): JSX.Element {
+  useEffect(() => {
+    showNotVerifiedMessage();
+  }, []);
+  let [NotVerifiedMessage, setNotVerifiedMessage] = useState({ display: "none" });
+  let [TopbarColor, setTopbarColor] = useState({ "background-color": "var(--highlight-blue)" });
+  const showNotVerifiedMessage = () => {
+    accountIsVerified().catch(() => {
+      console.log("Verified");
+      setNotVerifiedMessage({ display: "block" });
+      setTopbarColor({ "background-color": "var(--highlight-red)" });
+    });
+  };
+  const notVerifiedMessageDiv = (
+    <div style={NotVerifiedMessage}>
+      <p style="margin-bottom: 1vmin">Dein Account ist noch nicht verifiziert</p>
+    </div>
+  );
   const MenuButton = (title: string, route: JSX.Element): JSX.Element => {
     return (
       <button
@@ -55,8 +73,9 @@ export default function Settings(): JSX.Element {
 
   return (
     <div class="settings-page">
-      <div id="top-bar">
+      <div id="top-bar" style={TopbarColor}>
         <div id="username">{username}</div>
+        {notVerifiedMessageDiv}
       </div>
       <button
         class="back-button"
@@ -70,7 +89,7 @@ export default function Settings(): JSX.Element {
       <div id="page-content">{pageContent}</div>
       <div id="bottom-bar">
         <a href="/datenschutz">Datenschutzerklärung</a>
-        <a href="/password-reset">Passwort vergessen</a>
+        <a href="/passwort-vergessen">Passwort vergessen</a>
         <a href="/nutzungsbedingungen">Nutzungsbedingungen</a>
       </div>
     </div>
