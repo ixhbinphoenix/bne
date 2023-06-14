@@ -9,6 +9,7 @@ import DemandEmail from "./settings-components/DemandEmail";
 import ChangeUntisData from "./settings-components/ChangeUntisData";
 import DeleteAccount from "./settings-components/DeleteAccount";
 import Logout from "./settings-components/Logout";
+import UserData from "./settings-components/UserData"
 import { onSwipe } from "../../api/Touch";
 import { accountIsVerified, resendVerifyEmail } from "../../api/theBackend";
 
@@ -62,6 +63,7 @@ export default function Settings(): JSX.Element {
       {MenuButton("Untis-Daten ändern", <ChangeUntisData />)}
       {MenuButton("Account löschen", <DeleteAccount />)}
       {MenuButton("Abmelden", <Logout />)}
+      {MenuButton("Daten anfordern", <UserData />)}
     </div>
   );
 

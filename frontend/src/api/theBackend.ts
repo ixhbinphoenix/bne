@@ -252,6 +252,15 @@ export async function deleteAccount(password: string) {
     return Promise.reject(error);
   }
 }
+export async function GDPRData() {
+  try {
+    let result = await Request.Get("gdpr_data_compliance")
+    return result
+  }
+  catch (error) {
+    return Promise.reject(error)
+  }
+}
 export async function logout() {
   try {
     await Request.Post("logout");
