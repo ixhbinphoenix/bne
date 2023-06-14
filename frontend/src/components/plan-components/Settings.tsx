@@ -10,24 +10,36 @@ import ChangeUntisData from "./settings-components/ChangeUntisData";
 import DeleteAccount from "./settings-components/DeleteAccount";
 import Logout from "./settings-components/Logout";
 import { onSwipe } from "../../api/Touch";
-import { accountIsVerified } from "../../api/theBackend";
+import { accountIsVerified, resendVerifyEmail } from "../../api/theBackend";
 
 export default function Settings(): JSX.Element {
-  useEffect(() => {
-    showNotVerifiedMessage();
-  }, []);
-  let [NotVerifiedMessage, setNotVerifiedMessage] = useState({ display: "none" });
-  let [TopbarColor, setTopbarColor] = useState({ "background-color": "var(--highlight-blue)" });
+  const [resendMessage, setResendMessage] = useState("Link erneut versenden")
+  const [NotVerifiedMessage, setNotVerifiedMessage] = useState({ display: "none" });
+  const [TopbarColor, setTopbarColor] = useState({ "background-color": "var(--highlight-blue)" });
   const showNotVerifiedMessage = () => {
-    accountIsVerified().catch(() => {
-      console.log("Verified");
+    console.log("verifying")
+    accountIsVerified().catch((error) => {
+      console.log(error)
       setNotVerifiedMessage({ display: "block" });
       setTopbarColor({ "background-color": "var(--highlight-red)" });
     });
   };
+  const sendLink = () => {
+    resendVerifyEmail().then(() => {
+      setResendMessage("Link versendet")
+    }, (error) => {
+      setResendMessage(`Etwas ist schief gegangen: ${error.message}`)
+    })
+  }
   const notVerifiedMessageDiv = (
     <div style={NotVerifiedMessage}>
-      <p style="margin-bottom: 1vmin">Dein Account ist noch nicht verifiziert</p>
+      <p style="margin-bottom: 1vmin; text-align: center">
+        Du bist noch nicht verifiziert!
+        <br />
+        <button style="color: #0010ff; text-decoration: underline; cursor: pointer" onClick={sendLink}>
+          {resendMessage}
+        </button>
+      </p>
     </div>
   );
   const MenuButton = (title: string, route: JSX.Element): JSX.Element => {
@@ -57,6 +69,7 @@ export default function Settings(): JSX.Element {
   const [pageContent, setPageContent] = useState<JSX.Element>(Menu);
   const [username, setUsername] = useState("");
   useEffect(() => {
+    showNotVerifiedMessage();
     const usernameRaw = localStorage.getItem("untis_username");
     const nameParts = usernameRaw?.split("_");
     if (nameParts) {

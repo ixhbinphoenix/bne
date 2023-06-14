@@ -142,7 +142,7 @@ export async function verifySession() {
 export async function accountIsVerified(): Promise<boolean> {
   try {
     let result = await Request.Get("verified");
-    return Promise.resolve(true);
+    return result ? Promise.resolve(true) : Promise.reject(result);
   } catch (error) {
     return Promise.reject(error);
   }
@@ -224,6 +224,14 @@ export async function changeUntisData(
     return result;
   } catch (error) {
     return Promise.reject(error);
+  }
+}
+export async function resendVerifyEmail() {
+  try {
+    let result = await Request.Get("resend_mail")
+    return result
+  } catch (error) {
+    return Promise.reject(error)
   }
 }
 export async function verifyAccount(uuid: string): Promise<string> {
