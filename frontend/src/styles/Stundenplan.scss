@@ -108,7 +108,15 @@
 
           display: flex;
           flex-direction: row;
-          div {
+          
+          &>.sub-flex {
+            display: flex;
+            width: 100%;
+            height: 100%;
+          }
+
+           .lesson {
+            border: .1px solid #363a4f;
             min-width: 0;
             width: 100%;
             height: 100%;
@@ -119,7 +127,7 @@
             align-items: center;
             justify-content: space-around;
             background-color: var(--highlight-red);
-            font-size: clamp(25%, calc(65%), 30px);
+            font-size: clamp(25%, 65%, 30px);
 
             & > h2 {
               text-overflow: ellipsis;
@@ -128,7 +136,7 @@
               width: 100%;
               margin: 0;
               text-align: center;
-              font-size: clamp(4px, calc(125%), 20px);
+              font-size: clamp(4px, 125%, 4vmin);
             }
             & > p {
               width: 100%;

@@ -174,7 +174,8 @@ export default function Lernbueros(): JSX.Element {
 
         let flexStyle = {
           gridRowStart: "1",
-          gridRowEnd: "span 1"
+          gridRowEnd: "span 1",
+          flexDirection: "row"
         };
 
         for (let k: number = 0; k < lessons.length; k++) {
@@ -203,11 +204,13 @@ export default function Lernbueros(): JSX.Element {
             };
             flexStyle = {
               gridRowStart: lessons[k].start.toString(),
-              gridRowEnd: "span " + lessons[k].length
+              gridRowEnd: "span " + lessons[k].length,
+              flexDirection: "row"
             };
             if (!lessons[k].substitution) {
               lessonElements.push(
                 <div
+                  class="lesson"
                   style={objectStyle}
                   onClick={() => {
                     openPopup();
@@ -247,7 +250,7 @@ export default function Lernbueros(): JSX.Element {
                 substitutionTextStyle = { display: "block" };
               }
               lessonElements.push(
-                <div
+                <div class="lesson"
                   style={objectStyle}
                   onClick={() => {
                     openPopup();
@@ -273,11 +276,32 @@ export default function Lernbueros(): JSX.Element {
           }
         }
         if (lessonElements.length) {
-          tableElements[i].push(
+          if (lessonElements.length < 5) {
+            tableElements[i].push(
             <div className="parent-flex" style={flexStyle}>
               {lessonElements}
             </div>
-          );
+            );
+          } else {
+            flexStyle.flexDirection = "column"
+            console.log(lessonElements[0].props.children)
+            lessonElements.forEach(lesson => {
+              lesson.props.children.shift();
+              lesson.props.children.pop();
+            })
+            const rows = Math.ceil(lessonElements.length / 4);
+            const subFlexes = []
+            let j = 0;
+            for (let i = 0; i < rows; i++) {
+              subFlexes.push(<div class="sub-flex">{lessonElements.slice(j, j + 4)}</div>);
+              j += 4
+            }
+            tableElements[i].push(
+              <div className="parent-flex" style={flexStyle}>
+                {subFlexes}
+              </div>
+            );
+          }
         }
       }
     }

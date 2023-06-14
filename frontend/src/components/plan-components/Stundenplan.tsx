@@ -207,6 +207,7 @@ export default function Stundenplan(): JSX.Element {
             if (!lessons[k].substitution) {
               lessonElements.push(
                 <div
+                  class="lesson"
                   style={objectStyle}
                   onClick={() => {
                     openPopup();
@@ -246,7 +247,7 @@ export default function Stundenplan(): JSX.Element {
                 substitutionTextStyle = { display: "block" };
               }
               lessonElements.push(
-                <div
+                <div class="lesson"
                   style={objectStyle}
                   onClick={() => {
                     openPopup();
