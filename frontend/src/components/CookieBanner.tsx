@@ -27,7 +27,6 @@ export default function CookieBanner(): JSX.Element | null {
   }, [showBanner]);
   const setConsentCookie = () => {
     document.cookie = `cookie-consent=True; max-age=15552000;`;
-    console.log("hiding");
     toggleBanner(false);
   };
   return bannerContent;

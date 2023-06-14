@@ -1,6 +1,18 @@
 ---
 import LoginLayout from "../layouts/LoginLayout.astro";
 import RegisterForm from "../components/RegisterForm";
+import { checkSessionIdAstro } from "../api/frontmatter";
+
+const id: string | undefined = Astro.cookies.get("id").value;
+
+if (id) {
+  try {
+    const result = await checkSessionIdAstro(id);
+    if (result) {
+      return Astro.redirect("/home");
+    }
+  } catch (error) {}
+}
 ---
 
 <LoginLayout title="Registrieren">

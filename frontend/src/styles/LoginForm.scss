@@ -15,12 +15,7 @@
       font-size: clamp(14px, 12vmin, 120px);
       margin: 0px;
       background: rgb(198, 160, 246);
-      background: linear-gradient(
-        90deg,
-        rgba(198, 160, 246, 1) 0%,
-        rgba(237, 135, 150, 1) 50%,
-        rgba(238, 212, 159, 1) 100%
-      );
+      background: var(--text-gradient);
       background-clip: text;
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
@@ -52,22 +47,19 @@
         margin: 1.5%;
       }
     }
-
+    & > .error-message {
+      text-align: center;
+      color: #ff4d17;
+      margin-top: 3%;
+    }
+    & > a {
+      text-align: center;
+      color: var(--highlight-blue);
+    }
     & > form {
       display: flex;
       flex-direction: column;
 
-      & > .password-notice {
-        margin: 1% 0px;
-        white-space: pre-line;
-        color: #ff4d17;
-        text-align: center;
-        & > p {
-          font-size: clamp(10px, 1.75rem, 1.5vh);
-          margin: 0px;
-          opacity: 0;
-        }
-      }
       & > input {
         font-family: Inter, sans-serif;
         color: #b8c0e0;
@@ -77,16 +69,10 @@
         margin: 1.5% 0px;
         outline: none;
         border: 2px solid;
-        border-image: linear-gradient(
-            90deg,
-            rgba(198, 160, 246, 1) 0%,
-            rgba(237, 135, 150, 1) 50%,
-            rgba(238, 212, 159, 1) 100%
-          )
-          1;
+        border-image: var(--text-gradient) 1;
         &:focus {
           border-image: none;
-          border-color: #5974e2;
+          border-color: var(--highlight-blue);
         }
         &:invalid {
           color: #ff4d17;
@@ -105,14 +91,14 @@
           font-size: clamp(15px, 3rem, 3vh);
           margin: 1.5%;
           outline: none;
-          border: 2px solid #5974e2;
+          border: 2px solid var(--highlight-blue);
           cursor: pointer;
 
           &:hover {
-            background-color: #5974e2;
+            background-color: var(--highlight-blue);
           }
           &:active {
-            background-color: #5974e2;
+            background-color: var(--highlight-blue);
           }
         }
       }

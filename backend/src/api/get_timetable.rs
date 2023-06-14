@@ -39,7 +39,7 @@ pub async fn get_timetable(
     };
 
     let pot_user: Option<User> = User::get_from_id(
-        db,
+        db.clone(),
         match id.unwrap().id() {
             Ok(i) => {
                 let split = i.split_once(':');
@@ -61,14 +61,18 @@ pub async fn get_timetable(
     let user = match pot_user {
         Some(u) => u,
         None => {
-            // This can be currently reached since we still use the CookieSessionStore, meaning we
-            // can't invalidate sessions if we delete accounts. However, we can still delete them
-            // straight from the database and if that happens without them logging out, this
-            // happens
             debug!("Deleted(?) User tried to log in with old session token");
             return Ok(Response::new_error(404, "This account doesn't exist!".to_string()).into());
         }
     };
+
+    if !user.verified {
+        return Ok(Response::new_error(
+            403,
+            "Account not verified! Check your E-Mails for a verification link".to_string(),
+        )
+        .into());
+    }
 
     let untis = match UntisClient::unsafe_init(
         jsessionid,
@@ -77,12 +81,13 @@ pub async fn get_timetable(
         "the-schedule".into(),
         untis_data.school.clone(),
         untis_data.subdomain.clone(),
+        db,
     )
     .await
     {
         Ok(u) => u,
         Err(e) => {
-            if e.is_request() {
+            if let Error::Reqwest(_) = e {
                 return Ok(Response::new_error(400, "You done fucked up".into()).into());
             } else {
                 return Ok(Response::new_error(500, "Untis done fucked up".into()).into());

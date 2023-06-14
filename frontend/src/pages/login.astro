@@ -1,6 +1,16 @@
 ---
 import LoginLayout from "../layouts/LoginLayout.astro";
 import LoginForm from "../components/LoginForm";
+import { checkSessionIdAstro } from "../api/frontmatter";
+
+const id: string | undefined = Astro.cookies.get("id").value;
+
+if (id) {
+  try {
+    await checkSessionIdAstro(id);
+    return Astro.redirect("/home");
+  } catch {}
+}
 ---
 
 <LoginLayout title="Login">

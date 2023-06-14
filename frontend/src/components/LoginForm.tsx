@@ -2,37 +2,33 @@
 
 import "../styles/LoginForm.scss";
 import type { JSX } from "preact";
-import { useEffect } from "preact/hooks";
-import { loginAccount, verifySession } from "../api/theBackend";
-import { fetchJSessionId, getLocalUntisCredentials, saveUntisCredentials } from "../api/untisAPI";
+import { useState } from "preact/hooks";
+import { loginAccount } from "../api/theBackend";
+import { fetchJSessionId, saveUntisCredentials } from "../api/untisAPI";
 import { generateKey, passwordDecrypt } from "../api/encryption";
 
 export default function LoginForm(): JSX.Element {
-  useEffect(() => {
-    verifySession().then((session) => {
-      if (session) {
-        window.location.href = "/home";
-      }
-    });
-  }, []);
+  const [errorMessage, setErrorMessage] = useState<JSX.Element>(<p></p>);
+
   const handleSubmit = (event: any) => {
     event.preventDefault();
     sendLogin(event.target[0].value, event.target[1].value);
   };
   const sendLogin = (username: string, password: string) => {
     const key = generateKey(password);
-    loginAccount(username, password).then((result) => {
-      if (result.status == 200) {
-        const untisCredentialsDecrypted = JSON.parse(passwordDecrypt(key, result.cypher));
+    loginAccount(username, password).then(
+      (cypher) => {
+        const untisCredentialsDecrypted = JSON.parse(passwordDecrypt(key, cypher));
         saveUntisCredentials(untisCredentialsDecrypted.username, untisCredentialsDecrypted.password);
-        fetchJSessionId(getLocalUntisCredentials().username, getLocalUntisCredentials().password).then((result) => {
-          if (result.status == 200) {
-            document.cookie = `JSESSIONID=${result.JSessionId}; max-age=600; secure; samesite=none`;
-            window.location.href = "/home";
-          }
+        fetchJSessionId(untisCredentialsDecrypted.username, untisCredentialsDecrypted.password).then((result) => {
+          document.cookie = `JSESSIONID=${result.JSessionId}; max-age=600; secure; samesite=none`;
+          window.location.href = "/home";
         });
+      },
+      (error) => {
+        setErrorMessage(error.message);
       }
-    });
+    );
   };
   return (
     <div className="form-container">
@@ -66,6 +62,8 @@ export default function LoginForm(): JSX.Element {
             <input type="submit" id="submit-button" value="Absenden" />
           </div>
         </form>
+        <div class="error-message">{errorMessage}</div>
+        <a href="/passwort-vergessen">Passwort vergessen</a>
       </div>
     </div>
   );

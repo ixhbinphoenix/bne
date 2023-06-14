@@ -2,34 +2,37 @@
 
 import "../styles/LoginForm.scss";
 import type { JSX } from "preact";
-import { useEffect } from "preact/hooks";
-import { registerAccount, verifySession } from "../api/theBackend";
+import { useState } from "preact/hooks";
+import { registerAccount } from "../api/theBackend";
 import { fetchJSessionId, saveUntisCredentials } from "../api/untisAPI";
 import { generateKey, passwordEncrypt } from "../api/encryption";
 
 export default function LoginForm(): JSX.Element {
-  useEffect(() => {
-    verifySession().then((session) => {
-      if (session) {
-        window.location.href = "/stundenplan";
-      }
-    });
-  }, []);
+  const [errorMessage, setErrorMessage] = useState<JSX.Element>(<p></p>);
+
   const handleSubmit = (event: any) => {
     event.preventDefault();
-    saveUntisCredentials(event.target[2].value, event.target[3].value);
-    fetchJSessionId(event.target[2].value, event.target[3].value).then((result) => {
-      if (result.JSessionId && result.personId) {
-        document.cookie = `JSESSIONID=${result.JSessionId}; max-age=600; secure; samesite=none`;
-        sendRegister(
-          event.target[0].value,
-          event.target[1].value,
-          result.personId,
-          event.target[2].value,
-          event.target[3].value
-        );
+    if (event.target[1].value !== event.target[2].value) {
+      return setErrorMessage(<p>Deine Passwörter stimmen nicht überein</p>);
+    }
+    saveUntisCredentials(event.target[3].value, event.target[4].value);
+    fetchJSessionId(event.target[3].value, event.target[4].value).then(
+      (result) => {
+        if (result.JSessionId && result.personId) {
+          document.cookie = `JSESSIONID=${result.JSessionId}; max-age=600; secure; samesite=none`;
+          sendRegister(
+            event.target[0].value,
+            event.target[1].value,
+            result.personId,
+            event.target[3].value,
+            event.target[4].value
+          );
+        }
+      },
+      (error) => {
+        setErrorMessage(error.message);
       }
-    });
+    );
   };
   const sendRegister = (
     username: string,
@@ -42,11 +45,14 @@ export default function LoginForm(): JSX.Element {
     const untisCredentials = JSON.stringify({ username: untisUsername, password: untisPassword });
     const untisCredentialsEncrtypted = passwordEncrypt(key, untisCredentials).toString();
 
-    registerAccount(username, password, personId, untisCredentialsEncrtypted).then((result) => {
-      if (result.status == "200 OK") {
+    registerAccount(username, password, personId, untisCredentialsEncrtypted).then(
+      () => {
         window.location.href = "/home";
+      },
+      (error) => {
+        setErrorMessage(error.message);
       }
-    });
+    );
   };
   return (
     <div className="form-container">
@@ -86,6 +92,15 @@ export default function LoginForm(): JSX.Element {
             pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^a-zA-Z\d]).{8,}$"
           />
           <input
+            type="password"
+            title="Dein Passwort muss mindestens 8 Zeichen lang sein, ein Zahl, einen Groß-, einen Kleinbuchstaben und ein Sonderzeichen enthalten"
+            placeholder="Passwort wiederholen"
+            className="input-box"
+            required
+            autocomplete="new-password"
+            pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^a-zA-Z\d]).{8,}$"
+          />
+          <input
             id="untis-username"
             type="username"
             placeholder="Untis-Nutzername"
@@ -104,6 +119,7 @@ export default function LoginForm(): JSX.Element {
             <input type="submit" id="submit-button" value="Absenden" />
           </div>
         </form>
+        <div class="error-message">{errorMessage}</div>
       </div>
     </div>
   );

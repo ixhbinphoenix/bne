@@ -44,7 +44,7 @@ body {
       flex: 0;
       white-space: nowrap;
       background: rgb(198, 160, 246);
-      background: linear-gradient(90deg, rgb(199, 160, 246) 0%, rgb(237, 135, 150) 50%, rgb(238, 212, 159) 100%);
+      background: var(--text-gradient);
       -webkit-background-clip: text;
       background-clip: text;
       -webkit-text-fill-color: transparent;
@@ -72,11 +72,11 @@ body {
     text-align: justify;
     width: 70%;
 
-    &> p > a {
+    & > p > a {
       color: #8aadf4;
     }
   }
-  &> footer {
+  & > footer {
     bottom: 0px;
     display: flex;
     width: 100%;
@@ -86,9 +86,9 @@ body {
     border-top: 0.5vh solid #181926;
     background-color: #1e2030;
 
-    &> a {
-        color: #8aadf4;
-        font-size: clamp(8px, 2vmin, 14px);
+    & > a {
+      color: #8aadf4;
+      font-size: clamp(8px, 2vmin, 14px);
     }
   }
 }

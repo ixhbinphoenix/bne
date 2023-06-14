@@ -1,12 +1,15 @@
 use actix_identity::Identity;
 use actix_web::{web, HttpRequest, Responder, Result};
-use log::error;
+use log::{debug, error};
 use serde::{Deserialize, Serialize};
+use surrealdb::sql::Thing;
 
 use crate::{
     api::response::Response, api_wrapper::{
         untis_client::UntisClient, utils::{FormattedLesson, TimetableParameter}
-    }, database::surrealdb_repo::SurrealDBRepo, models::user_model::{User, UserCRUD}, prelude::Error, utils::time::{format_for_untis, get_this_friday, get_this_monday}, GlobalUntisData
+    }, models::{
+        model::{DBConnection, CRUD}, user_model::User
+    }, prelude::Error, utils::time::{format_for_untis, get_this_friday, get_this_monday}, GlobalUntisData
 };
 
 #[derive(Serialize)]
@@ -22,7 +25,7 @@ pub struct TimetableQuery {
 
 pub async fn get_lernbueros(
     id: Option<Identity>, query: web::Query<TimetableQuery>, req: HttpRequest, untis_data: web::Data<GlobalUntisData>,
-    db: web::Data<SurrealDBRepo>,
+    db: web::Data<DBConnection>,
 ) -> Result<impl Responder> {
     if id.is_none() {
         return Ok(web::Json(Response::new_error(403, "Not logged in".to_string())));
@@ -35,19 +38,41 @@ pub async fn get_lernbueros(
         session_cookie.unwrap().value().to_string()
     };
 
-    let user: User = UserCRUD::get_from_id(
-        db,
+    let pot_user: Option<User> = User::get_from_id(
+        db.clone(),
         match id.unwrap().id() {
-            Ok(i) => i,
+            Ok(i) => {
+                let split = i.split_once(':');
+                if split.is_some() {
+                    Thing::from(split.unwrap())
+                } else {
+                    error!("ID in session_cookie is wrong???");
+                    return Ok(Response::new_error(500, "There was an error trying to get your id".to_string()).into());
+                }
+            }
             Err(e) => {
                 error!("Error getting Identity id\n{e}");
                 return Ok(Response::new_error(500, "There was an error trying to get your id".to_string()).into());
             }
-        }
-        .as_str(),
+        },
     )
-    .await?
-    .try_into()?;
+    .await?;
+
+    let user = match pot_user {
+        Some(u) => u,
+        None => {
+            debug!("Deleted(?) User tried to log in with old session token");
+            return Ok(Response::new_error(404, "This account doesn't exist!".to_string()).into());
+        }
+    };
+
+    if !user.verified {
+        return Ok(Response::new_error(
+            403,
+            "Account not verified! Check your E-Mails for a verification link".to_string(),
+        )
+        .into());
+    }
 
     let untis = match UntisClient::unsafe_init(
         jsessionid,
@@ -56,12 +81,13 @@ pub async fn get_lernbueros(
         "the-schedule".into(),
         untis_data.school.clone(),
         untis_data.subdomain.clone(),
+        db,
     )
     .await
     {
         Ok(u) => u,
         Err(e) => {
-            if e.is_request() {
+            if let Error::Reqwest(_) = e {
                 return Ok(Response::new_error(400, "You done fucked up".into()).into());
             } else {
                 return Ok(Response::new_error(500, "Untis done fucked up".into()).into());

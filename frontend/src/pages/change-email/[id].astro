@@ -1,0 +1,21 @@
+---
+import ResetPasswordLayout from "../../layouts/ResetPasswordLayout.astro";
+import ChangeEmail from "../../components/plan-components/settings-components/ChangeEmail";
+import { checkUUID } from "../../api/frontmatter";
+
+let uuid = Astro.params.id?.toString();
+
+if (uuid) {
+  try {
+    await checkUUID(uuid, "EmailChange");
+  } catch (error) {
+    return Astro.redirect("/404");
+  }
+} else {
+  return Astro.redirect("/404");
+}
+---
+
+<ResetPasswordLayout title="E-Mail ändern">
+  <ChangeEmail {uuid} client:load />
+</ResetPasswordLayout>

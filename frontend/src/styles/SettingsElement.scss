@@ -1,0 +1,80 @@
+.page-content {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  & > .form-container {
+    margin: 0px 3%;
+    flex-direction: column;
+    display: flex;
+    justify-content: center;
+    & > h2 {
+      text-align: center;
+      margin-top: 11vh;
+      font-size: clamp(14px, 3.5vmin, 50px);
+    }
+    & > h4 {
+      text-align: center;
+      font-size: clamp(9px, 2vmin, 50px);
+    }
+    & > button {
+      text-align: center;
+      cursor: pointer;
+      font-family: Inter, sans-serif;
+      color: #b8c0e0;
+      background-color: transparent;
+      padding: 1%;
+      font-size: clamp(15px, 3rem, 3vh);
+      margin: 1.5% 0px;
+      outline: none;
+      border: 2px solid;
+      border-image: var(--text-gradient) 1;
+      &:hover {
+        border-image: none;
+        border-color: var(--highlight-blue);
+        background-color: var(--highlight-blue);
+      }
+    }
+    & > form {
+      display: flex;
+      flex-direction: column;
+      & > p {
+        text-align: center;
+        font-size: clamp(12px, 2vmin, 20px);
+      }
+      & > #submit-button {
+        cursor: pointer;
+
+        &:hover {
+          border-image: none;
+          border-color: var(--highlight-blue);
+          background-color: var(--highlight-blue);
+        }
+      }
+      & > input {
+        font-family: Inter, sans-serif;
+        color: #b8c0e0;
+        background-color: transparent;
+        padding: 1%;
+        font-size: clamp(15px, 3rem, 3vh);
+        margin: 1.5% 0px;
+        outline: none;
+        border: 2px solid;
+        border-image: var(--text-gradient) 1;
+        &:focus {
+          border-image: none;
+          border-color: var(--highlight-blue);
+        }
+        &:invalid {
+          border-color: var(--highlight-red);
+          color: var(--highlight-red);
+        }
+      }
+    }
+    & > div > p {
+      text-align: center;
+    }
+  }
+}

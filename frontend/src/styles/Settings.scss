@@ -1,0 +1,60 @@
+.settings-page {
+  width: 100%;
+  height: 100%;
+  background-color: #363a4f;
+  display: flex;
+  flex-direction: column;
+
+  & > #top-bar {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    top: 0px;
+
+    & > #username {
+      margin-top: 1.5vh;
+      margin-bottom: 1.5vh;
+      font-weight: 600;
+      font-size: clamp(25px, 4vmin, 60px);
+    }
+  }
+  & > .back-button {
+    cursor: pointer;
+    margin-left: 4%;
+    font-size: clamp(8px, 4.5vmin, 22px);
+  }
+
+  & > #page-content {
+    flex: 1 1 auto;
+
+    & > .menu {
+      height: 100%;
+      width: 100%;
+      display: grid;
+      justify-content: center;
+
+      & > button {
+        flex-grow: 1;
+        flex-basis: 0;
+        margin: 0px;
+        cursor: pointer;
+        font-size: clamp(10px, 4vmin, 25px);
+        text-align: left;
+      }
+    }
+  }
+  & > #bottom-bar {
+    height: 2.5vh;
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+    bottom: 0px;
+    width: 100%;
+
+    & > a {
+      color: var(--highlight-blue);
+      font-size: clamp(8px, 2vmin, 14px);
+    }
+  }
+}

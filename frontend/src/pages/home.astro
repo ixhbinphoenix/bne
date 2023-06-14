@@ -1,6 +1,18 @@
 ---
 import PlanLayout from "../layouts/PlanLayout.astro";
 import PlanContainer from "../components/PlanContainer";
+import { checkSessionIdAstro } from "../api/frontmatter";
+const id: string | undefined = Astro.cookies.get("id").value;
+
+if (id) {
+  try {
+    let result = await checkSessionIdAstro(id);
+  } catch (error) {
+    return Astro.redirect("/login");
+  }
+} else {
+  return Astro.redirect("/login");
+}
 ---
 
 <PlanLayout title="Stundenplan">

@@ -1,6 +1,17 @@
+pub mod change_email;
+pub mod change_password;
+pub mod change_untis_data;
 pub mod check_session;
+pub mod delete;
+pub mod forgot_password;
+pub mod gdpr_data_compliance;
 pub mod get_lernbueros;
 pub mod get_timetable;
+pub mod link;
 pub mod login;
+pub mod logout;
+pub mod logout_all;
 pub mod register;
+pub mod resend_mail;
 pub mod response;
+pub mod verified;

@@ -1,48 +1,43 @@
+use argon2::{Argon2, PasswordHash, PasswordVerifier};
 use serde::{Deserialize, Serialize};
 use surrealdb::sql::Thing;
 
 use super::model::{ConnectionData, DBConnection, CRUD};
 use crate::prelude::Error;
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct User {
     pub id: Thing,
     pub email: String,
     pub person_id: i64,
     pub password_hash: String,
     pub untis_cypher: String,
+    pub verified: bool,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct UserCreate {
     pub email: String,
     pub person_id: i64,
     pub password_hash: String,
     pub untis_cypher: String,
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-pub struct UserPatch {
-    pub id: Thing,
-    pub email: Option<String>,
-    pub person_id: Option<i64>,
-    pub password_hash: Option<String>,
-    pub untis_cypher: Option<String>,
+    pub verified: bool,
 }
 
 #[async_trait::async_trait]
-impl CRUD<User, UserCreate, UserPatch> for User {
-    async fn init_table(db: DBConnection) -> Result<bool, Error> {
+impl CRUD<User, UserCreate> for User {
+    async fn init_table(db: DBConnection) -> Result<(), Error> {
         let sql = "DEFINE TABLE users SCHEMAFULL;\
                    DEFINE FIELD email ON users TYPE string ASSERT is::email($value);\
                    DEFINE INDEX email ON TABLE users COLUMNS email UNIQUE;\
                    DEFINE FIELD person_id ON users TYPE number;\
                    DEFINE INDEX person_id ON TABLE users COLUMNS person_id UNIQUE;\
                    DEFINE FIELD password_hash ON users TYPE string;\
-                   DEFINE FIELD untis_cypher ON users TYPE string;";
+                   DEFINE FIELD untis_cypher ON users TYPE string;\
+                   DEFINE FIELD verified ON users TYPE bool;";
         db.query(sql).await?;
 
-        Ok(true)
+        Ok(())
     }
 }
 
@@ -60,5 +55,13 @@ impl User {
         let user: Option<User> = res.take(0)?;
 
         Ok(user)
+    }
+
+    pub fn verify_password(&self, password: String) -> Result<(), argon2::password_hash::Error> {
+        let argon2 = Argon2::default();
+
+        let hash = PasswordHash::new(&self.password_hash)?;
+
+        argon2.verify_password(password.as_bytes(), &hash)
     }
 }

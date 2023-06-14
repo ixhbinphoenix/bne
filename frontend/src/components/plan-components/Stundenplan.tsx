@@ -2,8 +2,8 @@
 
 import type { TheScheduleObject } from "../../api/main";
 import { SubjectColor } from "../../api/main";
-import { fetchJSessionId } from "../../api/untisAPI";
-import { getTimetable, verifySession } from "../../api/theBackend";
+import { fetchJSessionId, getLocalUntisCredentials } from "../../api/untisAPI";
+import { getTimetable } from "../../api/theBackend";
 import Popup from "./Popup";
 import type { JSX } from "preact";
 import "../../styles/Stundenplan.scss";
@@ -16,6 +16,7 @@ import {
   getCurrentDay,
   getCurrentLesson
 } from "../../api/dateHandling";
+import { onSwipe } from "../../api/Touch";
 
 export default function Stundenplan(): JSX.Element {
   const [currentWeek, setCurrentWeek] = useState(getMondayAndFridayDates());
@@ -37,88 +38,119 @@ export default function Stundenplan(): JSX.Element {
   useEffect(() => {
     highlightDates(getMondayAndFridayDates().currentMonday, getMondayAndFridayDates().currentFriday);
 
-    verifySession().then((status) => {
-      if (!status) {
-        window.location.href = "/login"; //bye bye go back to lobby
+    setCurrentDates(getWeekDays(currentWeek.currentMonday));
+    getTimetable(currentWeek.currentMonday, currentWeek.currentFriday).then(
+      (lessons) => {
+        addToDivs(lessons);
+        const tableDaysTemp = [];
+        for (let i: number = 0; i < 5; i++) {
+          tableDaysTemp.push(<div className="table-day">{tableElements[i]}</div>);
+        }
+        setTableDays(tableDaysTemp);
+      },
+      (error) => {
+        console.error(error);
+        setPopupContent(
+          <div>
+            <h1 style="text-align: center;">{error.message}</h1>
+          </div>
+        );
+        openPopup();
       }
-    });
-    fetchJSessionId(localStorage.getItem("untis_username"), localStorage.getItem("untis_password")).then((result) => {
-      if (result.JSessionId && result.personId) {
-        document.cookie = `JSESSIONID=${result.JSessionId}; max-age=600; secure; samesite=none`;
-
-        setCurrentDates(getWeekDays(currentWeek.currentMonday));
-        getTimetable(currentWeek.currentMonday, currentWeek.currentFriday).then((result) => {
-          if (result.lessons) {
-            addToDivs(result.lessons);
-            const tableDaysTemp = [];
-            for (let i: number = 0; i < 5; i++) {
-              tableDaysTemp.push(<div className="table-day">{tableElements[i]}</div>);
-            }
-            setTableDays(tableDaysTemp);
-          }
-        });
-      } else {
-        window.location.href = "/login";
-      }
-    });
+    );
   }, []);
 
+  useEffect(() => {
+    onSwipe(".table-layout", { direction: "left" }, nextWeek);
+    onSwipe(".table-layout", { direction: "right" }, previousWeek);
+  }, [currentWeek]);
+
   const nextWeek = () => {
+    closePopup();
     let week = shiftForward(currentWeek.currentMonday, currentWeek.currentFriday);
     highlightDates(week.currentMonday, week.currentFriday);
     setCurrentDates(getWeekDays(week.currentMonday));
 
-    getTimetable(week.currentMonday, week.currentFriday).then((result) => {
-      if (result.lessons) {
-        addToDivs(result.lessons);
+    getTimetable(week.currentMonday, week.currentFriday).then(
+      (lessons) => {
+        addToDivs(lessons);
         const tableDaysTemp = [];
         for (let i: number = 0; i < 5; i++) {
           tableDaysTemp.push(<div className="table-day">{tableElements[i]}</div>);
         }
         setTableDays(tableDaysTemp);
+      },
+      (error) => {
+        console.error(error);
+        setPopupContent(
+          <div>
+            <h1 style="text-align: center;">{error.message}</h1>
+          </div>
+        );
+        openPopup();
       }
-    });
+    );
     setCurrentWeek(week);
   };
   const previousWeek = () => {
+    closePopup();
     let week = shiftBackward(currentWeek.currentMonday, currentWeek.currentFriday);
     highlightDates(week.currentMonday, week.currentFriday);
     setCurrentDates(getWeekDays(week.currentMonday));
 
-    getTimetable(week.currentMonday, week.currentFriday).then((result) => {
-      if (result.lessons) {
-        addToDivs(result.lessons);
+    getTimetable(week.currentMonday, week.currentFriday).then(
+      (lessons) => {
+        addToDivs(lessons);
         const tableDaysTemp = [];
         for (let i: number = 0; i < 5; i++) {
           tableDaysTemp.push(<div className="table-day">{tableElements[i]}</div>);
         }
         setTableDays(tableDaysTemp);
+      },
+      (error) => {
+        console.error(error);
+        setPopupContent(
+          <div>
+            <h1 style="text-align: center;">{error.message}</h1>
+          </div>
+        );
+        openPopup();
       }
-    });
+    );
     setCurrentWeek(week);
   };
   const goToCurrentWeek = () => {
+    closePopup();
     let week = getMondayAndFridayDates();
     highlightDates(week.currentMonday, week.currentFriday);
     setCurrentDates(getWeekDays(week.currentMonday));
 
-    getTimetable(week.currentMonday, week.currentFriday).then((result) => {
-      if (result.lessons) {
-        addToDivs(result.lessons);
+    getTimetable(week.currentMonday, week.currentFriday).then(
+      (lessons) => {
+        addToDivs(lessons);
         const tableDaysTemp = [];
         for (let i: number = 0; i < 5; i++) {
           tableDaysTemp.push(<div className="table-day">{tableElements[i]}</div>);
         }
         setTableDays(tableDaysTemp);
+      },
+      (error) => {
+        console.error(error);
+        setPopupContent(
+          <div>
+            <h1 style="text-align: center;">{error.message}</h1>
+          </div>
+        );
+        openPopup();
       }
-    });
+    );
   };
   const getJSessionIdCookie = () => {
     const storedJSessionId = document.cookie.match("(^|;)\\s*" + "JSESSIONID" + "\\s*=\\s*([^;]+)")?.pop() || "";
     if (storedJSessionId) {
       return storedJSessionId;
     } else {
-      fetchJSessionId(localStorage.getItem("units_username"), localStorage.getItem("untis_password")).then((result) => {
+      fetchJSessionId(getLocalUntisCredentials().username, getLocalUntisCredentials().password).then((result) => {
         if (result.JSessionId) {
           document.cookie = `JSESSIONID=${result.JSessionId}; max-age=600; secure; samesite=strict`;
           return result.JSessionId;
@@ -135,6 +167,9 @@ export default function Stundenplan(): JSX.Element {
   const [currentDates, setCurrentDates] = useState<Array<string>>(getWeekDays(currentWeek.currentMonday));
   const openPopup = () => {
     setPopupStatus(true);
+  };
+  const closePopup = () => {
+    setPopupStatus(false);
   };
   const addToDivs = (lessons: TheScheduleObject[]) => {
     tableElements = [[], [], [], [], []];
@@ -255,6 +290,7 @@ export default function Stundenplan(): JSX.Element {
   const [tableDays, setTableDays] = useState<Array<JSX.Element>>([]);
   return (
     <div className="table-layout">
+      <img id="filter-icon" src="/filter.svg" alt="filter icon" />
       <div className="table-top">
         <span id="day1" class="day">
           {currentDates[0]}

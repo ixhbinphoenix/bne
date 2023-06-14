@@ -1,13 +1,17 @@
 use actix_identity::Identity;
-use actix_web::{web, HttpMessage, HttpRequest, HttpResponse, Responder, Result};
+use actix_web::{web, HttpMessage, HttpRequest, Responder, Result};
 use argon2::{password_hash::SaltString, Argon2, PasswordHasher};
+use chrono::{Months, Utc};
+use lettre::{message::header::ContentType, Address};
 use log::error;
 use rand_core::OsRng;
 use serde::Deserialize;
 
 use crate::{
-    models::{
-        model::{DBConnection, CRUD}, user_model::{User, UserCreate}
+    api::response::Response, internalError, mail::{
+        mailing::{build_mail, send_mail}, utils::{load_template, Mailer}
+    }, models::{
+        links_model::{Link, LinkType}, model::{DBConnection, CRUD}, user_model::{User, UserCreate}
     }, prelude::Error, utils::password::valid_password
 };
 
@@ -20,12 +24,15 @@ pub struct RegisterData {
 }
 
 pub async fn register_post(
-    data: web::Json<RegisterData>, db: web::Data<DBConnection>, request: HttpRequest,
+    data: web::Json<RegisterData>, db: web::Data<DBConnection>, request: HttpRequest, mailer: web::Data<Mailer>,
 ) -> Result<impl Responder> {
-    // TODO: Email validation
+    if data.email.clone().parse::<Address>().is_err() {
+        return Ok(Response::new_error(400, "Not a valid email address".into()).into());
+    }
+
     let pot_user = User::get_from_email(db.clone(), data.email.clone()).await;
     if pot_user.is_ok() && pot_user.unwrap().is_some() {
-        return Ok(HttpResponse::Forbidden().body("403 Forbidden\nE-mail already associated to account!".to_string()));
+        return Ok(web::Json(Response::new_error(403, "E-mail already associated to account!".to_string())));
     }
     if let Err(e) = valid_password(&data.password) {
         return Err(Error::from(e).try_into()?);
@@ -38,8 +45,7 @@ pub async fn register_post(
         Ok(str) => str.to_string(),
         Err(e) => {
             error!("Error: Unknown error trying to hash password\n{}", e);
-            return Ok(HttpResponse::Forbidden()
-                .body("500 Internal Server Error\nUnknown error trying to hash password".to_string()));
+            internalError!("Error trying to hash password")
         }
     };
 
@@ -48,21 +54,50 @@ pub async fn register_post(
         person_id: data.person_id,
         password_hash,
         untis_cypher: data.untis_cypher.clone(),
+        verified: false,
     };
 
-    let ret_user = match User::create(db, "users".to_owned(), db_user).await {
+    let ret_user = match User::create(db.clone(), "users".to_owned(), db_user).await {
         Ok(a) => a,
         Err(e) => return Err(e.try_into()?),
     };
 
-    match Identity::login(&request.extensions(), ret_user.id.to_string()) {
-        Ok(_) => {}
+    let expiry_time = Utc::now().checked_add_months(Months::new(1)).unwrap();
+
+    let link = match Link::create_from_user(db, ret_user.clone(), expiry_time, LinkType::VerifyAccount).await {
+        Ok(a) => a.construct_link(),
         Err(e) => {
-            error!("Error trying to log into Identity\n{}", e);
-            return Ok(HttpResponse::InternalServerError()
-                .body("500 Internal Server Error\nError trying to login, please retry".to_string()));
+            error!("Error creating link\n{e}");
+            internalError!()
         }
     };
 
-    Ok(HttpResponse::Ok().body("200 OK".to_string()))
+    let template = match load_template("verify.html").await {
+        Ok(a) => a.replace("${{VERIFY_URL}}", &link),
+        Err(e) => {
+            error!("Error loading template\n{e}");
+            internalError!()
+        }
+    };
+
+    let message = match build_mail(&ret_user.clone().email, "Accountverifizierung", ContentType::TEXT_HTML, template) {
+        Ok(a) => a,
+
+        Err(e) => {
+            error!("Error building message\n{e}");
+            internalError!()
+        }
+    };
+
+    if let Err(e) = send_mail(mailer, message).await {
+        error!("Error sending mail\n{e}");
+        internalError!()
+    }
+
+    if let Err(e) = Identity::login(&request.extensions(), ret_user.id.to_string()) {
+        error!("Error trying to log into Identity\n{}", e);
+        internalError!("Error trying to log in, please try again")
+    };
+
+    Ok(Response::new_success("Account successfully registered".to_string()).into())
 }

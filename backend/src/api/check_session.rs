@@ -1,17 +1,19 @@
 use actix_identity::Identity;
-use actix_web::{HttpResponse, Responder};
+use actix_web::{web, Responder, Result};
 use log::error;
 
-pub async fn check_session_get(id: Option<Identity>) -> impl Responder {
+use crate::api::response::Response;
+
+pub async fn check_session_get(id: Option<Identity>) -> Result<impl Responder> {
     if let Some(id) = id {
         match id.id() {
-            Ok(id) => HttpResponse::Ok().body(format!("YEP {id}")),
+            Ok(_) => Ok(web::Json(Response::new_success("Authenticated".to_string()))),
             Err(e) => {
                 error!("Error trying to get id.id()\n{}", e);
-                HttpResponse::InternalServerError().body("NOPE Server Error".to_string())
+                Ok(Response::new_error(500, "NOPE Server Error".to_string()).into())
             }
         }
     } else {
-        HttpResponse::Forbidden().body("NOPE".to_string())
+        Ok(Response::new_error(403, "Not Authenticated".to_string()).into())
     }
 }

@@ -1,0 +1,21 @@
+---
+import ResetPasswordLayout from "../../layouts/ResetPasswordLayout.astro";
+import ResetPassword from "../../components/plan-components/settings-components/ResetPassword";
+import { checkUUID } from "../../api/frontmatter";
+
+let uuid = Astro.params.id?.toString();
+
+if (uuid) {
+  try {
+    await checkUUID(uuid, "PasswordReset");
+  } catch (error) {
+    return Astro.redirect("/404");
+  }
+} else {
+  return Astro.redirect("/404");
+}
+---
+
+<ResetPasswordLayout title="Passwort vergessen">
+  <ResetPassword {uuid} client:load />
+</ResetPasswordLayout>
