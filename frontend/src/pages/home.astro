@@ -2,7 +2,6 @@
 import PlanLayout from "../layouts/PlanLayout.astro";
 import PlanContainer from "../components/PlanContainer";
 import { checkSessionIdAstro } from "../api/frontmatter";
-process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
 const id: string | undefined = Astro.cookies.get("id").value;
 
