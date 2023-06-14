@@ -13,6 +13,7 @@ use std::{
 };
 
 use actix_cors::Cors;
+use actix_governor::{GovernorConfigBuilder, Governor};
 use actix_identity::{config::LogoutBehaviour, IdentityMiddleware};
 use actix_session::{config::PersistentSession, SessionMiddleware};
 use actix_session_surrealdb::SurrealSessionStore;
@@ -143,6 +144,13 @@ async fn main() -> io::Result<()> {
             .allow_any_header()
             .max_age(3600);
 
+        // You won't get rate-limited on localhost
+        let governor_config = GovernorConfigBuilder::default()
+            .per_second(2)
+            .burst_size(10)
+            .finish()
+            .unwrap();
+
         App::new()
             .wrap(IdentityMiddleware::builder().logout_behaviour(LogoutBehaviour::PurgeSession).build())
             .wrap(logger)
@@ -161,6 +169,7 @@ async fn main() -> io::Result<()> {
                 )
                 .build(),
             )
+            .wrap(Governor::new(&governor_config))
             .wrap(cors)
             .app_data(json_config)
             .app_data(Data::new(db.clone()))
@@ -190,7 +199,7 @@ async fn main() -> io::Result<()> {
                     .service(web::resource("/check_uuid/{uuid}").route(web::get().to(check_uuid_get))),
             )
     })
-    .bind_rustls(format!("127.0.0.1:{port}"), config)?
+    .bind_rustls(format!("0.0.0.0:{port}"), config)?
     .run()
     .await
 }
