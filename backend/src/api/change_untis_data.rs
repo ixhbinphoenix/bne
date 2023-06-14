@@ -6,9 +6,9 @@ use surrealdb::sql::Thing;
 
 use super::response::Response;
 use crate::{
-    internalError, models::{
+    database::sessions::delete_user_sessions, internalError, models::{
         model::{ConnectionData, CRUD}, user_model::User
-    }, database::sessions::delete_user_sessions
+    }
 };
 
 #[derive(Debug, Deserialize)]

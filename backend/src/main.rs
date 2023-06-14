@@ -20,9 +20,9 @@ use actix_web::{
     cookie::{time::Duration, Key}, middleware::Logger, web::{self, Data}, App, HttpResponse, HttpServer
 };
 use api::{
-    change_email::change_email_get, change_password::change_password_post, change_untis_data::change_untis_data_post, check_session::check_session_get, delete::delete_post, forgot_password::forgot_password_post, get_lernbueros::get_lernbueros, get_timetable::get_timetable, link::{
+    change_email::change_email_get, change_password::change_password_post, change_untis_data::change_untis_data_post, check_session::check_session_get, delete::delete_post, forgot_password::forgot_password_post, gdpr_data_compliance::gdpr_data_compliance_get, get_lernbueros::get_lernbueros, get_timetable::get_timetable, link::{
         check_uuid::check_uuid_get, email_change::email_change_post, email_reset::email_reset_post, password::reset_password_post, verify::verify_get
-    }, login::login_post, logout::logout_post, logout_all::logout_all_post, register::register_post, verified::verified_get, resend_mail::resend_mail_get, gdpr_data_compliance::gdpr_data_compliance_get
+    }, login::login_post, logout::logout_post, logout_all::logout_all_post, register::register_post, resend_mail::resend_mail_get, verified::verified_get
 };
 use dotenv::dotenv;
 use lettre::{
@@ -35,7 +35,6 @@ use surrealdb::{engine::remote::ws::Ws, opt::auth::Root, Surreal};
 
 use crate::{
     mail::utils::Mailer, models::{links_model::Link, model::CRUD, user_model::User}, utils::env::{get_env, get_env_or}
-
 };
 
 #[derive(Clone)]
@@ -153,7 +152,6 @@ async fn main() -> io::Result<()> {
                     cookie_key.clone(),
                 )
                 .cookie_same_site(actix_web::cookie::SameSite::None)
-
                 .cookie_secure(true)
                 .cookie_http_only(true)
                 .session_lifecycle(

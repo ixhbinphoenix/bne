@@ -1,16 +1,23 @@
 use actix_identity::Identity;
-use actix_web::{Result, Responder, web};
-use chrono::{Utc, Months};
+use actix_web::{web, Responder, Result};
+use chrono::{Months, Utc};
 use lettre::message::header::ContentType;
 use log::error;
 use surrealdb::sql::Thing;
 
-use crate::{models::{model::{CRUD, ConnectionData}, user_model::User, links_model::{Link, LinkType}}, internalError, mail::{utils::{load_template, Mailer}, mailing::{build_mail, send_mail}}};
-
 use super::response::Response;
+use crate::{
+    internalError, mail::{
+        mailing::{build_mail, send_mail}, utils::{load_template, Mailer}
+    }, models::{
+        links_model::{Link, LinkType}, model::{ConnectionData, CRUD}, user_model::User
+    }
+};
 
 
-pub async fn resend_mail_get(db: ConnectionData, mailer: web::Data<Mailer>, id: Option<Identity>) -> Result<impl Responder> {
+pub async fn resend_mail_get(
+    db: ConnectionData, mailer: web::Data<Mailer>, id: Option<Identity>,
+) -> Result<impl Responder> {
     if id.is_none() {
         return Ok(web::Json(Response::new_error(403, "Not logged in".to_string())));
     }

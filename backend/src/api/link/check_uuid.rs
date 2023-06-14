@@ -1,21 +1,27 @@
 use std::str::FromStr;
 
 use actix_web::{web, Responder, Result};
+use log::{error, warn};
 use serde::Deserialize;
 use surrealdb::sql::Thing;
-use log::{warn, error};
 use uuid::Uuid;
 
-use crate::{models::{links_model::{Link, LinkType}, model::{CRUD, ConnectionData}}, internalError, api::response::Response};
+use crate::{
+    api::response::Response, internalError, models::{
+        links_model::{Link, LinkType}, model::{ConnectionData, CRUD}
+    }
+};
 
 #[derive(Debug, Deserialize)]
 pub struct UuidQuery {
     #[serde(rename = "type")]
-    link_type: LinkType
+    link_type: LinkType,
 }
 
 // Path: /link/check_uuid/{uuid}?type={link_type}
-pub async fn check_uuid_get(path: web::Path<String>, typequery: web::Query<UuidQuery>, db: ConnectionData) -> Result<impl Responder> {
+pub async fn check_uuid_get(
+    path: web::Path<String>, typequery: web::Query<UuidQuery>, db: ConnectionData,
+) -> Result<impl Responder> {
     if Uuid::from_str(&path).is_err() {
         return Ok(Response::new_error(400, "UUID is not a valid uuid".into()).into());
     }

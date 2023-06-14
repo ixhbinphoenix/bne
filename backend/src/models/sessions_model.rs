@@ -1,16 +1,15 @@
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 use surrealdb::sql::{Datetime, Thing};
 
-use crate::prelude::Error;
-
 use super::model::ConnectionData;
+use crate::prelude::Error;
 
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Session {
     expiry: Datetime,
     id: Thing,
-    token: String
+    token: String,
 }
 
 #[allow(unused)]

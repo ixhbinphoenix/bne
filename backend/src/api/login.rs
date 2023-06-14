@@ -37,7 +37,6 @@ pub async fn login_post(
     };
 
     match db_user.verify_password(data.password.clone()) {
-
         Ok(_) => match Identity::login(&req.extensions(), db_user.id.to_string()) {
             Ok(_) => Ok(Response::<LoginResponse>::new_success(LoginResponse {
                 untis_cypher: db_user.untis_cypher,
