@@ -14,8 +14,11 @@ export default function ResetPassword(props: IProps): JSX.Element {
   const [errorMessage, setErrorMessage] = useState(<p></p>);
   const sendPasswordChange = (event: any) => {
     event.preventDefault();
+    if (event.target[0].value !== event.target[1].value) {
+      return setErrorMessage(<p>Deine Passwörter stimmen nicht überein</p>)
+    }
     const key = generateKey(event.target[0].value);
-    const untisCredentials = { username: event.target[1].value, password: event.target[2].value };
+    const untisCredentials = { username: event.target[2].value, password: event.target[3].value };
     const untisCredentialsEncrypted = passwordEncrypt(key, JSON.stringify(untisCredentials)).toString();
     fetchJSessionId(untisCredentials.username, untisCredentials.password).then(
       (result) => {
@@ -42,6 +45,15 @@ export default function ResetPassword(props: IProps): JSX.Element {
             name="new_pwd"
             type="password"
             placeholder="Neues Passwort"
+            autocomplete="new-password"
+            pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^a-zA-Z\d]).{8,}$"
+            title="Dein Passwort muss mindestens als 8 Zeichen lang sein und eine Zahl, ein Sonderzeichen, einen Klein- und einen Großbuchstaben enthalten"
+            required
+          />
+          <input
+            name="new_pwd"
+            type="password"
+            placeholder="Neues Passwort wiederholen"
             autocomplete="new-password"
             pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^a-zA-Z\d]).{8,}$"
             title="Dein Passwort muss mindestens als 8 Zeichen lang sein und eine Zahl, ein Sonderzeichen, einen Klein- und einen Großbuchstaben enthalten"
