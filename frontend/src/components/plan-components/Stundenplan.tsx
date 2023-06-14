@@ -66,6 +66,7 @@ export default function Stundenplan(): JSX.Element {
   }, [currentWeek]);
 
   const nextWeek = () => {
+    closePopup();
     let week = shiftForward(currentWeek.currentMonday, currentWeek.currentFriday);
     highlightDates(week.currentMonday, week.currentFriday);
     setCurrentDates(getWeekDays(week.currentMonday));
@@ -92,6 +93,7 @@ export default function Stundenplan(): JSX.Element {
     setCurrentWeek(week);
   };
   const previousWeek = () => {
+    closePopup();
     let week = shiftBackward(currentWeek.currentMonday, currentWeek.currentFriday);
     highlightDates(week.currentMonday, week.currentFriday);
     setCurrentDates(getWeekDays(week.currentMonday));
@@ -118,6 +120,7 @@ export default function Stundenplan(): JSX.Element {
     setCurrentWeek(week);
   };
   const goToCurrentWeek = () => {
+    closePopup();
     let week = getMondayAndFridayDates();
     highlightDates(week.currentMonday, week.currentFriday);
     setCurrentDates(getWeekDays(week.currentMonday));
@@ -164,6 +167,9 @@ export default function Stundenplan(): JSX.Element {
   const [currentDates, setCurrentDates] = useState<Array<string>>(getWeekDays(currentWeek.currentMonday));
   const openPopup = () => {
     setPopupStatus(true);
+  };
+  const closePopup = () => {
+    setPopupStatus(false);
   };
   const addToDivs = (lessons: TheScheduleObject[]) => {
     tableElements = [[], [], [], [], []];
@@ -284,7 +290,7 @@ export default function Stundenplan(): JSX.Element {
   const [tableDays, setTableDays] = useState<Array<JSX.Element>>([]);
   return (
     <div className="table-layout">
-      {/*<img id="filter-icon" src="/filter.svg" alt="filter icon" />*/}
+      <img id="filter-icon" src="/filter.svg" alt="filter icon" />
       <div className="table-top">
         <span id="day1" class="day">
           {currentDates[0]}
