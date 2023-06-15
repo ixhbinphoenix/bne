@@ -1,7 +1,7 @@
-use std::{net::{IpAddr, SocketAddr}, str::FromStr, fmt::Display};
+use std::{net::{IpAddr, SocketAddr}, str::FromStr};
 use actix_governor::{KeyExtractor, SimpleKeyExtractionError};
 use actix_web::web;
-use log::{debug, error, info, warn};
+use log::error;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(super) struct NginxIpKeyExctrator;
@@ -29,17 +29,6 @@ impl KeyExtractor for NginxIpKeyExctrator {
 
         let peer_ip = req.peer_addr().map(|socket| socket.ip());
         let connection_info = req.connection_info();
-
-        info!("Proxy IP: {}", proxy_ip);
-
-        match peer_ip {
-            Some(a) => {
-                info!("Peer IP: {}", a);
-            }
-            _ => {
-                info!("Peer IP: None");
-            }
-        }
 
         match peer_ip {
             // request is from reverse proxy, so use 'Forwarded' or 'X-Forwarded-For' header
