@@ -188,7 +188,7 @@ export default function Lernbueros(): JSX.Element {
         };
         console.log(filter);
         for (let k: number = 0; k < lessons.length; k++) {
-          if (lessons[k].day == i && lessons[k].start - 1 == j && filter.includes(lessons[k].subject_short)) {
+          if (lessons[k].day == i && lessons[k].start - 1 == j && (filter.includes(lessons[k].subject_short) || !lessons[k].is_lb)) {
             let subjectType = lessons[k].subject;
             if (lessons[k].subject_short != "") {
               subjectType = lessons[k].subject_short;
