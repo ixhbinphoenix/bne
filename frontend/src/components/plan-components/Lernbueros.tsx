@@ -1,7 +1,7 @@
 /* @jsxImportSource preact */
 
 import type { TheScheduleObject } from "../../api/main";
-import { SubjectColor } from "../../api/main";
+import { SubjectColor, SubjectNames } from "../../api/main";
 import { fetchJSessionId, getLocalUntisCredentials } from "../../api/untisAPI";
 import { getLernbueros } from "../../api/theBackend";
 import Popup from "./Popup";
@@ -21,10 +21,9 @@ import { onSwipe } from "../../api/Touch";
 export default function Lernbueros(): JSX.Element {
   const [currentWeek, setCurrentWeek] = useState(getMondayAndFridayDates());
 
-  if(sessionStorage.getItem("monday") && currentWeek.currentMonday != sessionStorage.getItem("monday")){
-      setCurrentWeek(getMondayAndFridayDates(sessionStorage.getItem("monday")!))
-  }
-  else{
+  if (sessionStorage.getItem("monday") && currentWeek.currentMonday != sessionStorage.getItem("monday")) {
+    setCurrentWeek(getMondayAndFridayDates(sessionStorage.getItem("monday")!));
+  } else {
     sessionStorage.setItem("monday", currentWeek.currentMonday);
   }
 
@@ -175,6 +174,160 @@ export default function Lernbueros(): JSX.Element {
   const openPopup = () => {
     setPopupStatus(true);
   };
+  const [filterStatus, setFilterStatus] = useState(false);
+  const [FilterContent, setFilterContent] = useState<JSX.Element | null>(null);
+  const checkAll = () => {
+    const inputs = document.getElementsByTagName("input");
+    Array.from(inputs).forEach((input) => {
+      input.checked = true;
+    });
+  };
+  const uncheckAll = () => {
+    const inputs = document.getElementsByTagName("input");
+    Array.from(inputs).forEach((input) => {
+      input.checked = false;
+    });
+  };
+  let filterItems;
+  const openFilter = () => {
+    setFilterStatus(true);
+    if (!sessionStorage.getItem("filterItems")) {
+      filterItems = {
+        M: true,
+        D: true,
+        E: true,
+        CH: true,
+        GE: true,
+        ER: true,
+        KR: true,
+        PL: true,
+        IF: true,
+        MU: true,
+        PH: true,
+        BI: true,
+        L8: true,
+        N0: true,
+        S0: true,
+        SW: true,
+        SP: true,
+        PA: true,
+        EK: true,
+        LI: true
+      };
+      Filter(true, filterItems);
+    } else {
+      filterItems = JSON.parse(sessionStorage.getItem("filterItems")!);
+      console.log(filterItems);
+      Filter(true, filterItems);
+    }
+  };
+  const closeFilter = () => {
+    setFilterStatus(false);
+    Filter(false);
+  };
+  const changeFilter = (filterItems: any) => {
+    sessionStorage.setItem("filterItems", JSON.stringify(filterItems));
+  };
+
+  const Filter = (filterStatus: boolean, filterItems?: any) => {
+    if (filterStatus) {
+      const FilterItems = [];
+      for (const item in SubjectNames) {
+        console.log(filterItems.item);
+        FilterItems.push(
+          <label htmlFor={item}>
+            {SubjectNames[item]}
+            <input
+              type="checkbox"
+              id={item}
+              defaultChecked={filterItems[item]}
+              onClick={() => {
+                filterItems[item] = !filterItems[item];
+                console.log(filterItems[item]);
+                changeFilter(filterItems);
+              }}
+            />
+            <span className="checkbox"></span>
+          </label>
+        );
+      }
+      setFilterContent(
+        <div class="filter-background">
+          <div class="filter-content">
+            <div style="display: flex; justify-content: space-around">
+              <button
+                onClick={() => {
+                  checkAll();
+                  sessionStorage.setItem(
+                    "filterItems",
+                    JSON.stringify({
+                      M: true,
+                      D: true,
+                      E: true,
+                      CH: true,
+                      GE: true,
+                      ER: true,
+                      KR: true,
+                      PL: true,
+                      IF: true,
+                      MU: true,
+                      PH: true,
+                      BI: true,
+                      L8: true,
+                      N0: true,
+                      S0: true,
+                      SW: true,
+                      SP: true,
+                      PA: true,
+                      EK: true,
+                      LI: true
+                    })
+                  );
+                }}>
+                Alle
+              </button>
+              <button
+                onClick={() => {
+                  uncheckAll();
+                  sessionStorage.setItem(
+                    "filterItems",
+                    JSON.stringify({
+                      M: false,
+                      D: false,
+                      E: false,
+                      CH: false,
+                      GE: false,
+                      ER: false,
+                      KR: false,
+                      PL: false,
+                      IF: false,
+                      MU: false,
+                      PH: false,
+                      BI: false,
+                      L8: false,
+                      N0: false,
+                      S0: false,
+                      SW: false,
+                      SP: false,
+                      PA: false,
+                      EK: false,
+                      LI: false
+                    })
+                  );
+                }}>
+                Keine
+              </button>
+            </div>
+
+            <form>{FilterItems}</form>
+          </div>
+        </div>
+      );
+    } else {
+      setFilterContent(null);
+    }
+  };
+
   const addToDivs = (lessons: TheScheduleObject[]) => {
     tableElements = [[], [], [], [], []];
     for (let i: number = 0; i < 5; i++) {
@@ -260,7 +413,8 @@ export default function Lernbueros(): JSX.Element {
                 substitutionTextStyle = { display: "block" };
               }
               lessonElements.push(
-                <div class="lesson"
+                <div
+                  class="lesson"
                   style={objectStyle}
                   onClick={() => {
                     openPopup();
@@ -284,22 +438,22 @@ export default function Lernbueros(): JSX.Element {
         if (lessonElements.length) {
           if (lessonElements.length < 5) {
             tableElements[i].push(
-            <div className="parent-flex" style={flexStyle}>
-              {lessonElements}
-            </div>
+              <div className="parent-flex" style={flexStyle}>
+                {lessonElements}
+              </div>
             );
           } else {
-            flexStyle.flexDirection = "column"
-            lessonElements.forEach(lesson => {
+            flexStyle.flexDirection = "column";
+            lessonElements.forEach((lesson) => {
               lesson.props.children.shift();
               lesson.props.children.pop();
-            })
+            });
             const rows = Math.ceil(lessonElements.length / 4);
-            const subFlexes = []
+            const subFlexes = [];
             let j = 0;
             for (let i = 0; i < rows; i++) {
               subFlexes.push(<div class="sub-flex">{lessonElements.slice(j, j + 4)}</div>);
-              j += 4
+              j += 4;
             }
             tableElements[i].push(
               <div className="parent-flex" style={flexStyle}>
@@ -314,7 +468,19 @@ export default function Lernbueros(): JSX.Element {
   const [tableDays, setTableDays] = useState<Array<JSX.Element>>([]);
   return (
     <div className="table-layout">
-      {/*<img id="filter-icon" src="/filter.svg" alt="filter icon" />*/}
+      <img
+        style="cursor: pointer;"
+        id="filter-icon"
+        src="/filter.svg"
+        alt="filter icon"
+        onClick={() => {
+          if (filterStatus) {
+            closeFilter();
+          } else {
+            openFilter();
+          }
+        }}
+      />
       <div className="table-top">
         <span id="day1" class="day">
           {currentDates[0]}
@@ -384,6 +550,7 @@ export default function Lernbueros(): JSX.Element {
           <div className="bar-right bar" onClick={nextWeek}>
             ❱
           </div>
+          {FilterContent}
           <Popup trigger={popupStatus} setPopupStatus={setPopupStatus} content={popupContent}></Popup>
           {tableDays}
         </div>

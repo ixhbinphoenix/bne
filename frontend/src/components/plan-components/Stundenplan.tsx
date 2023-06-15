@@ -1,7 +1,7 @@
 /* @jsxImportSource preact */
 
 import type { TheScheduleObject } from "../../api/main";
-import { SubjectColor } from "../../api/main";
+import { SubjectColor, SubjectNames } from "../../api/main";
 import { fetchJSessionId, getLocalUntisCredentials } from "../../api/untisAPI";
 import { getTimetable } from "../../api/theBackend";
 import Popup from "./Popup";
@@ -20,13 +20,6 @@ import { onSwipe } from "../../api/Touch";
 
 export default function Stundenplan(): JSX.Element {
   const [currentWeek, setCurrentWeek] = useState(getMondayAndFridayDates());
-
-  if(sessionStorage.getItem("monday") && currentWeek.currentMonday != sessionStorage.getItem("monday")){
-      setCurrentWeek(getMondayAndFridayDates(sessionStorage.getItem("monday")!))
-  }
-  else{
-    sessionStorage.setItem("monday", currentWeek.currentMonday);
-  }
 
   const highlightDates = (currentMonday: string, currentFriday: string) => {
     const days = document.getElementsByClassName("day");
@@ -73,6 +66,7 @@ export default function Stundenplan(): JSX.Element {
   }, [currentWeek]);
 
   const nextWeek = () => {
+    closePopup();
     let week = shiftForward(currentWeek.currentMonday, currentWeek.currentFriday);
     highlightDates(week.currentMonday, week.currentFriday);
     setCurrentDates(getWeekDays(week.currentMonday));
@@ -96,10 +90,10 @@ export default function Stundenplan(): JSX.Element {
         openPopup();
       }
     );
-    sessionStorage.setItem("monday", week.currentMonday);
     setCurrentWeek(week);
   };
   const previousWeek = () => {
+    closePopup();
     let week = shiftBackward(currentWeek.currentMonday, currentWeek.currentFriday);
     highlightDates(week.currentMonday, week.currentFriday);
     setCurrentDates(getWeekDays(week.currentMonday));
@@ -123,10 +117,10 @@ export default function Stundenplan(): JSX.Element {
         openPopup();
       }
     );
-    sessionStorage.setItem("monday", week.currentMonday);
     setCurrentWeek(week);
   };
   const goToCurrentWeek = () => {
+    closePopup();
     let week = getMondayAndFridayDates();
     highlightDates(week.currentMonday, week.currentFriday);
     setCurrentDates(getWeekDays(week.currentMonday));
@@ -174,6 +168,9 @@ export default function Stundenplan(): JSX.Element {
   const openPopup = () => {
     setPopupStatus(true);
   };
+  const closePopup = () => {
+    setPopupStatus(false);
+  };
   const addToDivs = (lessons: TheScheduleObject[]) => {
     tableElements = [[], [], [], [], []];
     for (let i: number = 0; i < 5; i++) {
@@ -215,8 +212,7 @@ export default function Stundenplan(): JSX.Element {
             };
             if (!lessons[k].substitution) {
               lessonElements.push(
-                <div
-                  class="lesson"
+                <div class="lesson"
                   style={objectStyle}
                   onClick={() => {
                     openPopup();
@@ -294,7 +290,6 @@ export default function Stundenplan(): JSX.Element {
   const [tableDays, setTableDays] = useState<Array<JSX.Element>>([]);
   return (
     <div className="table-layout">
-      {/*<img id="filter-icon" src="/filter.svg" alt="filter icon" />*/}
       <div className="table-top">
         <span id="day1" class="day">
           {currentDates[0]}
@@ -364,7 +359,7 @@ export default function Stundenplan(): JSX.Element {
           <div className="bar-right bar" onClick={nextWeek}>
             ❱
           </div>
-          <Popup trigger={popupStatus} setPopupStatus={setPopupStatus} content={popupContent}></Popup>
+          <Popup trigger={popupStatus} setPopupStatus={setPopupStatus} content={popupContent} />
           {tableDays}
         </div>
       </div>
