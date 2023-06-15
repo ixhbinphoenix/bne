@@ -3,6 +3,8 @@ mod api;
 mod api_wrapper;
 mod database;
 mod error;
+#[cfg(feature = "proxy")]
+mod governor;
 mod mail;
 mod models;
 mod prelude;
@@ -11,6 +13,9 @@ mod utils;
 use std::{
     collections::HashMap, env, fs, io::{self, BufReader}
 };
+
+#[cfg(feature = "proxy")]
+use std::net::IpAddr;
 
 use actix_cors::Cors;
 use actix_governor::{GovernorConfigBuilder, Governor};
@@ -37,6 +42,9 @@ use surrealdb::{engine::remote::ws::Ws, opt::auth::Root, Surreal};
 use crate::{
     mail::utils::Mailer, models::{links_model::Link, model::CRUD, user_model::User}, utils::env::{get_env, get_env_or}
 };
+
+#[cfg(feature = "proxy")]
+use crate::governor::NginxIpKeyExctrator;
 
 #[derive(Clone)]
 pub struct GlobalUntisData {
@@ -123,6 +131,9 @@ async fn main() -> io::Result<()> {
 
     let port = get_env_or("PORT", "8080".to_string());
 
+    #[cfg(feature = "proxy")]
+    let reverse_proxy = get_env("REVERSE_PROXY").parse::<IpAddr>().unwrap();
+
     HttpServer::new(move || {
         let logger = Logger::default();
         let json_config = web::JsonConfig::default()
@@ -144,14 +155,25 @@ async fn main() -> io::Result<()> {
             .allow_any_header()
             .max_age(3600);
 
-        // You won't get rate-limited on localhost
+        #[cfg(feature = "proxy")]
         let governor_config = GovernorConfigBuilder::default()
-            .per_second(2)
-            .burst_size(10)
-            .finish()
-            .unwrap();
+                .key_extractor(NginxIpKeyExctrator)
+                .per_second(10)
+                .burst_size(2)
+                .use_headers()
+                .finish()
+                .unwrap();
+        #[cfg(not(feature = "proxy"))] 
+        let governor_config = GovernorConfigBuilder::default()
+                .per_second(10)
+                .burst_size(2)
+                .use_headers()
+                .finish()
+                .unwrap();
 
-        App::new()
+        #[allow(clippy::let_and_return)]    
+        let app = App::new()
+            .wrap(Governor::new(&governor_config))
             .wrap(IdentityMiddleware::builder().logout_behaviour(LogoutBehaviour::PurgeSession).build())
             .wrap(logger)
             .wrap(
@@ -169,7 +191,6 @@ async fn main() -> io::Result<()> {
                 )
                 .build(),
             )
-            .wrap(Governor::new(&governor_config))
             .wrap(cors)
             .app_data(json_config)
             .app_data(Data::new(db.clone()))
@@ -197,7 +218,12 @@ async fn main() -> io::Result<()> {
                     .service(web::resource("/password/{uuid}").route(web::post().to(reset_password_post)))
                     .service(web::resource("/verify/{uuid}").route(web::get().to(verify_get)))
                     .service(web::resource("/check_uuid/{uuid}").route(web::get().to(check_uuid_get))),
-            )
+            );
+        #[cfg(feature = "proxy")]
+        let app = app.
+            app_data(Data::new(reverse_proxy));
+
+        app
     })
     .bind_rustls(format!("0.0.0.0:{port}"), config)?
     .run()
