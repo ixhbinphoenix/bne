@@ -66,12 +66,12 @@ async fn main() -> io::Result<()> {
 
     info!("Connecting database...");
 
-    let db_location = get_env_or("DB_LOCATION", "127.0.0.1:8000".to_string());
+    let db_location = get_env_or("DB_LOCATION", "127.0.0.1:8000");
 
     let db = Surreal::new::<Ws>(db_location.clone()).await.expect("DB to connect");
 
-    let db_user = get_env_or("DB_USERNAME", "root".to_string());
-    let db_pass = get_env_or("DB_PASSWORD", "root".to_string());
+    let db_user = get_env_or("DB_USERNAME", "root");
+    let db_pass = get_env_or("DB_PASSWORD", "root");
 
     info!("Signing in...");
 
@@ -82,8 +82,8 @@ async fn main() -> io::Result<()> {
     .await
     .expect("DB Credentials to be correct");
 
-    let db_namespace = get_env_or("DB_NAMESPACE", "test".to_string());
-    let db_database = get_env_or("DB_DATABASE", "test".to_string());
+    let db_namespace = get_env_or("DB_NAMESPACE", "test");
+    let db_database = get_env_or("DB_DATABASE", "test");
 
     db.use_ns(db_namespace.clone()).use_db(db_database.clone()).await.expect("using namespace and db to work");
 
@@ -129,7 +129,7 @@ async fn main() -> io::Result<()> {
         Key::generate()
     };
 
-    let port = get_env_or("PORT", "8080".to_string());
+    let port = get_env_or("PORT", "8080");
 
     #[cfg(feature = "proxy")]
     let reverse_proxy = get_env("REVERSE_PROXY").parse::<IpAddr>().unwrap();
@@ -220,8 +220,8 @@ async fn main() -> io::Result<()> {
                     .service(web::resource("/check_uuid/{uuid}").route(web::get().to(check_uuid_get))),
             );
         #[cfg(feature = "proxy")]
-        let app = app.
-            app_data(Data::new(reverse_proxy));
+        let app = app
+            .app_data(Data::new(reverse_proxy));
 
         app
     })

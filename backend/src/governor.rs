@@ -3,6 +3,8 @@ use actix_governor::{KeyExtractor, SimpleKeyExtractionError};
 use actix_web::web;
 use log::error;
 
+use crate::utils::env::get_env_or;
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(super) struct NginxIpKeyExctrator;
 
@@ -70,6 +72,11 @@ impl KeyExtractor for NginxIpKeyExctrator {
                     .map(|socket| socket.ip())
             }
         }
+    }
+
+    fn whitelisted_keys(&self) -> Vec<Self::Key> {
+        let whitelisted = get_env_or("WHITELIST", "127.0.0.1").parse::<IpAddr>().unwrap();
+        vec![whitelisted]
     }
 
     fn key_name(&self, key: &Self::Key) -> Option<String> {

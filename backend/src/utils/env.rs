@@ -6,13 +6,13 @@ fn get_envv() -> HashMap<String, String> {
 }
 
 /// Returns either the value of an enviroment variable or the default provided
-pub fn get_env_or(key: &str, default: String) -> String {
+pub fn get_env_or(key: &str, default: &str) -> String {
     let envv = get_envv();
     if envv.contains_key(key) {
         // Safety: The HashMap is already checked for the key
         envv.get(key).unwrap().clone()
     } else {
-        default
+        default.to_string()
     }
 }
 
