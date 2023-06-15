@@ -44,7 +44,7 @@ Requirements:
 - [Rust Nightly](https://www.rust-lang.org/) (best installed through [rustup](https://rustup.rs/))
 - [rustfmt](https://github.com/rust-lang/rustfmt) (best installed through [rustup](https://rustup.rs/))
 - [SurrealDB](https://surrealdb.com)
-- (Optional) Reverse Proxy (i.e. [nginx](https://nginx.com))
+- (Optional) Reverse Proxy[^proxy] (i.e. [nginx](https://nginx.com))
 
 ### Setup
 
@@ -54,7 +54,7 @@ Set up a surrealdb server, either locally or on another server. Currently, you'l
 
 After that, configure your Envrionment variables by creating a `.env` file. You can use the [`.env.example`](backend/.env.example) as an example of required variables
 
-> Note: The WHITELIST and REVERSE_PROXY variables are only required if you're planning to run a reverse proxy for local testing
+> Note: The WHITELIST and REVERSE_PROXY variables are only required if you're planning to run a reverse proxy[^proxy] for local testing
 
 Now you can run the Backend server using `cargo run`. Note that there are code differences between debug and release builds[^buildtypes], and that the `proxy` feature is enabled by default[^proxy].
 ```sh
