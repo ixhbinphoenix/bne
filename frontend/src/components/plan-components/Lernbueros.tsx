@@ -35,7 +35,7 @@ export default function Lernbueros(): JSX.Element {
     const currentDay = document.getElementById("day" + getCurrentDay(currentMonday, currentFriday));
     currentDay?.classList.add("highlighted");
 
-    const lessons = document.getElementsByClassName("lesson");
+    const lessons = document.getElementsByClassName("lesson-number");
     Array.from(lessons).forEach((lesson) => {
       lesson.classList.remove("highlighted");
     });
@@ -328,7 +328,7 @@ export default function Lernbueros(): JSX.Element {
     }
   };
 
-  const addToDivs = (lessons: TheScheduleObject[]) => {
+  const addToDivs = (lessons: TheScheduleObject[], filter: string[] = ["M","D","E","IF","SW","PH","L8","N0","CH","BI","GE","ER","KR","PL","MU","S0","SP","PA","EK"]) => {
     tableElements = [[], [], [], [], []];
     for (let i: number = 0; i < 5; i++) {
       for (let j: number = 0; j < 10; j++) {
@@ -339,9 +339,9 @@ export default function Lernbueros(): JSX.Element {
           gridRowEnd: "span 1",
           flexDirection: "row"
         };
-
+        console.log(filter);
         for (let k: number = 0; k < lessons.length; k++) {
-          if (lessons[k].day == i && lessons[k].start - 1 == j) {
+          if (lessons[k].day == i && lessons[k].start - 1 == j && (filter.includes(lessons[k].subject_short) || !lessons[k].is_lb)) {
             let subjectType = lessons[k].subject;
             if (lessons[k].subject_short != "") {
               subjectType = lessons[k].subject_short;
@@ -429,7 +429,12 @@ export default function Lernbueros(): JSX.Element {
                       </div>
                     );
                   }}>
+                  <p style={roomStyle}>{lessons[k].room}</p>
+                  <p style={substitutionRoomStyle}>{lessons[k].substitution?.room}</p>
                   <h2>{subjectType}</h2>
+                  <strong style={substitutionTextStyle}>{lessons[k].substitution?.substitution_text}</strong>
+                  <p style={teacherStyle}>{lessons[k].teacher}</p>
+                  <p style={substitutionTeacherStyle}>{lessons[k].substitution?.teacher}</p>
                 </div>
               );
             }
@@ -510,34 +515,34 @@ export default function Lernbueros(): JSX.Element {
       </div>
       <div className="table-body">
         <div className="table-sidebar-left">
-          <span id="lesson1" class="lesson">
+          <span id="lesson1" className="lesson-number">
             <div>07:55</div>1<div>08:40</div>
           </span>
-          <span id="lesson2" class="lesson">
+          <span id="lesson2" className="lesson-number">
             <div>08:40</div>2<div>09:25</div>
           </span>
-          <span id="lesson3" class="lesson">
+          <span id="lesson3" className="lesson-number">
             <div>09:45</div>3<div>10:30</div>
           </span>
-          <span id="lesson4" class="lesson">
+          <span id="lesson4" className="lesson-number">
             <div>10:30</div>4<div>11:15</div>
           </span>
-          <span id="lesson5" class="lesson">
+          <span id="lesson5" className="lesson-number">
             <div>11:35</div>5<div>12:20</div>
           </span>
-          <span id="lesson6" class="lesson">
+          <span id="lesson6" className="lesson-number">
             <div>12:20</div>6<div>13:05</div>
           </span>
-          <span id="lesson7" class="lesson">
+          <span id="lesson7" className="lesson-number">
             <div>13:15</div>7<div>14:00</div>
           </span>
-          <span id="lesson8" class="lesson">
+          <span id="lesson8" className="lesson-number">
             <div>14:05</div>8<div>14:50</div>
           </span>
-          <span id="lesson9" class="lesson">
+          <span id="lesson9" className="lesson-number">
             <div>14:50</div>9<div>15:35</div>
           </span>
-          <span id="lesson10" class="lesson">
+          <span id="lesson10" className="lesson-number">
             <div>15:40</div>
             10
             <div>16:25</div>

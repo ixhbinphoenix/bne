@@ -1,4 +1,4 @@
-use std::{collections::HashMap, sync::Arc};
+use std::{collections::HashMap, sync::Arc, ops::Add};
 
 use actix_web::web;
 use actix_web_lab::__reexports::tokio::task::JoinSet;
@@ -274,8 +274,8 @@ impl UntisClient {
                     .time_units
                     .iter()
                     .position(|unit| unit.start_time == lesson.start_time)
-                    .unwrap()
-                    + 1;
+                    .get_or_insert(0)
+                    .add(1);
                 let mut subject = "".to_string();
                 let mut subject_short = "".to_string();
 
@@ -385,7 +385,12 @@ impl UntisClient {
                             2
                         }
                     } else if (lesson.end_time - lesson.start_time) > 85 {
-                        (((lesson.end_time - lesson.start_time) / 85) as f32).floor() as u8
+                        if ((((lesson.end_time - lesson.start_time) / 85) as f32).floor() as u8) > 10{
+                            10
+                        }
+                        else{
+                            (((lesson.end_time - lesson.start_time) / 85) as f32).floor() as u8
+                        }
                     } else {
                         1
                     },
