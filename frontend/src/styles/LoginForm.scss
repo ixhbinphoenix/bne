@@ -60,6 +60,38 @@
       display: flex;
       flex-direction: column;
 
+      & > .password-notice {
+        margin: 1% 0px;
+        white-space: pre-line;
+        color: #ff4d17;
+        text-align: center;
+        & > p {
+          font-size: clamp(10px, 1.75rem, 1.5vh);
+          margin: 0px;
+          opacity: 0;
+        }
+      }
+      & >.checkbox-div {
+        margin: 1vmin 0px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: clamp(10px, 1rem, 1.5vw);
+        text-align: center;
+
+        &> label {
+          max-width: 75%;
+        }
+
+        &> #checkbox {
+          margin: 0px;
+          margin-right: 1%;
+          width: 15px;
+          height: 15px;
+          cursor: pointer;          
+        }
+      }
+
       & > input {
         font-family: Inter, sans-serif;
         color: #b8c0e0;
