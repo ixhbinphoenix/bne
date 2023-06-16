@@ -17,6 +17,9 @@ import {
   getCurrentLesson
 } from "../../api/dateHandling";
 import { onSwipe } from "../../api/Touch";
+import { json } from "stream/consumers";
+
+var lb_saves: TheScheduleObject[];
 
 export default function Lernbueros(): JSX.Element {
   const [currentWeek, setCurrentWeek] = useState(getMondayAndFridayDates());
@@ -48,6 +51,7 @@ export default function Lernbueros(): JSX.Element {
     setCurrentDates(getWeekDays(currentWeek.currentMonday));
     getLernbueros(currentWeek.currentMonday, currentWeek.currentFriday).then(
       (lessons) => {
+        lb_saves = lessons;
         addToDivs(lessons);
         const tableDaysTemp = [];
         for (let i: number = 0; i < 5; i++) {
@@ -67,6 +71,20 @@ export default function Lernbueros(): JSX.Element {
     );
   }, []);
 
+  const rerender = () => {
+    if (lb_saves) {
+      addToDivs(lb_saves);
+      const tableDaysTemp = [];
+      for (let i: number = 0; i < 5; i++) {
+        tableDaysTemp.push(<div className="table-day">{tableElements[i]}</div>);
+      }
+      setTableDays(tableDaysTemp);
+    }
+    else {
+      openPopup();
+    }
+  }
+
   useEffect(() => {
     onSwipe(".table-layout", { direction: "left" }, nextWeek);
     onSwipe(".table-layout", { direction: "right" }, previousWeek);
@@ -79,6 +97,7 @@ export default function Lernbueros(): JSX.Element {
 
     getLernbueros(week.currentMonday, week.currentFriday).then(
       (lessons) => {
+        lb_saves = lessons;
         addToDivs(lessons);
         const tableDaysTemp = [];
         for (let i: number = 0; i < 5; i++) {
@@ -106,6 +125,7 @@ export default function Lernbueros(): JSX.Element {
 
     getLernbueros(week.currentMonday, week.currentFriday).then(
       (lessons) => {
+        lb_saves = lessons;
         addToDivs(lessons);
         const tableDaysTemp = [];
         for (let i: number = 0; i < 5; i++) {
@@ -133,6 +153,7 @@ export default function Lernbueros(): JSX.Element {
 
     getLernbueros(week.currentMonday, week.currentFriday).then(
       (lessons) => {
+        lb_saves = lessons;
         addToDivs(lessons);
         const tableDaysTemp = [];
         for (let i: number = 0; i < 5; i++) {
@@ -214,6 +235,7 @@ export default function Lernbueros(): JSX.Element {
         EK: true,
         LI: true
       };
+      sessionStorage.setItem("filterItems", JSON.stringify(filterItems));
       Filter(true, filterItems);
     } else {
       filterItems = JSON.parse(sessionStorage.getItem("filterItems")!);
@@ -224,6 +246,7 @@ export default function Lernbueros(): JSX.Element {
   const closeFilter = () => {
     setFilterStatus(false);
     Filter(false);
+    rerender();
   };
   const changeFilter = (filterItems: any) => {
     sessionStorage.setItem("filterItems", JSON.stringify(filterItems));
@@ -254,71 +277,6 @@ export default function Lernbueros(): JSX.Element {
       setFilterContent(
         <div class="filter-background">
           <div class="filter-content">
-            <div style="display: flex; justify-content: space-around">
-              <button
-                onClick={() => {
-                  checkAll();
-                  sessionStorage.setItem(
-                    "filterItems",
-                    JSON.stringify({
-                      M: true,
-                      D: true,
-                      E: true,
-                      CH: true,
-                      GE: true,
-                      ER: true,
-                      KR: true,
-                      PL: true,
-                      IF: true,
-                      MU: true,
-                      PH: true,
-                      BI: true,
-                      L8: true,
-                      N0: true,
-                      S0: true,
-                      SW: true,
-                      SP: true,
-                      PA: true,
-                      EK: true,
-                      LI: true
-                    })
-                  );
-                }}>
-                Alle
-              </button>
-              <button
-                onClick={() => {
-                  uncheckAll();
-                  sessionStorage.setItem(
-                    "filterItems",
-                    JSON.stringify({
-                      M: false,
-                      D: false,
-                      E: false,
-                      CH: false,
-                      GE: false,
-                      ER: false,
-                      KR: false,
-                      PL: false,
-                      IF: false,
-                      MU: false,
-                      PH: false,
-                      BI: false,
-                      L8: false,
-                      N0: false,
-                      S0: false,
-                      SW: false,
-                      SP: false,
-                      PA: false,
-                      EK: false,
-                      LI: false
-                    })
-                  );
-                }}>
-                Keine
-              </button>
-            </div>
-
             <form>{FilterItems}</form>
           </div>
         </div>
@@ -328,7 +286,7 @@ export default function Lernbueros(): JSX.Element {
     }
   };
 
-  const addToDivs = (lessons: TheScheduleObject[], filter: string[] = ["M","D","E","IF","SW","PH","L8","N0","CH","BI","GE","ER","KR","PL","MU","S0","SP","PA","EK"]) => {
+  const addToDivs = (lessons: TheScheduleObject[]) => {
     tableElements = [[], [], [], [], []];
     for (let i: number = 0; i < 5; i++) {
       for (let j: number = 0; j < 10; j++) {
@@ -339,9 +297,11 @@ export default function Lernbueros(): JSX.Element {
           gridRowEnd: "span 1",
           flexDirection: "row"
         };
-        console.log(filter);
+
+        let filter = sessionStorage.getItem("filterItems");
+
         for (let k: number = 0; k < lessons.length; k++) {
-          if (lessons[k].day == i && lessons[k].start - 1 == j && (filter.includes(lessons[k].subject_short) || !lessons[k].is_lb)) {
+          if (lessons[k].day == i && lessons[k].start - 1 == j && (!filter || JSON.parse(filter)[lessons[k].subject_short])) {
             let subjectType = lessons[k].subject;
             if (lessons[k].subject_short != "") {
               subjectType = lessons[k].subject_short;
