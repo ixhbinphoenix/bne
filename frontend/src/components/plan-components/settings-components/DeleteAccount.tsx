@@ -11,7 +11,7 @@ export default function DeleteAccount(): JSX.Element {
     event.preventDefault();
     deleteAccount(event.target[0].value).then(
       () => {
-        setErrorMessage(<p>Deine Account wurde gelöscht, du kannst diese Seite jetzt neu laden</p>);
+        setErrorMessage(<p>Dein Account wurde gelöscht, du kannst diese Seite jetzt neu laden</p>);
       },
       (error) => {
         setErrorMessage(<p>Etwas ist schief gegangen: {error.message}</p>);

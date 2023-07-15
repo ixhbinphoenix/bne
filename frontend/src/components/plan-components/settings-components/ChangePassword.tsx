@@ -12,6 +12,9 @@ export default function ChangePassword(): JSX.Element {
 
   const sendPasswordChange = (event: any) => {
     event.preventDefault();
+    if (event.target[1].value !== event.target[2].value) {
+      return setErrorMessage(<p>Deine Passwörter stimmen nicht überein</p>);
+    }
     const key = generateKey(event.target[1].value);
     const untisCredentials = JSON.stringify(getLocalUntisCredentials());
     const untisCypher = passwordEncrypt(key, untisCredentials).toString();
@@ -40,6 +43,15 @@ export default function ChangePassword(): JSX.Element {
             name="new_pwd"
             type="password"
             placeholder="Neues Passwort"
+            autocomplete="new-password"
+            pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^a-zA-Z\d]).{8,}$"
+            title="Dein Passwort muss mindestens als 8 Zeichen lang sein und eine Zahl, ein Sonderzeichen, einen Klein- und einen Großbuchstaben enthalten"
+            required
+          />
+          <input
+            name="new_pwd"
+            type="password"
+            placeholder="Neues Passwort wiederholen"
             autocomplete="new-password"
             pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^a-zA-Z\d]).{8,}$"
             title="Dein Passwort muss mindestens als 8 Zeichen lang sein und eine Zahl, ein Sonderzeichen, einen Klein- und einen Großbuchstaben enthalten"

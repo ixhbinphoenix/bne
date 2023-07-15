@@ -43,14 +43,14 @@ Dazu müssen Sie das Musterformular ausfüllen und per E-Mail oder Post an uns s
 
 — An Herrn Sascha Thiel, Beethovenstraße 18, 48165 Münster, Nordrhein-Westfalen, Deutschland, support@theschedule.de:
 
-— Hiermit widerrufe ich den von mir abgeschlossenen Vertrag über die Erbringung der folgenden Dienstleistung ******\_******
+— Hiermit widerrufe ich den von mir abgeschlossenen Vertrag über die Erbringung der folgenden Dienstleistung ______________
 
-– Bestellt am ******\_******
+– Bestellt am _________
 
-— Name des Verbrauchers ******\_******
+— Name des Verbrauchers ____________
 
-— Anschrift des Verbrauchers ******\_******
+— Anschrift des Verbrauchers __________
 
-— Unterschrift des Verbrauchers (nur bei Mitteilung auf Papier) ******\_******
+— Unterschrift des Verbrauchers (nur bei Mitteilung auf Papier) _____________________
 
-— Datum ******\_******
+— Datum __________________

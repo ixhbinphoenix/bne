@@ -19,7 +19,6 @@ pub enum Error {
     #[error(transparent)]
     Mail(#[from] MailError),
 
-
     #[error(transparent)]
     IO(#[from] std::io::Error),
 

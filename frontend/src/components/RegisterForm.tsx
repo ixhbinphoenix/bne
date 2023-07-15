@@ -2,8 +2,8 @@
 
 import "../styles/LoginForm.scss";
 import type { JSX } from "preact";
-import { useEffect, useState } from "preact/hooks";
-import { registerAccount, verifySession } from "../api/theBackend";
+import { useState } from "preact/hooks";
+import { registerAccount } from "../api/theBackend";
 import { fetchJSessionId, saveUntisCredentials } from "../api/untisAPI";
 import { generateKey, passwordEncrypt } from "../api/encryption";
 
@@ -12,8 +12,11 @@ export default function LoginForm(): JSX.Element {
 
   const handleSubmit = (event: any) => {
     event.preventDefault();
-    saveUntisCredentials(event.target[2].value, event.target[3].value);
-    fetchJSessionId(event.target[2].value, event.target[3].value).then(
+    if (event.target[1].value !== event.target[2].value) {
+      return setErrorMessage(<p>Deine Passwörter stimmen nicht überein</p>);
+    }
+    saveUntisCredentials(event.target[3].value, event.target[4].value);
+    fetchJSessionId(event.target[3].value, event.target[4].value).then(
       (result) => {
         if (result.JSessionId && result.personId) {
           document.cookie = `JSESSIONID=${result.JSessionId}; max-age=600; secure; samesite=none`;
@@ -21,8 +24,8 @@ export default function LoginForm(): JSX.Element {
             event.target[0].value,
             event.target[1].value,
             result.personId,
-            event.target[2].value,
-            event.target[3].value
+            event.target[3].value,
+            event.target[4].value
           );
         }
       },
@@ -89,6 +92,15 @@ export default function LoginForm(): JSX.Element {
             pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^a-zA-Z\d]).{8,}$"
           />
           <input
+            type="password"
+            title="Dein Passwort muss mindestens 8 Zeichen lang sein, ein Zahl, einen Groß-, einen Kleinbuchstaben und ein Sonderzeichen enthalten"
+            placeholder="Passwort wiederholen"
+            className="input-box"
+            required
+            autocomplete="new-password"
+            pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^a-zA-Z\d]).{8,}$"
+          />
+          <input
             id="untis-username"
             type="username"
             placeholder="Untis-Nutzername"
@@ -103,6 +115,10 @@ export default function LoginForm(): JSX.Element {
             autocomplete="off"
             required
           />
+          <div class="checkbox-div">
+            <input type="checkbox" id="checkbox" required/>
+            <label htmlFor="checkbox">Ich akzeptiere die <a href="/datenschutz" style="color: var(--highlight-blue);">Datenschutzbestimmung</a> und <a href="/nutzungsbedingungen" style="color: var(--highlight-blue);">Nutzungsbedingungen</a></label>
+          </div>
           <div className="button-container">
             <input type="submit" id="submit-button" value="Absenden" />
           </div>

@@ -91,6 +91,7 @@ export default function Lernbueros(): JSX.Element {
   }, [currentWeek]);
 
   const nextWeek = () => {
+    closePopup();
     let week = shiftForward(currentWeek.currentMonday, currentWeek.currentFriday);
     highlightDates(week.currentMonday, week.currentFriday);
     setCurrentDates(getWeekDays(week.currentMonday));
@@ -119,6 +120,7 @@ export default function Lernbueros(): JSX.Element {
     setCurrentWeek(week);
   };
   const previousWeek = () => {
+    closePopup();
     let week = shiftBackward(currentWeek.currentMonday, currentWeek.currentFriday);
     highlightDates(week.currentMonday, week.currentFriday);
     setCurrentDates(getWeekDays(week.currentMonday));
@@ -147,6 +149,7 @@ export default function Lernbueros(): JSX.Element {
     setCurrentWeek(week);
   };
   const goToCurrentWeek = () => {
+    closePopup();
     let week = getMondayAndFridayDates();
     highlightDates(week.currentMonday, week.currentFriday);
     setCurrentDates(getWeekDays(week.currentMonday));
@@ -285,7 +288,9 @@ export default function Lernbueros(): JSX.Element {
       setFilterContent(null);
     }
   };
-
+  const closePopup = () => {
+    setPopupStatus(false);
+  };
   const addToDivs = (lessons: TheScheduleObject[]) => {
     tableElements = [[], [], [], [], []];
     for (let i: number = 0; i < 5; i++) {

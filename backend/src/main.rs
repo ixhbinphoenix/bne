@@ -3,6 +3,8 @@ mod api;
 mod api_wrapper;
 mod database;
 mod error;
+#[cfg(feature = "proxy")]
+mod governor;
 mod mail;
 mod models;
 mod prelude;
@@ -12,7 +14,11 @@ use std::{
     collections::HashMap, env, fs, io::{self, BufReader}
 };
 
+#[cfg(feature = "proxy")]
+use std::net::IpAddr;
+
 use actix_cors::Cors;
+use actix_governor::{GovernorConfigBuilder, Governor};
 use actix_identity::{config::LogoutBehaviour, IdentityMiddleware};
 use actix_session::{config::PersistentSession, SessionMiddleware};
 use actix_session_surrealdb::SurrealSessionStore;
@@ -20,9 +26,9 @@ use actix_web::{
     cookie::{time::Duration, Key}, middleware::Logger, web::{self, Data}, App, HttpResponse, HttpServer
 };
 use api::{
-    change_email::change_email_get, change_password::change_password_post, change_untis_data::change_untis_data_post, check_session::check_session_get, delete::delete_post, forgot_password::forgot_password_post, get_lernbueros::get_lernbueros, get_timetable::get_timetable, link::{
+    change_email::change_email_get, change_password::change_password_post, change_untis_data::change_untis_data_post, check_session::check_session_get, delete::delete_post, forgot_password::forgot_password_post, gdpr_data_compliance::gdpr_data_compliance_get, get_lernbueros::get_lernbueros, get_timetable::get_timetable, link::{
         check_uuid::check_uuid_get, email_change::email_change_post, email_reset::email_reset_post, password::reset_password_post, verify::verify_get
-    }, login::login_post, logout::logout_post, logout_all::logout_all_post, register::register_post, verified::verified_get
+    }, login::login_post, logout::logout_post, logout_all::logout_all_post, register::register_post, resend_mail::resend_mail_get, verified::verified_get
 };
 use dotenv::dotenv;
 use lettre::{
@@ -35,8 +41,10 @@ use surrealdb::{engine::remote::ws::Ws, opt::auth::Root, Surreal};
 
 use crate::{
     mail::utils::Mailer, models::{links_model::Link, model::CRUD, user_model::User}, utils::env::{get_env, get_env_or}
-
 };
+
+#[cfg(feature = "proxy")]
+use crate::governor::NginxIpKeyExctrator;
 
 #[derive(Clone)]
 pub struct GlobalUntisData {
@@ -58,12 +66,12 @@ async fn main() -> io::Result<()> {
 
     info!("Connecting database...");
 
-    let db_location = get_env_or("DB_LOCATION", "127.0.0.1:8000".to_string());
+    let db_location = get_env_or("DB_LOCATION", "127.0.0.1:8000");
 
     let db = Surreal::new::<Ws>(db_location.clone()).await.expect("DB to connect");
 
-    let db_user = get_env_or("DB_USERNAME", "root".to_string());
-    let db_pass = get_env_or("DB_PASSWORD", "root".to_string());
+    let db_user = get_env_or("DB_USERNAME", "root");
+    let db_pass = get_env_or("DB_PASSWORD", "root");
 
     info!("Signing in...");
 
@@ -74,8 +82,8 @@ async fn main() -> io::Result<()> {
     .await
     .expect("DB Credentials to be correct");
 
-    let db_namespace = get_env_or("DB_NAMESPACE", "test".to_string());
-    let db_database = get_env_or("DB_DATABASE", "test".to_string());
+    let db_namespace = get_env_or("DB_NAMESPACE", "test");
+    let db_database = get_env_or("DB_DATABASE", "test");
 
     db.use_ns(db_namespace.clone()).use_db(db_database.clone()).await.expect("using namespace and db to work");
 
@@ -121,7 +129,10 @@ async fn main() -> io::Result<()> {
         Key::generate()
     };
 
-    let port = get_env_or("PORT", "8080".to_string());
+    let port = get_env_or("PORT", "8080");
+
+    #[cfg(feature = "proxy")]
+    let reverse_proxy = get_env("REVERSE_PROXY").parse::<IpAddr>().unwrap();
 
     HttpServer::new(move || {
         let logger = Logger::default();
@@ -144,7 +155,25 @@ async fn main() -> io::Result<()> {
             .allow_any_header()
             .max_age(3600);
 
-        App::new()
+        #[cfg(feature = "proxy")]
+        let governor_config = GovernorConfigBuilder::default()
+                .key_extractor(NginxIpKeyExctrator)
+                .per_second(10)
+                .burst_size(2)
+                .use_headers()
+                .finish()
+                .unwrap();
+        #[cfg(not(feature = "proxy"))] 
+        let governor_config = GovernorConfigBuilder::default()
+                .per_second(10)
+                .burst_size(2)
+                .use_headers()
+                .finish()
+                .unwrap();
+
+        #[allow(clippy::let_and_return)]    
+        let app = App::new()
+            .wrap(Governor::new(&governor_config))
             .wrap(IdentityMiddleware::builder().logout_behaviour(LogoutBehaviour::PurgeSession).build())
             .wrap(logger)
             .wrap(
@@ -153,7 +182,6 @@ async fn main() -> io::Result<()> {
                     cookie_key.clone(),
                 )
                 .cookie_same_site(actix_web::cookie::SameSite::None)
-
                 .cookie_secure(true)
                 .cookie_http_only(true)
                 .session_lifecycle(
@@ -180,7 +208,9 @@ async fn main() -> io::Result<()> {
             .service(web::resource("/change_password").route(web::post().to(change_password_post)))
             .service(web::resource("/forgot_password").route(web::post().to(forgot_password_post)))
             .service(web::resource("/change_untis_data").route(web::post().to(change_untis_data_post)))
+            .service(web::resource("/resend_mail").route(web::get().to(resend_mail_get)))
             .service(web::resource("/verified").route(web::get().to(verified_get)))
+            .service(web::resource("/gdpr_data_compliance").route(web::get().to(gdpr_data_compliance_get)))
             .service(
                 web::scope("/link")
                     .service(web::resource("/email_change/{uuid}").route(web::post().to(email_change_post)))
@@ -188,9 +218,14 @@ async fn main() -> io::Result<()> {
                     .service(web::resource("/password/{uuid}").route(web::post().to(reset_password_post)))
                     .service(web::resource("/verify/{uuid}").route(web::get().to(verify_get)))
                     .service(web::resource("/check_uuid/{uuid}").route(web::get().to(check_uuid_get))),
-            )
+            );
+        #[cfg(feature = "proxy")]
+        let app = app
+            .app_data(Data::new(reverse_proxy));
+
+        app
     })
-    .bind_rustls(format!("127.0.0.1:{port}"), config)?
+    .bind_rustls(format!("0.0.0.0:{port}"), config)?
     .run()
     .await
 }

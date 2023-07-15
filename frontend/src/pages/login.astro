@@ -9,9 +9,7 @@ if (id) {
   try {
     await checkSessionIdAstro(id);
     return Astro.redirect("/home");
-  } catch {
-    
-  }
+  } catch {}
 }
 ---
 

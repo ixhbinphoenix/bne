@@ -142,7 +142,7 @@ export async function verifySession() {
 export async function accountIsVerified(): Promise<boolean> {
   try {
     let result = await Request.Get("verified");
-    return Promise.resolve(true);
+    return result ? Promise.resolve(true) : Promise.reject(result);
   } catch (error) {
     return Promise.reject(error);
   }
@@ -226,6 +226,14 @@ export async function changeUntisData(
     return Promise.reject(error);
   }
 }
+export async function resendVerifyEmail() {
+  try {
+    let result = await Request.Get("resend_mail");
+    return result;
+  } catch (error) {
+    return Promise.reject(error);
+  }
+}
 export async function verifyAccount(uuid: string): Promise<string> {
   try {
     let result = await Request.Get<string>(`link/verify/${uuid}`);
@@ -239,6 +247,14 @@ export async function deleteAccount(password: string) {
     let result = await Request.Post("delete", {
       password: password
     });
+    return result;
+  } catch (error) {
+    return Promise.reject(error);
+  }
+}
+export async function GDPRData() {
+  try {
+    let result = await Request.Get("gdpr_data_compliance");
     return result;
   } catch (error) {
     return Promise.reject(error);
