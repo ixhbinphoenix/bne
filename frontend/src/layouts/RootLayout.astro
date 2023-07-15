@@ -2,7 +2,7 @@
 import "@fontsource/inter";
 import "@fontsource/inter/700.css";
 import CookieBanner from "../components/CookieBanner";
-import favicon from "../icons/favicon.svg";
+import favicon from "/favicon.svg";
 export interface Props {
   title: String;
 }
@@ -12,6 +12,7 @@ const { title } = Astro.props;
 <html lang="de">
   <head>
     <link rel="icon" href={favicon} />
+    <link rel="manifest" href="/manifest.webmanifest">
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#1e2030" />
