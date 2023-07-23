@@ -242,7 +242,6 @@ export default function Lernbueros(): JSX.Element {
       Filter(true, filterItems);
     } else {
       filterItems = JSON.parse(sessionStorage.getItem("filterItems")!);
-      console.log(filterItems);
       Filter(true, filterItems);
     }
   };
@@ -259,7 +258,6 @@ export default function Lernbueros(): JSX.Element {
     if (filterStatus) {
       const FilterItems = [];
       for (const item in SubjectNames) {
-        console.log(filterItems.item);
         FilterItems.push(
           <label htmlFor={item}>
             {SubjectNames[item]}
@@ -269,7 +267,6 @@ export default function Lernbueros(): JSX.Element {
               defaultChecked={filterItems[item]}
               onClick={() => {
                 filterItems[item] = !filterItems[item];
-                console.log(filterItems[item]);
                 changeFilter(filterItems);
               }}
             />

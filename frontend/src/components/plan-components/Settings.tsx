@@ -18,9 +18,7 @@ export default function Settings(): JSX.Element {
   const [NotVerifiedMessage, setNotVerifiedMessage] = useState({ display: "none" });
   const [TopbarColor, setTopbarColor] = useState({ "background-color": "var(--highlight-blue)" });
   const showNotVerifiedMessage = () => {
-    console.log("verifying");
     accountIsVerified().catch((error) => {
-      console.log(error);
       setNotVerifiedMessage({ display: "block" });
       setTopbarColor({ "background-color": "var(--highlight-red)" });
     });
