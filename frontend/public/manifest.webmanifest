@@ -1,19 +1,19 @@
 {
-    "name": "TheSchedule",
-    "short_name": "TheSchedule",
-    "start_url": "/home",
-    "display": "standalone",
-    "orientation": "portrait-primary",
-    "id": "/home",
-    "background_color": "#24273a",
-    "theme_color": "#24273a",
+  "name": "TheSchedule",
+  "short_name": "TheSchedule",
+  "start_url": "/home",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "id": "/home",
+  "background_color": "#24273a",
+  "theme_color": "#24273a",
 
   "icons": [
     {
-        "src": "maskable_icon.png",
-        "sizes": "1024x1024",
-        "type": "image/png",
-        "purpose": "maskable"
+      "src": "maskable_icon.png",
+      "sizes": "1024x1024",
+      "type": "image/png",
+      "purpose": "maskable"
     },
     {
       "src": "windows11/SmallTile.scale-100.png",

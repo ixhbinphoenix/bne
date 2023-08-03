@@ -1,7 +1,7 @@
 {
   "name": "TheSchedule",
   "type": "module",
-  "version": "0.0.1",
+  "version": "0.1.1",
   "private": true,
   "scripts": {
     "dev": "astro dev",
@@ -15,9 +15,11 @@
     "@astrojs/preact": "^2.2.1",
     "@astrojs/vercel": "^3.4.1",
     "@fontsource/inter": "^5.0.2",
+    "@types/serviceworker": "^0.0.71",
     "astro": "^2.5.7",
     "crypto-js": "^4.1.1",
-    "preact": "^10.15.1"
+    "preact": "^10.15.1",
+    "react": "^18.2.0"
   },
   "devDependencies": {
     "@types/crypto-js": "^4.1.1",

@@ -8,5 +8,10 @@ import vercel from "@astrojs/vercel/serverless";
 export default defineConfig({
   output: "server",
   integrations: [preact()],
+  server: {
+    headers: {
+      "Service-Worker-Allowed": "/"
+    }
+  },
   adapter: vercel()
 });
