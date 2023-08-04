@@ -5,6 +5,6 @@
 
 Web-app built for extending Untis, for better planning.
 
->Note: if you don´t already know what this projekt is, it´s probably not for you.
+>Note: if you don´t already know what this project is, it´s probably not for you.
 
 With the interface you can display your weekly schedule with the addition of showing your moveable self-learning lessons, which Untis doesn´t show. TheSchedule has faster loading time and easier visibility of which lesson is cancelled and which lesson is just moved or substituted.
