@@ -17,7 +17,6 @@ import {
   getCurrentLesson
 } from "../../api/dateHandling";
 import { onSwipe } from "../../api/Touch";
-import { json } from "stream/consumers";
 
 var lb_saves: TheScheduleObject[];
 
