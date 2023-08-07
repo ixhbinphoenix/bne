@@ -31,6 +31,7 @@
     display: flex;
     flex-direction: column;
     align-items: stretch;
+    width: clamp(200px, 80vw, 750px);
 
     & > .login-switch {
       position: relative;
@@ -71,24 +72,23 @@
           opacity: 0;
         }
       }
-      & >.checkbox-div {
-        margin: 1vmin 0px;
+      & > .checkbox-div {
+        margin: 1vmin;
         display: flex;
         justify-content: center;
         align-items: center;
         font-size: clamp(10px, 1rem, 1.5vw);
         text-align: center;
 
-        &> label {
-          max-width: 75%;
-        }
-
-        &> #checkbox {
+        & > #checkbox {
           margin: 0px;
           margin-right: 1%;
           width: 15px;
           height: 15px;
-          cursor: pointer;          
+          cursor: pointer;
+        }
+        & > label {
+          max-width: 75%;
         }
       }
 
