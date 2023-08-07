@@ -1,7 +1,7 @@
 /* @jsxImportSource preact */
 
 import type { TheScheduleObject } from "../../api/main";
-import { SubjectColor } from "../../api/main";
+import { SubjectColor, SubjectNames } from "../../api/main";
 import { fetchJSessionId, getLocalUntisCredentials } from "../../api/untisAPI";
 import { getLernbueros } from "../../api/theBackend";
 import Popup from "./Popup";
@@ -18,8 +18,16 @@ import {
 } from "../../api/dateHandling";
 import { onSwipe } from "../../api/Touch";
 
+var lb_saves: TheScheduleObject[];
+
 export default function Lernbueros(): JSX.Element {
   const [currentWeek, setCurrentWeek] = useState(getMondayAndFridayDates());
+
+  if (sessionStorage.getItem("monday") && currentWeek.currentMonday != sessionStorage.getItem("monday")) {
+    setCurrentWeek(getMondayAndFridayDates(sessionStorage.getItem("monday")!));
+  } else {
+    sessionStorage.setItem("monday", currentWeek.currentMonday);
+  }
 
   const highlightDates = (currentMonday: string, currentFriday: string) => {
     const days = document.getElementsByClassName("day");
@@ -29,7 +37,7 @@ export default function Lernbueros(): JSX.Element {
     const currentDay = document.getElementById("day" + getCurrentDay(currentMonday, currentFriday));
     currentDay?.classList.add("highlighted");
 
-    const lessons = document.getElementsByClassName("lesson");
+    const lessons = document.getElementsByClassName("lesson-number");
     Array.from(lessons).forEach((lesson) => {
       lesson.classList.remove("highlighted");
     });
@@ -37,11 +45,12 @@ export default function Lernbueros(): JSX.Element {
     currentLesson?.classList.add("highlighted");
   };
   useEffect(() => {
-    highlightDates(getMondayAndFridayDates().currentMonday, getMondayAndFridayDates().currentFriday);
+    highlightDates(currentWeek.currentMonday, currentWeek.currentFriday);
 
     setCurrentDates(getWeekDays(currentWeek.currentMonday));
     getLernbueros(currentWeek.currentMonday, currentWeek.currentFriday).then(
       (lessons) => {
+        lb_saves = lessons;
         addToDivs(lessons);
         const tableDaysTemp = [];
         for (let i: number = 0; i < 5; i++) {
@@ -61,6 +70,20 @@ export default function Lernbueros(): JSX.Element {
     );
   }, []);
 
+  const rerender = () => {
+    if (lb_saves) {
+      addToDivs(lb_saves);
+      const tableDaysTemp = [];
+      for (let i: number = 0; i < 5; i++) {
+        tableDaysTemp.push(<div className="table-day">{tableElements[i]}</div>);
+      }
+      setTableDays(tableDaysTemp);
+    }
+    else {
+      openPopup();
+    }
+  }
+
   useEffect(() => {
     onSwipe(".table-layout", { direction: "left" }, nextWeek);
     onSwipe(".table-layout", { direction: "right" }, previousWeek);
@@ -74,6 +97,7 @@ export default function Lernbueros(): JSX.Element {
 
     getLernbueros(week.currentMonday, week.currentFriday).then(
       (lessons) => {
+        lb_saves = lessons;
         addToDivs(lessons);
         const tableDaysTemp = [];
         for (let i: number = 0; i < 5; i++) {
@@ -91,6 +115,7 @@ export default function Lernbueros(): JSX.Element {
         openPopup();
       }
     );
+    sessionStorage.setItem("monday", week.currentMonday);
     setCurrentWeek(week);
   };
   const previousWeek = () => {
@@ -101,6 +126,7 @@ export default function Lernbueros(): JSX.Element {
 
     getLernbueros(week.currentMonday, week.currentFriday).then(
       (lessons) => {
+        lb_saves = lessons;
         addToDivs(lessons);
         const tableDaysTemp = [];
         for (let i: number = 0; i < 5; i++) {
@@ -118,6 +144,7 @@ export default function Lernbueros(): JSX.Element {
         openPopup();
       }
     );
+    sessionStorage.setItem("monday", week.currentMonday);
     setCurrentWeek(week);
   };
   const goToCurrentWeek = () => {
@@ -128,6 +155,7 @@ export default function Lernbueros(): JSX.Element {
 
     getLernbueros(week.currentMonday, week.currentFriday).then(
       (lessons) => {
+        lb_saves = lessons;
         addToDivs(lessons);
         const tableDaysTemp = [];
         for (let i: number = 0; i < 5; i++) {
@@ -169,6 +197,93 @@ export default function Lernbueros(): JSX.Element {
   const openPopup = () => {
     setPopupStatus(true);
   };
+  const [filterStatus, setFilterStatus] = useState(false);
+  const [FilterContent, setFilterContent] = useState<JSX.Element | null>(null);
+  const checkAll = () => {
+    const inputs = document.getElementsByTagName("input");
+    Array.from(inputs).forEach((input) => {
+      input.checked = true;
+    });
+  };
+  const uncheckAll = () => {
+    const inputs = document.getElementsByTagName("input");
+    Array.from(inputs).forEach((input) => {
+      input.checked = false;
+    });
+  };
+  let filterItems;
+  const openFilter = () => {
+    setFilterStatus(true);
+    if (!sessionStorage.getItem("filterItems")) {
+      filterItems = {
+        M: true,
+        D: true,
+        E: true,
+        CH: true,
+        GE: true,
+        ER: true,
+        KR: true,
+        PL: true,
+        IF: true,
+        MU: true,
+        PH: true,
+        BI: true,
+        L8: true,
+        N0: true,
+        S0: true,
+        SW: true,
+        SP: true,
+        PA: true,
+        EK: true,
+        LI: true
+      };
+      sessionStorage.setItem("filterItems", JSON.stringify(filterItems));
+      Filter(true, filterItems);
+    } else {
+      filterItems = JSON.parse(sessionStorage.getItem("filterItems")!);
+      Filter(true, filterItems);
+    }
+  };
+  const closeFilter = () => {
+    setFilterStatus(false);
+    Filter(false);
+    rerender();
+  };
+  const changeFilter = (filterItems: any) => {
+    sessionStorage.setItem("filterItems", JSON.stringify(filterItems));
+  };
+
+  const Filter = (filterStatus: boolean, filterItems?: any) => {
+    if (filterStatus) {
+      const FilterItems = [];
+      for (const item in SubjectNames) {
+        FilterItems.push(
+          <label htmlFor={item}>
+            {SubjectNames[item]}
+            <input
+              type="checkbox"
+              id={item}
+              defaultChecked={filterItems[item]}
+              onClick={() => {
+                filterItems[item] = !filterItems[item];
+                changeFilter(filterItems);
+              }}
+            />
+            <span className="checkbox"></span>
+          </label>
+        );
+      }
+      setFilterContent(
+        <div class="filter-background">
+          <div class="filter-content">
+            <form>{FilterItems}</form>
+          </div>
+        </div>
+      );
+    } else {
+      setFilterContent(null);
+    }
+  };
   const closePopup = () => {
     setPopupStatus(false);
   };
@@ -180,17 +295,21 @@ export default function Lernbueros(): JSX.Element {
 
         let flexStyle = {
           gridRowStart: "1",
-          gridRowEnd: "span 1"
+          gridRowEnd: "span 1",
+          flexDirection: "row"
         };
 
+        let filter = sessionStorage.getItem("filterItems");
+
         for (let k: number = 0; k < lessons.length; k++) {
-          if (lessons[k].day == i && lessons[k].start - 1 == j) {
+          if (lessons[k].day == i && lessons[k].start - 1 == j && (!filter || JSON.parse(filter)[lessons[k].subject_short])) {
             let subjectType = lessons[k].subject;
             if (lessons[k].subject_short != "") {
               subjectType = lessons[k].subject_short;
             }
             const objectStyle = {
-              backgroundColor: SubjectColor[lessons[k].subject_short]
+              backgroundColor: SubjectColor[lessons[k].subject_short],
+              cursor: "pointer"
             };
             let roomStyle = {
               textDecoration: "none"
@@ -209,11 +328,13 @@ export default function Lernbueros(): JSX.Element {
             };
             flexStyle = {
               gridRowStart: lessons[k].start.toString(),
-              gridRowEnd: "span " + lessons[k].length
+              gridRowEnd: "span " + lessons[k].length,
+              flexDirection: "row"
             };
             if (!lessons[k].substitution) {
               lessonElements.push(
                 <div
+                  class="lesson"
                   style={objectStyle}
                   onClick={() => {
                     openPopup();
@@ -225,9 +346,9 @@ export default function Lernbueros(): JSX.Element {
                       </div>
                     );
                   }}>
-                  <p>{lessons[k].room}</p>
+                  <p style={roomStyle}>{lessons[k].room}</p>
                   <h2>{subjectType}</h2>
-                  <p>{lessons[k].teacher}</p>
+                  <p style={teacherStyle}>{lessons[k].teacher}</p>
                 </div>
               );
             } else {
@@ -254,6 +375,7 @@ export default function Lernbueros(): JSX.Element {
               }
               lessonElements.push(
                 <div
+                  class="lesson"
                   style={objectStyle}
                   onClick={() => {
                     openPopup();
@@ -271,6 +393,7 @@ export default function Lernbueros(): JSX.Element {
                   <p style={roomStyle}>{lessons[k].room}</p>
                   <p style={substitutionRoomStyle}>{lessons[k].substitution?.room}</p>
                   <h2>{subjectType}</h2>
+                  <strong style={substitutionTextStyle}>{lessons[k].substitution?.substitution_text}</strong>
                   <p style={teacherStyle}>{lessons[k].teacher}</p>
                   <p style={substitutionTeacherStyle}>{lessons[k].substitution?.teacher}</p>
                 </div>
@@ -279,11 +402,31 @@ export default function Lernbueros(): JSX.Element {
           }
         }
         if (lessonElements.length) {
-          tableElements[i].push(
-            <div className="parent-flex" style={flexStyle}>
-              {lessonElements}
-            </div>
-          );
+          if (lessonElements.length < 5) {
+            tableElements[i].push(
+              <div className="parent-flex" style={flexStyle}>
+                {lessonElements}
+              </div>
+            );
+          } else {
+            flexStyle.flexDirection = "column";
+            lessonElements.forEach((lesson) => {
+              lesson.props.children.shift();
+              lesson.props.children.pop();
+            });
+            const rows = Math.ceil(lessonElements.length / 4);
+            const subFlexes = [];
+            let j = 0;
+            for (let i = 0; i < rows; i++) {
+              subFlexes.push(<div class="sub-flex">{lessonElements.slice(j, j + 4)}</div>);
+              j += 4;
+            }
+            tableElements[i].push(
+              <div className="parent-flex" style={flexStyle}>
+                {subFlexes}
+              </div>
+            );
+          }
         }
       }
     }
@@ -291,7 +434,19 @@ export default function Lernbueros(): JSX.Element {
   const [tableDays, setTableDays] = useState<Array<JSX.Element>>([]);
   return (
     <div className="table-layout">
-      {/*<img id="filter-icon" src="/filter.svg" alt="filter icon" />*/}
+      <img
+        style="cursor: pointer;"
+        id="filter-icon"
+        src="/filter.svg"
+        alt="filter icon"
+        onClick={() => {
+          if (filterStatus) {
+            closeFilter();
+          } else {
+            openFilter();
+          }
+        }}
+      />
       <div className="table-top">
         <span id="day1" class="day">
           {currentDates[0]}
@@ -321,34 +476,34 @@ export default function Lernbueros(): JSX.Element {
       </div>
       <div className="table-body">
         <div className="table-sidebar-left">
-          <span id="lesson1" class="lesson">
+          <span id="lesson1" className="lesson-number">
             <div>07:55</div>1<div>08:40</div>
           </span>
-          <span id="lesson2" class="lesson">
+          <span id="lesson2" className="lesson-number">
             <div>08:40</div>2<div>09:25</div>
           </span>
-          <span id="lesson3" class="lesson">
+          <span id="lesson3" className="lesson-number">
             <div>09:45</div>3<div>10:30</div>
           </span>
-          <span id="lesson4" class="lesson">
+          <span id="lesson4" className="lesson-number">
             <div>10:30</div>4<div>11:15</div>
           </span>
-          <span id="lesson5" class="lesson">
+          <span id="lesson5" className="lesson-number">
             <div>11:35</div>5<div>12:20</div>
           </span>
-          <span id="lesson6" class="lesson">
+          <span id="lesson6" className="lesson-number">
             <div>12:20</div>6<div>13:05</div>
           </span>
-          <span id="lesson7" class="lesson">
+          <span id="lesson7" className="lesson-number">
             <div>13:15</div>7<div>14:00</div>
           </span>
-          <span id="lesson8" class="lesson">
+          <span id="lesson8" className="lesson-number">
             <div>14:05</div>8<div>14:50</div>
           </span>
-          <span id="lesson9" class="lesson">
+          <span id="lesson9" className="lesson-number">
             <div>14:50</div>9<div>15:35</div>
           </span>
-          <span id="lesson10" class="lesson">
+          <span id="lesson10" className="lesson-number">
             <div>15:40</div>
             10
             <div>16:25</div>
@@ -361,6 +516,7 @@ export default function Lernbueros(): JSX.Element {
           <div className="bar-right bar" onClick={nextWeek}>
             ❱
           </div>
+          {FilterContent}
           <Popup trigger={popupStatus} setPopupStatus={setPopupStatus} content={popupContent}></Popup>
           {tableDays}
         </div>

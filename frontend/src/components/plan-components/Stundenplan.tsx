@@ -1,7 +1,7 @@
 /* @jsxImportSource preact */
 
 import type { TheScheduleObject } from "../../api/main";
-import { SubjectColor } from "../../api/main";
+import { SubjectColor, SubjectNames } from "../../api/main";
 import { fetchJSessionId, getLocalUntisCredentials } from "../../api/untisAPI";
 import { getTimetable } from "../../api/theBackend";
 import Popup from "./Popup";
@@ -212,7 +212,7 @@ export default function Stundenplan(): JSX.Element {
             };
             if (!lessons[k].substitution) {
               lessonElements.push(
-                <div
+                <div class="lesson"
                   style={objectStyle}
                   onClick={() => {
                     openPopup();
@@ -252,7 +252,7 @@ export default function Stundenplan(): JSX.Element {
                 substitutionTextStyle = { display: "block" };
               }
               lessonElements.push(
-                <div
+                <div class="lesson"
                   style={objectStyle}
                   onClick={() => {
                     openPopup();
@@ -290,7 +290,6 @@ export default function Stundenplan(): JSX.Element {
   const [tableDays, setTableDays] = useState<Array<JSX.Element>>([]);
   return (
     <div className="table-layout">
-      <img id="filter-icon" src="/filter.svg" alt="filter icon" />
       <div className="table-top">
         <span id="day1" class="day">
           {currentDates[0]}
@@ -360,7 +359,7 @@ export default function Stundenplan(): JSX.Element {
           <div className="bar-right bar" onClick={nextWeek}>
             ❱
           </div>
-          <Popup trigger={popupStatus} setPopupStatus={setPopupStatus} content={popupContent}></Popup>
+          <Popup trigger={popupStatus} setPopupStatus={setPopupStatus} content={popupContent} />
           {tableDays}
         </div>
       </div>

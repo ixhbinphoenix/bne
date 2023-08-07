@@ -1,6 +1,11 @@
-export function getMondayAndFridayDates(): { currentMonday: string; currentFriday: string } {
-  const now = new Date();
-  const currentDayOfWeek = now.getDay(); // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
+export function getMondayAndFridayDates(strMonday? : string): { currentMonday: string; currentFriday: string } {
+  let now = new Date();
+  let currentDayOfWeek = now.getDay(); // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
+
+  if(strMonday){
+    currentDayOfWeek = 0;
+    now = createDate(strMonday);
+  }
 
   // Calculate the date of the Monday of the current week
   const monday = new Date(now);
