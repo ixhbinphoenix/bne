@@ -1,7 +1,8 @@
 .form-container {
   margin-left: 2.5%;
   margin-right: 2.5%;
-  margin-top: 2%;
+  position: absolute;
+  top: clamp(11vh, 15%, 70px);
   color: #b8c0e0;
 
   & > .description {
@@ -21,7 +22,7 @@
     }
     & > .subtitle {
       font-size: clamp(5px, 2.5vmin, 25px);
-      margin-bottom: 6%;
+      margin-bottom: 3%;
       text-align: end;
     }
   }
