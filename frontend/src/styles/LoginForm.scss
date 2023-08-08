@@ -12,9 +12,10 @@
     flex-direction: column;
 
     & > .title {
+      user-select: none;
       font-size: clamp(14px, 12vmin, 120px);
       margin: 0px;
-      background: rgb(198, 160, 246);
+      background: var(--highlight-blue);
       background: var(--text-gradient);
       background-clip: text;
       -webkit-background-clip: text;
@@ -49,7 +50,7 @@
     }
     & > .error-message {
       text-align: center;
-      color: #ff4d17;
+      color: var(--highlight-red);
       margin-top: 3%;
     }
     & > a {
@@ -63,7 +64,7 @@
       & > .password-notice {
         margin: 1% 0px;
         white-space: pre-line;
-        color: #ff4d17;
+        color: var(--highlight-red);
         text-align: center;
         & > p {
           font-size: clamp(10px, 1.75rem, 1.5vh);
@@ -71,7 +72,7 @@
           opacity: 0;
         }
       }
-      & >.checkbox-div {
+      & > .checkbox-div {
         margin: 1vmin 0px;
         display: flex;
         justify-content: center;
@@ -79,16 +80,16 @@
         font-size: clamp(10px, 1rem, 1.5vw);
         text-align: center;
 
-        &> label {
+        & > label {
           max-width: 75%;
         }
 
-        &> #checkbox {
+        & > #checkbox {
           margin: 0px;
           margin-right: 1%;
           width: 15px;
           height: 15px;
-          cursor: pointer;          
+          cursor: pointer;
         }
       }
 
@@ -107,8 +108,8 @@
           border-color: var(--highlight-blue);
         }
         &:invalid {
-          color: #ff4d17;
-          border-color: #ff4d17;
+          color: var(--highlight-red);
+          border-color: var(--highlight-red);
         }
       }
       & > .button-container {

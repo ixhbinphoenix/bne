@@ -72,10 +72,10 @@ h1 {
   text-align: center;
 }
 .sidebar-element:active {
-  color: var(--highlight-red);
+  color: var(--highlight-green);
 }
 .active {
-  color: var(--highlight-red);
+  color: var(--highlight-green);
 }
 p {
   margin: 0px;
