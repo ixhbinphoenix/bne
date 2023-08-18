@@ -3,9 +3,10 @@
  *
  * @description Service Worker for enabling offline experience with TheSchedule
 **/
-importScripts("./cachingStrategies.ts");
+import { Strategies }  from "./cachingStrategies"
 
 const cache: string = "v1";
+
 
 async function cacheFonts(event: FetchEvent): Promise<Response> {
   return Strategies.CacheFirst(event);

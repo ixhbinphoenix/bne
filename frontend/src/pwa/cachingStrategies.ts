@@ -1,4 +1,4 @@
-class Strategies {
+export class Strategies {
   static getTimeStampStatus(name: string, maxAgeSeconds: number = 2630000): boolean {
     const cookie = document.cookie.match("(^|;)\\s*" + name + "\\s*=\\s*([^;]+)")?.pop() || "";
     if (!cookie) {

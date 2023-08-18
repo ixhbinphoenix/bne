@@ -1,8 +1,8 @@
 import { defineConfig } from "astro/config";
+import compileServiceWorker from "./compileServiceWorker";
 
 // https://astro.build/config
 import preact from "@astrojs/preact";
-
 import vercel from "@astrojs/vercel/serverless";
 
 export default defineConfig({
@@ -13,5 +13,8 @@ export default defineConfig({
       "Service-Worker-Allowed": "/"
     }
   },
-  adapter: vercel()
+  adapter: vercel(),
+  vite: {
+    plugins: [compileServiceWorker()]
+  }
 });
