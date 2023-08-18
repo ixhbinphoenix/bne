@@ -23,11 +23,3 @@ if (id) {
 <PlanLayout title="Stundenplan">
   <PlanContainer client:load />
 </PlanLayout>
-
-<script>
-  if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.register("/serviceWorker.js", { scope: "/" }).then((worker) => {
-      console.log(worker.scope);
-    });
-  }
-</script>
