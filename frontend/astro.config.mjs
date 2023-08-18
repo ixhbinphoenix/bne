@@ -4,6 +4,7 @@ import compileServiceWorker from "./compileServiceWorker";
 // https://astro.build/config
 import preact from "@astrojs/preact";
 import vercel from "@astrojs/vercel/serverless";
+import node from "@astrojs/node"
 
 export default defineConfig({
   output: "server",
@@ -13,7 +14,9 @@ export default defineConfig({
       "Service-Worker-Allowed": "/"
     }
   },
-  adapter: vercel(),
+  adapter: vercel({
+    imageService: false
+  }),
   vite: {
     plugins: [compileServiceWorker()]
   }
