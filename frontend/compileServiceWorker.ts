@@ -10,7 +10,7 @@ const compileServiceWorker = () => ({
       plugins: [typescript(), terser()]
     };
     const outputOptions: OutputOptions = {
-      file: "./dist/client/serviceWorker.js",
+      file: "./.vercel/output/static/serviceWorker.js",
       format: "es",
       compact: true
     };
