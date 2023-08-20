@@ -36,3 +36,25 @@ export const SubjectColor: { [key: string]: string } = {
   PA: "#ff5500",
   EK: "#00490d"
 };
+export const SubjectNames: { [key: string]: string } = {
+  M: "Mathematik",
+  D: "Deutsch",
+  E: "Englisch",
+  CH: "Chemie",
+  GE: "Geschichte",
+  ER: "Evangelische Religionslehre",
+  KR: "Katholische Religionslehre",
+  PL: "Philosophie",
+  IF: "Informatik",
+  MU: "Musik",
+  PH: "Physik",
+  BI: "Biologie",
+  L8: "Latein",
+  N0: "Niederländisch",
+  S0: "Spanisch",
+  SW: "Sozialwissenschaft",
+  SP: "Sport",
+  PA: "Pädagogik",
+  EK: "Erdkunde",
+  LI: "Literatur"
+};

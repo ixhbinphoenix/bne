@@ -9,28 +9,31 @@ dependencies:
     specifier: ^2.2.1
     version: 2.2.1(preact@10.15.1)
   '@astrojs/vercel':
-    specifier: ^3.4.1
-    version: 3.4.1(astro@2.5.7)(react@18.2.0)
+    specifier: ^3.5.0
+    version: 3.5.0(astro@2.6.4)(react@18.2.0)
   '@fontsource/inter':
-    specifier: ^5.0.2
-    version: 5.0.2
+    specifier: ^5.0.3
+    version: 5.0.3
   astro:
-    specifier: ^2.5.7
-    version: 2.5.7(@types/node@20.2.5)(sass@1.62.1)
+    specifier: ^2.6.4
+    version: 2.6.4(@types/node@20.3.1)(sass@1.63.4)
   crypto-js:
     specifier: ^4.1.1
     version: 4.1.1
   preact:
     specifier: ^10.15.1
     version: 10.15.1
+  react:
+    specifier: '18'
+    version: 18.2.0
 
 devDependencies:
   '@types/crypto-js':
     specifier: ^4.1.1
     version: 4.1.1
   '@types/node':
-    specifier: ^20.2.5
-    version: 20.2.5
+    specifier: ^20.3.1
+    version: 20.3.1
   prettier:
     specifier: ^2.8.8
     version: 2.8.8
@@ -38,8 +41,8 @@ devDependencies:
     specifier: ^0.10.0
     version: 0.10.0
   sass:
-    specifier: ^1.62.1
-    version: 1.62.1
+    specifier: ^1.63.4
+    version: 1.63.4
 
 packages:
 
@@ -53,6 +56,10 @@ packages:
 
   /@astrojs/compiler@1.5.0:
     resolution: {integrity: sha512-k04X/7nlMklU0HQUScxbCTf5n8/Vr+0U0bawb9QWulWxd6qJf3FmBrNATgTYiltjB4pc5HBqmmttAfFi7m4lLg==}
+
+  /@astrojs/internal-helpers@0.1.2:
+    resolution: {integrity: sha512-YXLk1CUDdC9P5bjFZcGjz+cE/ZDceXObDTXn/GCID4r8LjThuexxi+dlJqukmUpkSItzQqgzfWnrPLxSFPejdA==}
+    dev: false
 
   /@astrojs/language-server@1.0.8:
     resolution: {integrity: sha512-gssRxLGb8XnvKpqSzrDW5jdzdFnXD7eBXVkPCkkt2hv7Qzb+SAzv6hVgMok3jDCxpR1aeB+XNd9Qszj2h29iog==}
@@ -73,13 +80,13 @@ packages:
       vscode-uri: 3.0.7
     dev: false
 
-  /@astrojs/markdown-remark@2.2.1(astro@2.5.7):
+  /@astrojs/markdown-remark@2.2.1(astro@2.6.4):
     resolution: {integrity: sha512-VF0HRv4GpC1XEMLnsKf6jth7JSmlt9qpqP0josQgA2eSpCIAC/Et+y94mgdBIZVBYH/yFnMoIxgKVe93xfO2GA==}
     peerDependencies:
       astro: ^2.5.0
     dependencies:
       '@astrojs/prism': 2.1.2
-      astro: 2.5.7(@types/node@20.2.5)(sass@1.62.1)
+      astro: 2.6.4(@types/node@20.3.1)(sass@1.63.4)
       github-slugger: 1.5.0
       import-meta-resolve: 2.2.2
       rehype-raw: 6.1.1
@@ -135,15 +142,16 @@ packages:
       - supports-color
     dev: false
 
-  /@astrojs/vercel@3.4.1(astro@2.5.7)(react@18.2.0):
-    resolution: {integrity: sha512-EFYxpEGFA4QXVxF0Wk10fHoBypuoP1SkSU+K6osLl3Xjxb1jx3rdsmM56w+FNX3z4QD9dpEqjfVD7lu+VM9udA==}
+  /@astrojs/vercel@3.5.0(astro@2.6.4)(react@18.2.0):
+    resolution: {integrity: sha512-2uhwcY6fwgLZVlk13jgz6oN4pY6N1DDQZXeMwkcohVyGPbnToFxpjTnhI19neq0r9eA0aA7oHqY1oG6quV9/Og==}
     peerDependencies:
-      astro: ^2.5.6
+      astro: ^2.6.0
     dependencies:
+      '@astrojs/internal-helpers': 0.1.2
       '@astrojs/webapi': 2.2.0
       '@vercel/analytics': 0.1.11(react@18.2.0)
       '@vercel/nft': 0.22.6
-      astro: 2.5.7(@types/node@20.2.5)(sass@1.62.1)
+      astro: 2.6.4(@types/node@20.3.1)(sass@1.63.4)
       esbuild: 0.17.19
       fast-glob: 3.2.12
       set-cookie-parser: 2.6.0
@@ -605,8 +613,8 @@ packages:
     dev: false
     optional: true
 
-  /@fontsource/inter@5.0.2:
-    resolution: {integrity: sha512-pQ1ms5nbprD+7Dnu5h0T9XOSJi5pvOanLCxi6mA9/5wclXFkkzvZo31ddoD8/Urncx11967qTnvGglPeWEOT+Q==}
+  /@fontsource/inter@5.0.3:
+    resolution: {integrity: sha512-JJvh5xht71F6e0E5r2+Ffu8g+CYAxMvnGJm9ZMg5IIjy8UwxLp+8C99TgPJupdEyBpEJv0wuMG2Rd183z/bV8g==}
     dev: false
 
   /@jridgewell/gen-mapping@0.3.3:
@@ -784,8 +792,8 @@ packages:
       '@types/unist': 2.0.6
     dev: false
 
-  /@types/node@20.2.5:
-    resolution: {integrity: sha512-JJulVEQXmiY9Px5axXHeYGLSjhkZEnD+MDPDGbCbIAbMslkKwmygtZFy1X6s/075Yo94sf8GuSlFfPzysQrWZQ==}
+  /@types/node@20.3.1:
+    resolution: {integrity: sha512-EhcH/wvidPy1WeML3TtYFGR83UzjxeWRen9V402T8aUGYsCHOmfoisV3ZSg03gAFIbLq8TnWOJ0f4cALtnSEUg==}
 
   /@types/parse5@6.0.3:
     resolution: {integrity: sha512-SuT16Q1K51EAVPz1K29DJ/sXjhSQ0zjvsypYJ6tlwVsRV9jwW5Adq2ch8Dq8kDBCkYnELS7N7VNCSB5nC56t/g==}
@@ -937,8 +945,8 @@ packages:
     resolution: {integrity: sha512-I1jXZMjAgCMmxT4qxXfPXa6SthSoE8h6gkSI9BGGNv8mP8G/v0blc+qFnZu6K42vTOiuME596QaLO0TP3Lk0xg==}
     dev: false
 
-  /astro@2.5.7(@types/node@20.2.5)(sass@1.62.1):
-    resolution: {integrity: sha512-qYKMIN4tXAOAsm10vU4f+Q7LfC05JmEbQiJmSBqIEhp+wnQcEUFkGLrHMSsps3oBzMtjErUdDDW5tGJcn5eVlA==}
+  /astro@2.6.4(@types/node@20.3.1)(sass@1.63.4):
+    resolution: {integrity: sha512-YM5H9SLHflxCB/3H8S2Bi+1Lbwn/MA9Vl/eOZmkCT491gvBsyuKCTsoUas6fwggeKn+fIR2XpdYd2F+unQve3g==}
     engines: {node: '>=16.12.0', npm: '>=6.14.0'}
     hasBin: true
     peerDependencies:
@@ -948,8 +956,9 @@ packages:
         optional: true
     dependencies:
       '@astrojs/compiler': 1.5.0
+      '@astrojs/internal-helpers': 0.1.2
       '@astrojs/language-server': 1.0.8
-      '@astrojs/markdown-remark': 2.2.1(astro@2.5.7)
+      '@astrojs/markdown-remark': 2.2.1(astro@2.6.4)
       '@astrojs/telemetry': 2.1.1
       '@astrojs/webapi': 2.2.0
       '@babel/core': 7.22.1
@@ -999,7 +1008,7 @@ packages:
       typescript: 5.1.3
       unist-util-visit: 4.1.2
       vfile: 5.3.7
-      vite: 4.3.9(@types/node@20.2.5)(sass@1.62.1)
+      vite: 4.3.9(@types/node@20.3.1)(sass@1.63.4)
       vitefu: 0.2.4(vite@4.3.9)
       yargs-parser: 21.1.1
       zod: 3.21.4
@@ -3065,8 +3074,8 @@ packages:
     dependencies:
       suf-log: 2.5.3
 
-  /sass@1.62.1:
-    resolution: {integrity: sha512-NHpxIzN29MXvWiuswfc1W3I0N8SXBd8UR26WntmDlRYf0bSADnwnOjsyMZ3lMezSlArD33Vs3YFhp7dWvL770A==}
+  /sass@1.63.4:
+    resolution: {integrity: sha512-Sx/+weUmK+oiIlI+9sdD0wZHsqpbgQg8wSwSnGBjwb5GwqFhYNwwnI+UWZtLjKvKyFlKkatRK235qQ3mokyPoQ==}
     engines: {node: '>=14.0.0'}
     hasBin: true
     dependencies:
@@ -3471,7 +3480,7 @@ packages:
       vfile-message: 3.1.4
     dev: false
 
-  /vite@4.3.9(@types/node@20.2.5)(sass@1.62.1):
+  /vite@4.3.9(@types/node@20.3.1)(sass@1.63.4):
     resolution: {integrity: sha512-qsTNZjO9NoJNW7KnOrgYwczm0WctJ8m/yqYAMAK9Lxt4SoySUfS5S8ia9K7JHpa3KEeMfyF8LoJ3c5NeBJy6pg==}
     engines: {node: ^14.18.0 || >=16.0.0}
     hasBin: true
@@ -3496,11 +3505,11 @@ packages:
       terser:
         optional: true
     dependencies:
-      '@types/node': 20.2.5
+      '@types/node': 20.3.1
       esbuild: 0.17.19
       postcss: 8.4.24
       rollup: 3.23.0
-      sass: 1.62.1
+      sass: 1.63.4
     optionalDependencies:
       fsevents: 2.3.2
     dev: false
@@ -3513,7 +3522,7 @@ packages:
       vite:
         optional: true
     dependencies:
-      vite: 4.3.9(@types/node@20.2.5)(sass@1.62.1)
+      vite: 4.3.9(@types/node@20.3.1)(sass@1.63.4)
     dev: false
 
   /vscode-css-languageservice@6.2.6:

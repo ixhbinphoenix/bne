@@ -1,7 +1,6 @@
 :root {
   --spacing-left: clamp(28px, 1.5vw, 55px);
   --spacing-top: clamp(4%, 4%, 35px);
-  --text-color: #cad3f5;
 }
 
 .table-layout {
@@ -15,6 +14,7 @@
   & > #filter-icon {
     position: absolute;
     margin: 3.5px;
+    height: var(--spacing-top);
     width: var(--spacing-left);
     color: var(--text-color);
   }
@@ -69,6 +69,79 @@
       width: 100%;
       height: 100%;
 
+      & > .filter-background {
+        position: absolute;
+        z-index: 10;
+        height: 100%;
+        width: 100%;
+        background-color: #00000088;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        & > .filter-content {
+          background-color: #363a4f;
+          position: relative;
+          padding: 1% 7%;
+
+          & > div > button {
+            cursor: pointer;
+          }
+
+          & > form {
+            display: flex;
+            flex-direction: column;
+            flex-wrap: wrap;
+            & > label {
+              font-size: clamp(90%, 2vmin, 24px);
+              position: relative;
+              margin: 1.5% 0px;
+              & > input {
+                position: absolute;
+                opacity: 0;
+                cursor: pointer;
+                z-index: 100;
+                width: 25px;
+                height: 25px;
+                margin: 0px;
+
+                &:checked + .checkbox {
+                  background: var(--highlight-blue);
+                }
+                &:checked + .checkbox:after {
+                  display: block;
+                }
+              }
+              & > .checkbox {
+                cursor: pointer;
+                position: absolute;
+                top: 13%;
+                left: -10%;
+                height: clamp(14px, 1.75vmin, 25px);
+                width: clamp(14px, 1.75vmin, 25px);
+                background-color: var(--text-color);
+
+                &:after {
+                  content: "";
+                  position: absolute;
+                  display: none;
+                  left: 31%;
+                  top: 0%;
+                  width: 27%;
+                  height: 71%;
+                  border: var(--text-color) solid;
+                  border-width: 0 3px 3px 0;
+                  -webkit-transform: rotate(45deg);
+                  -ms-transform: rotate(45deg);
+                  transform: rotate(45deg);
+                }
+              }
+            }
+          }
+        }
+      }
+
       .bar {
         user-select: none;
         cursor: pointer;
@@ -108,7 +181,17 @@
 
           display: flex;
           flex-direction: row;
-          div {
+
+          & > .sub-flex {
+            display: flex;
+            width: 100%;
+            height: 100%;
+          }
+           .invisible{
+            display: none;
+           }
+          .lesson {
+            border: 0.1px solid #363a4f;
             min-width: 0;
             width: 100%;
             height: 100%;
@@ -119,7 +202,7 @@
             align-items: center;
             justify-content: space-around;
             background-color: var(--highlight-red);
-            font-size: clamp(25%, calc(65%), 30px);
+            font-size: clamp(25%, 1.5vmin, 30px);
 
             & > h2 {
               text-overflow: ellipsis;
@@ -128,7 +211,7 @@
               width: 100%;
               margin: 0;
               text-align: center;
-              font-size: clamp(4px, calc(125%), 20px);
+              font-size: clamp(4px, 125%, 4vmin);
             }
             & > p {
               width: 100%;
