@@ -12,6 +12,10 @@ For a full Development setup you need the following:
 - SurrealDB Database
 - Reverse Proxy e.g. nginx (Optional)[^proxy]
 
+## NixOS
+
+We have a nix dev shell flake which you can use with `nix develop` or with [nix-direnv](https://github.com/nix-community/nix-direnv). It provides you with all required dependencies to build both backend and frontend
+
 ## Frontend
 
 Requirements:
