@@ -29,7 +29,6 @@
     "@types/crypto-js": "^4.1.1",
     "@types/node": "^20.2.5",
     "@types/serviceworker": "^0.0.73",
-    "@vite-pwa/astro": "^0.1.1",
     "prettier": "^2.8.8",
     "prettier-plugin-astro": "^0.10.0",
     "sass": "^1.62.1",
