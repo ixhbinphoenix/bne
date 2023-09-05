@@ -26,6 +26,7 @@
     "rollup": "^3.28.0"
   },
   "devDependencies": {
+    "pwa-asset-generator": "^6.3.1",
     "@types/crypto-js": "^4.1.1",
     "@types/node": "^20.2.5",
     "@types/serviceworker": "^0.0.73",
