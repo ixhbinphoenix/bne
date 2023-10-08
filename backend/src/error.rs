@@ -13,6 +13,9 @@ pub enum Error {
     #[error(transparent)]
     Surreal(#[from] surrealdb::Error),
 
+    #[error("Database Record that was just checked doesn't exist?")]
+    DBOptionNone,
+
     #[error(transparent)]
     Password(#[from] PasswordError),
 

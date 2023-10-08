@@ -49,7 +49,7 @@ impl CRUD<Link, LinkCreate> for Link {
         if let Some(link) = res {
             if link.expiry.timestamp_millis() < Utc::now().timestamp_millis() {
                 debug!("Link expired, deleting.");
-                db.delete(id).await?;
+                let _: Option<Link> = db.delete(id).await?;
                 Ok(None)
             } else {
                 Ok(Some(link))
@@ -76,12 +76,15 @@ impl Link {
             id: db_id.clone(),
             user: user_id,
             link_type,
-            expiry: expiry_time.into(),
+            expiry: surrealdb::sql::Datetime::from(expiry_time),
         };
 
-        let res: Self = db.create(db_id).content(link).await?;
+        let res: Option<Self> = db.create(db_id).content(link).await?;
 
-        Ok(res)
+        match res {
+            Some(a) => Ok(a),
+            None => Err(Error::DBOptionNone)
+        }
     }
 
     pub async fn get_from_user(db: ConnectionData, user: User) -> Result<Vec<Self>, Error> {

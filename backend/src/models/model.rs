@@ -18,15 +18,23 @@ where
 
 
     async fn create(db: ConnectionData, tb: String, data: C) -> Result<D, Error> {
-        let res: D = db.create(tb).content(data).await?;
+        let mut res: Vec<D> = db.create(tb).content(data).await?;
 
-        Ok(res)
+        if res.len() > 0 {
+            let a = res.pop().unwrap();
+            Ok(a)
+        } else {
+            Err(Error::DBOptionNone)
+        }
     }
 
     async fn create_id(db: ConnectionData, id: Thing, data: D) -> Result<D, Error> {
-        let res: D = db.create(id).content(data).await?;
+        let res: Option<D> = db.create(id).content(data).await?;
 
-        Ok(res)
+        match res {
+            Some(a) => Ok(a),
+            None => Err(Error::DBOptionNone)
+        }
     }
 
     async fn get_from_id(db: ConnectionData, id: Thing) -> Result<Option<D>, Error> {
@@ -36,13 +44,13 @@ where
     }
 
     async fn update_replace(db: ConnectionData, id: Thing, data: D) -> Result<(), Error> {
-        let _: D = db.update(id).content(data).await?;
+        let _: Option<D> = db.update(id).content(data).await?;
 
         Ok(())
     }
 
     async fn delete(db: ConnectionData, id: Thing) -> Result<(), Error> {
-        let _: D = db.delete(id).await?;
+        let _: Option<D> = db.delete(id).await?;
 
 
         Ok(())
