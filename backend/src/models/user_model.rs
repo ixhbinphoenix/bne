@@ -28,7 +28,7 @@ pub struct UserCreate {
 impl CRUD<User, UserCreate> for User {
     async fn init_table(db: DBConnection) -> Result<(), Error> {
         let sql = "DEFINE TABLE users SCHEMAFULL;\
-                   DEFINE FIELD email ON users TYPE string ASSERT is::email($value);\
+                   DEFINE FIELD email ON users TYPE string ASSERT string::is::email($value);\
                    DEFINE INDEX email ON TABLE users COLUMNS email UNIQUE;\
                    DEFINE FIELD person_id ON users TYPE number;\
                    DEFINE INDEX person_id ON TABLE users COLUMNS person_id UNIQUE;\
