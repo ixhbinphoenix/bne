@@ -20,7 +20,7 @@ where
     async fn create(db: ConnectionData, tb: String, data: C) -> Result<D, Error> {
         let mut res: Vec<D> = db.create(tb).content(data).await?;
 
-        if res.len() > 0 {
+        if !res.is_empty() {
             let a = res.pop().unwrap();
             Ok(a)
         } else {
