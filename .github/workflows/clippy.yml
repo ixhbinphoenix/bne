@@ -1,0 +1,17 @@
+name: Clippy check
+on: push
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  clippy:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Fetch dependencies
+      run: cargo fetch
+      working-directory: backend
+    - name: Run Clippy
+      run: cargo clippy --all-targets --all-features -- -Dwarnings
+      working-directory: backend

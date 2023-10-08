@@ -44,11 +44,9 @@ impl KeyExtractor for NginxIpKeyExctrator {
                         .map_err(|_| { couldntExtract!() })
                 }),
             Some(peer) => {
-                if cfg!(not(debug_assertions)) {
-                    if peer.to_string() != "127.0.0.1" {
-                        error!("!!!FATAL!!! SERVER MISCONFIGURED, GOT REQUEST FROM REVERSE PROXY DIRECTLY");
-                        panic!();
-                    }
+                if cfg!(not(debug_assertions)) && peer.to_string() != "127.0.0.1" {
+                    error!("!!!FATAL!!! SERVER MISCONFIGURED, GOT REQUEST FROM REVERSE PROXY DIRECTLY");
+                    panic!();
                 }
                 connection_info
                     .peer_addr()
