@@ -111,15 +111,15 @@ dependencies = [
 
 [[package]]
 name = "actix-identity"
-version = "0.5.2"
+version = "0.6.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1224c9f9593dc27c9077b233ce04adedc1d7febcfc35ee9f53ea3c24df180bec"
+checksum = "36e1cc6f95e245b2f3c6995df4e1c0c697704c48c28ec325d135a3ca039d4952"
 dependencies = [
  "actix-service",
  "actix-session",
  "actix-utils",
  "actix-web",
- "anyhow",
+ "derive_more",
  "futures-core",
  "serde",
  "tracing",
@@ -189,9 +189,9 @@ dependencies = [
 
 [[package]]
 name = "actix-session"
-version = "0.7.2"
+version = "0.8.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "43da8b818ae1f11049a4d218975345fe8e56ce5a5f92c11f972abcff5ff80e87"
+checksum = "2e6a28f813a6671e1847d005cad0be36ae4d016287690f765c303379837c13d6"
 dependencies = [
  "actix-service",
  "actix-utils",
@@ -206,9 +206,9 @@ dependencies = [
 
 [[package]]
 name = "actix-session-surrealdb"
-version = "0.1.6"
+version = "0.1.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "22e25f6500365082e9570d42ebc4ca16f3d879722a0e4a7326fbfedb9b6a5a81"
+checksum = "ba1ab3541edfe18233bf94807ea36b4b55604400ba09d5ce247d9610d7147917"
 dependencies = [
  "actix-session",
  "actix-web",
