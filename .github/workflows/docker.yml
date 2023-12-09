@@ -33,6 +33,6 @@ jobs:
         with:
           context: backend/
           push: true
-          tags: ghcr.io/ixhbinphoenix/theschedule:latest
+          tags: ghcr.io/ixhbinphoenix/bne:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
