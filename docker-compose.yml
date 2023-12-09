@@ -14,7 +14,7 @@ services:
       - file:/db-data
 
   backend:
-    build: theschedule:latest
+    build: ./backend/Dockerfile
     env_file: ./backend/docker.env
     restart: unless-stopped # Needed for startup, 1st startup tries connecting to db before it's online
     ports:
