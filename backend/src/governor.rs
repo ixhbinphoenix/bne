@@ -1,7 +1,7 @@
 use std::{net::{IpAddr, SocketAddr}, str::FromStr};
 use actix_governor::{KeyExtractor, SimpleKeyExtractionError};
 use actix_web::web;
-use log::error;
+use log::{error, info};
 
 use crate::utils::env::get_env_or;
 
@@ -46,6 +46,7 @@ impl KeyExtractor for NginxIpKeyExctrator {
             Some(peer) => {
                 if cfg!(not(debug_assertions)) && peer.to_string() != "127.0.0.1" {
                     error!("!!!FATAL!!! SERVER MISCONFIGURED, GOT REQUEST FROM REVERSE PROXY DIRECTLY");
+                    info!("IP Adress of connection: {}", peer.to_string());
                     panic!();
                 }
                 connection_info
