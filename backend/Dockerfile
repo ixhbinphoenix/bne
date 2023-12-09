@@ -1,6 +1,6 @@
 FROM rust:alpine as builder
 RUN apk update && apk add openssl-dev pkgconfig musl musl-dev gcc
-RUN mkdir backend
+RUN rustup set profile minimal && rustup toolchain install nightly-x86_64-unknown-linux-musl && rustup default nightly-x86_64-unknown-linux-musl
 COPY . .
 RUN cargo install --path .
 
