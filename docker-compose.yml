@@ -1,0 +1,26 @@
+version: '3'
+services:
+  surreal:
+    image: surrealdb/surrealdb:latest
+    restart: unless-stopped
+    volumes:
+      - ./db-data:/db-data
+    entrypoint:
+      - /surreal
+      - start
+      - -b
+      - 0.0.0.0:8000
+      - --auth
+      - file:/db-data
+
+  backend:
+    build: theschedule:latest
+    env_file: ./backend/docker.env
+    restart: unless-stopped # Needed for startup, 1st startup tries connecting to db before it's online
+    ports:
+      - 8080:8080
+    volumes:
+      - ./backend/key.pem:/key.pem
+      - ./backend/cert.pem:/cert.pem
+    links:
+      - surreal
