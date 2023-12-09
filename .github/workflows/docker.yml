@@ -14,7 +14,7 @@ env:
 jobs:
   docker:
     runs-on: ubuntu-latest
-    if: github.repository == 'transfem-org/Sharkey'
+    if: github.repository == 'ixhbinphoenix/bne'
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
