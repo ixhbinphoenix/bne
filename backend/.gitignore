@@ -2,5 +2,6 @@ target/
 cert.pem
 key.pem
 test.db/
+docker.env
 .env
 .vscode
