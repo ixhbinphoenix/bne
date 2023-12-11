@@ -184,6 +184,11 @@ async fn main() -> io::Result<()> {
                 .cookie_same_site(actix_web::cookie::SameSite::None)
                 .cookie_secure(true)
                 .cookie_http_only(true)
+                .cookie_domain(if cfg!(debug_assertions) {
+                    None
+                } else {
+                    Some("theschedule.de".to_string())
+                })
                 .session_lifecycle(
                     PersistentSession::default()
                         .session_ttl_extension_policy(actix_session::config::TtlExtensionPolicy::OnStateChanges)
