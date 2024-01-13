@@ -58,3 +58,6 @@ export const SubjectNames: { [key: string]: string } = {
   EK: "Erdkunde",
   LI: "Literatur"
 };
+export function JSESSIONIDCookieString(JSESSIONID: string): string {
+  return `JSESSIONID=${JSESSIONID}; max-age=600; secure; samesite=none; domain=.theschedule.de`;
+}

@@ -6,6 +6,7 @@ import { useState } from "preact/hooks";
 import { loginAccount } from "../api/theBackend";
 import { fetchJSessionId, saveUntisCredentials } from "../api/untisAPI";
 import { generateKey, passwordDecrypt } from "../api/encryption";
+import { JSESSIONIDCookieString } from "../api/main";
 
 export default function LoginForm(): JSX.Element {
   const [errorMessage, setErrorMessage] = useState<JSX.Element>(<p></p>);
@@ -21,7 +22,7 @@ export default function LoginForm(): JSX.Element {
         const untisCredentialsDecrypted = JSON.parse(passwordDecrypt(key, cypher));
         saveUntisCredentials(untisCredentialsDecrypted.username, untisCredentialsDecrypted.password);
         fetchJSessionId(untisCredentialsDecrypted.username, untisCredentialsDecrypted.password).then((result) => {
-          document.cookie = `JSESSIONID=${result.JSessionId}; max-age=600; secure; samesite=none`;
+          document.cookie = JSESSIONIDCookieString(result.JSessionId);
           window.location.href = "/home";
         });
       },

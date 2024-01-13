@@ -1,5 +1,5 @@
 import { getLocalUntisCredentials, fetchJSessionId, deleteLocalUntisCredentials } from "./untisAPI";
-import type { TheScheduleObject } from "./main";
+import { JSESSIONIDCookieString, type TheScheduleObject } from "./main";
 
 class Request {
   //class to handle primitive requests
@@ -93,7 +93,7 @@ export async function getTimetable(monday: string, friday: string): Promise<TheS
     const untisCredentials = getLocalUntisCredentials();
     if (!storedJSessionId && getLocalUntisCredentials()) {
       const result = await fetchJSessionId(untisCredentials.username, untisCredentials.password);
-      document.cookie = `JSESSIONID=${result.JSessionId}; max-age=600; secure; samesite=none; domain=.theschedule.de`;
+      document.cookie = JSESSIONIDCookieString(result.JSessionId) 
       body = await Request.Get<{ lessons: TheScheduleObject[] }>("get_timetable" + searchQuery);
     } else {
       body = await Request.Get<{ lessons: TheScheduleObject[] }>("get_timetable" + searchQuery);
@@ -111,7 +111,7 @@ export async function getLernbueros(monday: string, friday: string): Promise<The
     const untisCredentials = getLocalUntisCredentials();
     if (!storedJSessionId && getLocalUntisCredentials()) {
       const result = await fetchJSessionId(untisCredentials.username, untisCredentials.password);
-      document.cookie = `JSESSIONID=${result.JSessionId}; max-age=600; secure; samesite=none; domain=.theschedule.de`;
+      document.cookie = JSESSIONIDCookieString(result.JSessionId);
       body = await Request.Get<{ lessons: TheScheduleObject[] }>("get_lernbueros" + searchQuery);
     } else {
       body = await Request.Get<{ lessons: TheScheduleObject[] }>("get_lernbueros" + searchQuery);
