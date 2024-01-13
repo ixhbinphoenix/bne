@@ -6,6 +6,7 @@ import { useState } from "preact/hooks";
 import { registerAccount } from "../api/theBackend";
 import { fetchJSessionId, saveUntisCredentials } from "../api/untisAPI";
 import { generateKey, passwordEncrypt } from "../api/encryption";
+import { JSESSIONIDCookieString } from "../api/main";
 
 export default function LoginForm(): JSX.Element {
   const [errorMessage, setErrorMessage] = useState<JSX.Element>(<p></p>);
@@ -19,7 +20,7 @@ export default function LoginForm(): JSX.Element {
     fetchJSessionId(event.target[3].value, event.target[4].value).then(
       (result) => {
         if (result.JSessionId && result.personId) {
-          document.cookie = `JSESSIONID=${result.JSessionId}; max-age=600; secure; samesite=none`;
+          document.cookie = JSESSIONIDCookieString(result.JSessionId); 
           sendRegister(
             event.target[0].value,
             event.target[1].value,
