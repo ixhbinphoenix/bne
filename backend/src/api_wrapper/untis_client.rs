@@ -46,6 +46,8 @@ impl UntisClient {
             .await
             .map_err(Error::Reqwest)?;
 
+        debug(response);
+
         Ok(response)
     }
 
