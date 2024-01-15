@@ -31,11 +31,10 @@ pub async fn get_timetable(
         return Ok(web::Json(Response::new_error(403, "Not logged in".to_string())));
     }
 
-    let session_cookie = req.cookie("JSESSIONID");
-    let jsessionid = if session_cookie.is_none() {
-        return Ok(Response::new_error(403, "No JSESSIONID provided".to_string()).into());
+    let jsessionid = if let Some(session_cookie) = req.cookie("JSESSIONID") {
+        session_cookie.value().to_string()
     } else {
-        session_cookie.unwrap().value().to_string()
+        return Ok(Response::new_error(403, "No JSESSIONID provided".to_string()).into());
     };
 
     let pot_user: Option<User> = User::get_from_id(

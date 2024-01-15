@@ -3,14 +3,19 @@ import PlanLayout from "../layouts/PlanLayout.astro";
 import PlanContainer from "../components/PlanContainer";
 import { checkSessionIdAstro } from "../api/frontmatter";
 const id: string | undefined = Astro.cookies.get("id").value;
+Astro.response.headers.append("Service-Worker-Allowed", "/");
+
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
 if (id) {
   try {
     let result = await checkSessionIdAstro(id);
   } catch (error) {
+    console.log(error);
     return Astro.redirect("/login");
   }
 } else {
+  console.log("no id");
   return Astro.redirect("/login");
 }
 ---

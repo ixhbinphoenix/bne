@@ -33,7 +33,7 @@ pub async fn reset_password_post(
         return Ok(Response::new_error(400, "UUID is not a valid uuid".into()).into());
     }
     if let Err(e) = valid_password(&body.new_password) {
-        return Err(Error::from(e).try_into()?);
+        return Err(Error::from(e).into());
     };
 
     let pot_link = match Link::get_from_id(
