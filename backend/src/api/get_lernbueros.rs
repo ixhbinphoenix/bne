@@ -90,7 +90,7 @@ pub async fn get_lernbueros(
             if let Error::Reqwest(_) = e {
                 return Ok(Response::new_error(400, "You done fucked up".into()).into());
             } else {
-                return Ok(Response::new_error(500, "Untis done fucked up".into()).into());
+                return Ok(Response::new_error(500, "Untis done fucked up ".to_string() + &e.to_string()).into());
             }
         }
     };
