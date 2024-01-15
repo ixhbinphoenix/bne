@@ -8,7 +8,7 @@ pub enum Error {
     CtxFail,
 
     #[error("Fetching from Untis failed")]
-    UntisError,
+    UntisError(String),
 
     #[error(transparent)]
     Surreal(#[from] surrealdb::Error),
