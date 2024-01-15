@@ -89,8 +89,11 @@ pub async fn get_timetable(
         Err(e) => {
             if let Error::Reqwest(_) = e {
                 return Ok(Response::new_error(400, "You done fucked up".into()).into());
-            } else {
-                return Ok(Response::new_error(500, "Untis done fucked up ".to_string() + &e.to_string()).into());
+            } else if let Error::UntisError(body) = e {
+                return Ok(Response::new_error(500, "Untis done fucked up ".to_string() + &body).into());
+            }
+            else {
+                return Ok(Response::new_error(500, "Some mysterious guy done fucked up".into()).into());
             }
         }
     };
@@ -107,7 +110,7 @@ pub async fn get_timetable(
     let timetable = match untis.clone().get_timetable(TimetableParameter::default(untis, from, until)).await {
         Ok(timetable) => timetable,
         Err(err) => {
-            return Ok(Response::from(Error::UntisError(err.to_string())).into());
+            return Ok(Response::new_error(500, "Untis done fucked up ".to_string() + &err.to_string()).into());
         }
     };
     Ok(Response::new_success(TimetableResponse { lessons: timetable }).into())
