@@ -106,8 +106,8 @@ pub async fn get_timetable(
 
     let timetable = match untis.clone().get_timetable(TimetableParameter::default(untis, from, until)).await {
         Ok(timetable) => timetable,
-        Err(_) => {
-            return Ok(Response::from(Error::UntisError).into());
+        Err(err) => {
+            return Ok(Response::from(Error::UntisError(err.to_string())).into());
         }
     };
     Ok(Response::new_success(TimetableResponse { lessons: timetable }).into())

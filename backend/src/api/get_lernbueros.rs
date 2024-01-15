@@ -106,8 +106,8 @@ pub async fn get_lernbueros(
 
     let lernbueros = match untis.clone().get_lernbueros(TimetableParameter::default(untis, from, until)).await {
         Ok(lernbueros) => lernbueros,
-        Err(_) => {
-            return Ok(Response::from(Error::UntisError).into());
+        Err(err) => {
+            return Ok(Response::from(Error::UntisError(err.to_string())).into());
         }
     };
     Ok(Response::new_success(TimetableResponse { lessons: lernbueros }).into())

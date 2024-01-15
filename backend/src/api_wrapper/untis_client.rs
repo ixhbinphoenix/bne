@@ -40,7 +40,7 @@ impl UntisClient {
         let response = self
             .client
             .post(format!("https://{}.webuntis.com/WebUntis/jsonrpc.do?school={}", self.subdomain, self.school))
-            .body(serde_json::to_string(&body).map_err(|err| Error::UntisError(err.to_string())("Error parsing request Body".into()))?)
+            .body(serde_json::to_string(&body).map_err(|_| Error::UntisError("Error parsing request Body (43)".into()))?)
             .header("Cookie", "JSESSIONID=".to_owned() + &self.jsessionid)
             .send()
             .await
@@ -66,8 +66,8 @@ impl UntisClient {
             db,
         };
 
-        untis_client.login(user, password).await.map_err(|err| Error::UntisError(err.to_string()))?;
-        untis_client.ids = untis_client.get_ids().await.map_err(|err| Error::UntisError(err.to_string()))?;
+        untis_client.login(user, password).await.map_err(|err| Error::UntisError(err.to_string() + " 69".into()))?;
+        untis_client.ids = untis_client.get_ids().await.map_err(|err| Error::UntisError(err.to_string() + " 70".into()))?;
 
         Ok(untis_client)
     }
@@ -115,25 +115,25 @@ impl UntisClient {
     }
 
     async fn get_ids(&mut self) -> Result<HashMap<String, u16>, Error> {
-        let klassen: Vec<Klasse> = self.get_klassen().await.map_err(|err| Error::UntisError(err.to_string()))?;
+        let klassen: Vec<Klasse> = self.get_klassen().await.map_err(|err| Error::UntisError(err.to_string() + " 118".into()))?;
 
         let ef_id = klassen
             .clone()
             .into_iter()
             .find(|klasse| klasse.name == "EF")
             .ok_or("Couldn't find EF")
-            .map_err(|err| Error::UntisError(err.to_string()))?;
+            .map_err(|err| Error::UntisError(err.to_string() + " 125".into()))?;
         let q1_id = klassen
             .clone()
             .into_iter()
             .find(|klasse| klasse.name == "Q1")
             .ok_or("Couldn't find Q1")
-            .map_err(|err| Error::UntisError(err.to_string()))?;
+            .map_err(|err| Error::UntisError(err.to_string() + " 131".into()))?;
         let q2_id = klassen
             .into_iter()
             .find(|klasse| klasse.name == "Q2")
             .ok_or("Couldn't find Q2")
-            .map_err(|err| Error::UntisError(err.to_string()))?;
+            .map_err(|err| Error::UntisError(err.to_string() + " 136".into()))?;
 
         Ok(HashMap::from([
             ("EF".into(), ef_id.id),
@@ -152,29 +152,29 @@ impl UntisClient {
         let response = self
             .request(utils::Parameter::TimetableParameter(parameter.clone()), "getTimetable".to_string())
             .await
-            .map_err(|err| Error::UntisError(err.to_string()))?;
+            .map_err(|err| Error::UntisError(err.to_string() + " 155".into()))?;
 
-        let text = response.text().await.map_err(|err| Error::UntisError(err.to_string()))?;
-        let json: UntisArrayResponse<PeriodObject> = serde_json::from_str(&text).map_err(|err| Error::UntisError(err.to_string()))?;
+        let text = response.text().await.map_err(|err| Error::UntisError(err.to_string() + " 157".into()))?;
+        let json: UntisArrayResponse<PeriodObject> = serde_json::from_str(&text).map_err(|err| Error::UntisError(err.to_string() + " 158".into()))?;
 
         let mut timetable = json.result;
 
         let mut holidays = self
             .get_period_holidays(
-                parameter.options.start_date.parse::<u32>().map_err(|err| Error::UntisError(err.to_string()))?,
-                parameter.options.end_date.parse::<u32>().map_err(|err| Error::UntisError(err.to_string()))?,
+                parameter.options.start_date.parse::<u32>().map_err(|err| Error::UntisError(err.to_string() + " 164".into()))?,
+                parameter.options.end_date.parse::<u32>().map_err(|err| Error::UntisError(err.to_string() + " 165".into()))?,
             )
             .await
-            .map_err(|err| Error::UntisError(err.to_string()))?;
+            .map_err(|err| Error::UntisError(err.to_string() + " 168".into()))?;
 
         timetable.append(&mut holidays);
 
-        self.format_lessons(timetable, parameter.options.start_date.parse::<u32>().map_err(|err| Error::UntisError(err.to_string()))?)
+        self.format_lessons(timetable, parameter.options.start_date.parse::<u32>().map_err(|err| Error::UntisError(err.to_string() + " 172".into()))?)
             .await
     }
 
     pub async fn get_period_holidays(&self, start_date: u32, end_date: u32) -> Result<Vec<PeriodObject>, Error> {
-        let all_holidays = self.get_holidays().await.map_err(|err| Error::UntisError(err.to_string()))?;
+        let all_holidays = self.get_holidays().await.map_err(|err| Error::UntisError(err.to_string() + " 172".into()))?;
 
         let holidays = all_holidays.iter().filter(|&holiday| {
             holiday.start_date <= i64::from(start_date) && holiday.end_date >= i64::from(start_date)
@@ -184,28 +184,28 @@ impl UntisClient {
         let mut period_holidays: Vec<PeriodObject> = vec![];
 
         for holiday in holidays {
-            let start = NaiveDate::parse_from_str(&start_date.to_string(), "%Y%m%d").map_err(|err| Error::UntisError(err.to_string()))?;
-            let end = NaiveDate::parse_from_str(&end_date.to_string(), "%Y%m%d").map_err(|err| Error::UntisError(err.to_string()))?;
+            let start = NaiveDate::parse_from_str(&start_date.to_string(), "%Y%m%d").map_err(|err| Error::UntisError(err.to_string() + " 187".into()))?;
+            let end = NaiveDate::parse_from_str(&end_date.to_string(), "%Y%m%d").map_err(|err| Error::UntisError(err.to_string() + " 188".into()))?;
 
             let length = end - start;
 
             for i in 0..=length.num_days() {
                 if let Some(date) = start.checked_add_days(Days::new(i as u64)) {
                     if NaiveDate::parse_from_str(&holiday.start_date.to_string(), "%Y%m%d")
-                        .map_err(|err| Error::UntisError(err.to_string()))?
+                        .map_err(|err| Error::UntisError(err.to_string() + " 195".into()))?
                         > date
                     {
                         continue;
                     }
                     if NaiveDate::parse_from_str(&holiday.end_date.to_string(), "%Y%m%d")
-                        .map_err(|err| Error::UntisError(err.to_string()))?
+                        .map_err(|err| Error::UntisError(err.to_string() + " 201".into()))?
                         < date
                     {
                         break;
                     }
                     period_holidays.push(PeriodObject {
                         id: 1,
-                        date: date.format("%Y%m%d").to_string().parse::<u32>().map_err(|err| Error::UntisError(err.to_string()))?,
+                        date: date.format("%Y%m%d").to_string().parse::<u32>().map_err(|err| Error::UntisError(err.to_string() + " 208".into()))?,
                         start_time: 755,
                         end_time: 1625,
                         kl: vec![],
@@ -255,7 +255,7 @@ impl UntisClient {
         days.push(d.to_owned());
 
         let mut skip: HashMap<u16, u8> = HashMap::new();
-        let timegrid = self.get_timegrid_units().await.map_err(|err| Error::UntisError(err.to_string()))?;
+        let timegrid = self.get_timegrid_units().await.map_err(|err| Error::UntisError(err.to_string() + " 258".into()))?;
 
         for d in days {
             let clone = d.clone();
@@ -272,7 +272,7 @@ impl UntisClient {
                     continue;
                 }
                 let day = day_of_week(lesson.date);
-                let start = timegrid[usize::try_from(day).map_err(|err| Error::UntisError(err.to_string()))?]
+                let start = timegrid[usize::try_from(day).map_err(|err| Error::UntisError(err.to_string() + " 275".into()))?]
                     .time_units
                     .iter()
                     .position(|unit| unit.start_time == lesson.start_time)
@@ -366,7 +366,7 @@ impl UntisClient {
                 let mut formatted_lesson = FormattedLesson {
                     teacher,
                     is_lb: false,
-                    start: u8::try_from(start).map_err(|err| Error::UntisError(err.to_string()))?,
+                    start: u8::try_from(start).map_err(|err| Error::UntisError(err.to_string() + " 369".into()))?,
                     length: if !lesson.su.is_empty()
                         && d.iter().any(|les| {
                             !les.su.is_empty()
@@ -451,9 +451,9 @@ impl UntisClient {
         let mut all_lbs: Vec<FormattedLesson> = vec![];
         let mut future_lessons = JoinSet::new();
 
-        let ef_id = self.ids.get(&"EF".to_string()).ok_or("Couldn't find field EF").map_err(|err| Error::UntisError(err.to_string()))?;
-        let q1_id = self.ids.get(&"Q1".to_string()).ok_or("Couldn't find field Q1").map_err(|err| Error::UntisError(err.to_string()))?;
-        let q2_id = self.ids.get(&"Q2".to_string()).ok_or("Couldn't find field Q2").map_err(|err| Error::UntisError(err.to_string()))?;
+        let ef_id = self.ids.get(&"EF".to_string()).ok_or("Couldn't find field EF").map_err(|err| Error::UntisError(err.to_string() + " 454".into()))?;
+        let q1_id = self.ids.get(&"Q1".to_string()).ok_or("Couldn't find field Q1").map_err(|err| Error::UntisError(err.to_string() + " 455".into()))?;
+        let q2_id = self.ids.get(&"Q2".to_string()).ok_or("Couldn't find field Q2").map_err(|err| Error::UntisError(err.to_string() + " 456".into()))?;
 
         parameter.options.element.r#type = 1;
 
@@ -475,7 +475,7 @@ impl UntisClient {
         let mut lessons: Vec<Vec<FormattedLesson>> = vec![];
 
         while let Some(res) = future_lessons.join_next().await {
-            lessons.push(res.map_err(|err| Error::UntisError(err.to_string()))?.map_err(|err| Error::UntisError(err.to_string()))?)
+            lessons.push(res.map_err(|err| Error::UntisError(err.to_string()))?.map_err(|err| Error::UntisError(err.to_string() + " 478".into()))?)
         }
 
         all_lbs.append(
@@ -526,11 +526,11 @@ impl UntisClient {
 
         let holidays = self
             .get_period_holidays(
-                parameter.options.start_date.parse::<u32>().map_err(|err| Error::UntisError(err.to_string()))?,
-                parameter.options.end_date.parse::<u32>().map_err(|err| Error::UntisError(err.to_string()))?,
+                parameter.options.start_date.parse::<u32>().map_err(|err| Error::UntisError(err.to_string() + " 529".into()))?,
+                parameter.options.end_date.parse::<u32>().map_err(|err| Error::UntisError(err.to_string() + " 530".into()))?,
             )
             .await
-            .map_err(|err| Error::UntisError(err.to_string()))?;
+            .map_err(|err| Error::UntisError(err.to_string() + " 533".into()))?;
 
         #[allow(clippy::type_complexity)]
         let mut lbs_per_week: HashMap<String, HashMap<String, Vec<(String, String, Option<Substitution>)>>> =
@@ -562,8 +562,8 @@ impl UntisClient {
         for week_lesson in lbs_per_week {
             let lessons = week_lesson.1;
             let time: Vec<&str> = week_lesson.0.split(';').collect();
-            let day = time[0].parse::<u8>().map_err(|err| Error::UntisError(err.to_string()))?;
-            let start = time[1].parse::<u8>().map_err(|err| Error::UntisError(err.to_string()))?;
+            let day = time[0].parse::<u8>().map_err(|err| Error::UntisError(err.to_string() + " 565".into()))?;
+            let start = time[1].parse::<u8>().map_err(|err| Error::UntisError(err.to_string() + " 566".into()))?;
 
             for lesson in lessons {
                 let mut teachers = "".to_string();
@@ -626,9 +626,9 @@ impl UntisClient {
         }
 
         let mut formatted_holidays = self
-            .format_lessons(holidays, parameter.options.start_date.parse::<u32>().map_err(|err| Error::UntisError(err.to_string()))?)
+            .format_lessons(holidays, parameter.options.start_date.parse::<u32>().map_err(|err| Error::UntisError(err.to_string() + " 629".into()))?)
             .await
-            .map_err(|err| Error::UntisError(err.to_string()))?;
+            .map_err(|err| Error::UntisError(err.to_string() + " 631".into()))?;
 
         every_lb.append(&mut formatted_holidays);
 
@@ -637,20 +637,20 @@ impl UntisClient {
 
     pub async fn get_subjects(&mut self) -> Result<Vec<DetailedSubject>, Error> {
         let response =
-            self.request(utils::Parameter::Null(), "getSubjects".to_string()).await.map_err(|err| Error::UntisError(err.to_string()))?;
+            self.request(utils::Parameter::Null(), "getSubjects".to_string()).await.map_err(|err| Error::UntisError(err.to_string() + " 640".into()))?;
 
-        let text = response.text().await.map_err(|err| Error::UntisError(err.to_string()))?;
-        let json: UntisArrayResponse<DetailedSubject> = serde_json::from_str(&text).map_err(|err| Error::UntisError(err.to_string()))?;
+        let text = response.text().await.map_err(|err| Error::UntisError(err.to_string() + " 642".into()))?;
+        let json: UntisArrayResponse<DetailedSubject> = serde_json::from_str(&text).map_err(|err| Error::UntisError(err.to_string() + " 643".into()))?;
 
         Ok(json.result)
     }
 
     pub async fn get_klassen(&mut self) -> Result<Vec<Klasse>, Error> {
         let response =
-            self.request(utils::Parameter::Null(), "getKlassen".to_string()).await.map_err(|err| Error::UntisError(err.to_string()))?;
+            self.request(utils::Parameter::Null(), "getKlassen".to_string()).await.map_err(|err| Error::UntisError(err.to_string() + " 650".into()))?;
 
-        let text = response.text().await.map_err(|err| Error::UntisError(err.to_string()))?;
-        let json: UntisArrayResponse<Klasse> = serde_json::from_str(&text).map_err(|err| Error::UntisError(err.to_string()))?;
+        let text = response.text().await.map_err(|err| Error::UntisError(err.to_string() + " 652".into()))?;
+        let json: UntisArrayResponse<Klasse> = serde_json::from_str(&text).map_err(|err| Error::UntisError(err.to_string() + " 653".into()))?;
 
         Ok(json.result)
     }
@@ -659,10 +659,10 @@ impl UntisClient {
         let response = self
             .request(utils::Parameter::Null(), "getSchoolyears".to_string())
             .await
-            .map_err(|err| Error::UntisError(err.to_string()))?;
+            .map_err(|err| Error::UntisError(err.to_string() + " 662".into()))?;
 
-        let text = response.text().await.map_err(|err| Error::UntisError(err.to_string()))?;
-        let json: UntisArrayResponse<Schoolyear> = serde_json::from_str(&text).map_err(|err| Error::UntisError(err.to_string()))?;
+        let text = response.text().await.map_err(|err| Error::UntisError(err.to_string() + " 664".into()))?;
+        let json: UntisArrayResponse<Schoolyear> = serde_json::from_str(&text).map_err(|err| Error::UntisError(err.to_string() + " 665".into()))?;
 
         Ok(json.result)
     }
@@ -671,10 +671,10 @@ impl UntisClient {
         let response = self
             .request(utils::Parameter::Null(), "getCurrentSchoolyear".to_string())
             .await
-            .map_err(|err| Error::UntisError(err.to_string()))?;
+            .map_err(|err| Error::UntisError(err.to_string() + " 674".into()))?;
 
-        let text = response.text().await.map_err(|err| Error::UntisError(err.to_string()))?;
-        let json: UntisArrayResponse<Schoolyear> = serde_json::from_str(&text).map_err(|err| Error::UntisError(err.to_string()))?;
+        let text = response.text().await.map_err(|err| Error::UntisError(err.to_string() + " 676".into()))?;
+        let json: UntisArrayResponse<Schoolyear> = serde_json::from_str(&text).map_err(|err| Error::UntisError(err.to_string() + " 677".into()))?;
         let first = json.result[0].clone();
 
         Ok(first)
@@ -682,10 +682,10 @@ impl UntisClient {
 
     pub async fn get_holidays(&self) -> Result<Vec<Holidays>, Error> {
         let response =
-            self.request(utils::Parameter::Null(), "getHolidays".to_string()).await.map_err(|err| Error::UntisError(err.to_string()))?;
+            self.request(utils::Parameter::Null(), "getHolidays".to_string()).await.map_err(|err| Error::UntisError(err.to_string() + " 685".into()))?;
 
-        let text = response.text().await.map_err(|err| Error::UntisError(err.to_string()))?;
-        let json: UntisArrayResponse<Holidays> = serde_json::from_str(&text).map_err(|err| Error::UntisError(err.to_string()))?;
+        let text = response.text().await.map_err(|err| Error::UntisError(err.to_string() + " 687".into()))?;
+        let json: UntisArrayResponse<Holidays> = serde_json::from_str(&text).map_err(|err| Error::UntisError(err.to_string() + " 688".into()))?;
 
         Ok(json.result)
     }
@@ -694,10 +694,10 @@ impl UntisClient {
         let response = self
             .request(utils::Parameter::Null(), "getTimegridUnits".to_string())
             .await
-            .map_err(|err| Error::UntisError(err.to_string()))?;
+            .map_err(|err| Error::UntisError(err.to_string() + " 697".into()))?;
 
-        let text = response.text().await.map_err(|err| Error::UntisError(err.to_string()))?;
-        let json: UntisArrayResponse<TimegridUnits> = serde_json::from_str(&text).map_err(|err| Error::UntisError(err.to_string()))?;
+        let text = response.text().await.map_err(|err| Error::UntisError(err.to_string() + " 699".into()))?;
+        let json: UntisArrayResponse<TimegridUnits> = serde_json::from_str(&text).map_err(|err| Error::UntisError(err.to_string() + " 700".into()))?;
 
         Ok(json.result)
     }
