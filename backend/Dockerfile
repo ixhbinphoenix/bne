@@ -1,5 +1,5 @@
 FROM rust:slim-bookworm as builder
-RUN apt-get update && apt-get install -y openssl libssl-dev pkg-config gcc
+RUN apt-get update && apt-get install -y openssl libssl-dev pkg-config gcc ca-certificates
 RUN rustup set profile minimal && rustup toolchain install nightly-x86_64-unknown-linux-gnu && rustup default nightly-x86_64-unknown-linux-gnu
 COPY . .
 RUN cargo install --locked --path .
