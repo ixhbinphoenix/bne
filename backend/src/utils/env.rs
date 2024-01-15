@@ -2,7 +2,7 @@ use std::{collections::HashMap, env};
 
 /// Returns HashMap of Enviroment variables
 fn get_envv() -> HashMap<String, String> {
-    env::vars().map(|(key, value)| (key, value)).collect()
+    env::vars().collect()
 }
 
 /// Returns either the value of an enviroment variable or the default provided

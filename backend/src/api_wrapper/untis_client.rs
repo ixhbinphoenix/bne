@@ -271,7 +271,7 @@ impl UntisClient {
                     continue;
                 }
                 let day = day_of_week(lesson.date);
-                let start = timegrid[usize::try_from(day).map_err(|err| Error::UntisError(err.to_string() + " 275"))?]
+                let start = timegrid[usize::from(day)]
                     .time_units
                     .iter()
                     .position(|unit| unit.start_time == lesson.start_time)

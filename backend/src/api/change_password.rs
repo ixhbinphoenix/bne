@@ -57,7 +57,7 @@ pub async fn change_password_post(
     };
 
     if let Err(e) = valid_password(&body.new_password) {
-        return Err(Error::from(e).try_into()?);
+        return Err(Error::from(e).into());
     };
 
     if body.old_password == body.new_password {

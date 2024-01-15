@@ -55,7 +55,7 @@ pub struct GlobalUntisData {
 #[actix_web::main]
 async fn main() -> io::Result<()> {
     dotenv().ok();
-    let envv: HashMap<String, String> = env::vars().map(|(key, value)| (key, value)).collect();
+    let envv: HashMap<String, String> = env::vars().collect();
     if cfg!(debug_assertions) {
         env_logger::init_from_env(env_logger::Env::new().default_filter_or("debug"));
     } else {
