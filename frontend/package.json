@@ -19,7 +19,7 @@
     "astro": "^2.6.4",
     "crypto-js": "^4.1.1",
     "preact": "^10.15.1",
-    "react": "18"
+    "react": "18",
     "@astrojs/vercel": "^3.4.1",
     "@fontsource/inter": "^5.0.2",
     "@rollup/plugin-node-resolve": "^15.2.0",
