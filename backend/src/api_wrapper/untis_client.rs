@@ -43,12 +43,11 @@ impl UntisClient {
             .body(serde_json::to_string(&body).map_err(|_| Error::UntisError("Error parsing request Body (43)".into()))?)
             .header("Cookie", "JSESSIONID=".to_owned() + &self.jsessionid)
             .send()
-            .await
-            .map_err(Error::Reqwest)?;
+            .await;
 
         debug!("{:?}", response);
 
-        Ok(response)
+        Ok(response.map_err(Error::Reqwest)?)
     }
 
     pub async fn init(
