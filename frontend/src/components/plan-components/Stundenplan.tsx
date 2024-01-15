@@ -189,7 +189,8 @@ export default function Stundenplan(): JSX.Element {
               subjectType = lessons[k].subject_short;
             }
             const objectStyle = {
-              backgroundColor: SubjectColor[lessons[k].subject_short]
+              backgroundColor: SubjectColor[lessons[k].subject_short],
+              opacity: 1
             };
             let roomStyle = {
               textDecoration: "none"
@@ -242,9 +243,11 @@ export default function Stundenplan(): JSX.Element {
                 substitutionTeacherStyle = { display: "block" };
               }
               if (lessons[k].substitution?.teacher == "---") {
+                objectStyle.opacity = 0.5;
                 teacherStyle = { textDecoration: "line-through" };
               }
               if (lessons[k].substitution?.cancelled) {
+                objectStyle.opacity = 0.5;
                 roomStyle = { textDecoration: "line-through" };
                 teacherStyle = { textDecoration: "line-through" };
               }
