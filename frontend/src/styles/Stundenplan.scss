@@ -202,7 +202,7 @@
             align-items: center;
             justify-content: space-around;
             background-color: var(--highlight-red);
-            font-size: clamp(25%, 1.5vmin, 30px);
+            font-size: clamp(25%, 3vmin, 20px);
 
             & > h2 {
               text-overflow: ellipsis;
