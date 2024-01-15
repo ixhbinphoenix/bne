@@ -6,10 +6,7 @@ use super::response::Response;
 use crate::{database::sessions::delete_user_sessions, models::model::DBConnection};
 
 pub async fn logout_all_post(id: Option<Identity>, db: web::Data<DBConnection>) -> Result<impl Responder> {
-    if id.is_none() {
-        Ok(web::Json(Response::new_error(403, "Not logged in!".into())))
-    } else {
-        let identity = id.unwrap();
+    if let Some(identity) = id {
         let id = match identity.id() {
             Ok(a) => a,
             Err(e) => {
@@ -19,5 +16,7 @@ pub async fn logout_all_post(id: Option<Identity>, db: web::Data<DBConnection>) 
         };
         delete_user_sessions(db, id).await?;
         Ok(Response::new_success("Logged out on all devices!").into())
-    }
+    } else {
+        Ok(web::Json(Response::new_error(403, "Not logged in!".into())))
+    } 
 }
