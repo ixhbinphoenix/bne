@@ -214,7 +214,7 @@ export default function Lernbueros(): JSX.Element {
   let filterItems;
   const openFilter = () => {
     setFilterStatus(true);
-    if (!sessionStorage.getItem("filterItems")) {
+    if (!localStorage.getItem("filterItems")) {
       filterItems = {
         M: true,
         D: true,
@@ -237,10 +237,10 @@ export default function Lernbueros(): JSX.Element {
         EK: true,
         LI: true
       };
-      sessionStorage.setItem("filterItems", JSON.stringify(filterItems));
+      localStorage.setItem("filterItems", JSON.stringify(filterItems));
       Filter(true, filterItems);
     } else {
-      filterItems = JSON.parse(sessionStorage.getItem("filterItems")!);
+      filterItems = JSON.parse(localStorage.getItem("filterItems")!);
       Filter(true, filterItems);
     }
   };
@@ -250,7 +250,7 @@ export default function Lernbueros(): JSX.Element {
     rerender();
   };
   const changeFilter = (filterItems: any) => {
-    sessionStorage.setItem("filterItems", JSON.stringify(filterItems));
+    localStorage.setItem("filterItems", JSON.stringify(filterItems));
   };
 
   const Filter = (filterStatus: boolean, filterItems?: any) => {
