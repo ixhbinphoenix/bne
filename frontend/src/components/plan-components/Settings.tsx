@@ -12,8 +12,10 @@ import Logout from "./settings-components/Logout";
 import UserData from "./settings-components/UserData";
 import { onSwipe } from "../../api/Touch";
 import { accountIsVerified, resendVerifyEmail } from "../../api/theBackend";
+import { getCommitHash } from "../../api/main";
 
 export default function Settings(): JSX.Element {
+  const [commitHash, setCommitHash] = useState("");
   const [resendMessage, setResendMessage] = useState("Link erneut versenden");
   const [NotVerifiedMessage, setNotVerifiedMessage] = useState({ display: "none" });
   const [TopbarColor, setTopbarColor] = useState({ "background-color": "var(--highlight-blue)" });
@@ -72,6 +74,11 @@ export default function Settings(): JSX.Element {
   const [pageContent, setPageContent] = useState<JSX.Element>(Menu);
   const [username, setUsername] = useState("");
   useEffect(() => {
+    getCommitHash().then(
+      (result) => {
+        setCommitHash(result)
+      }
+    )
     showNotVerifiedMessage();
     const usernameRaw = localStorage.getItem("untis_username");
     const nameParts = usernameRaw?.split("_");
@@ -88,10 +95,11 @@ export default function Settings(): JSX.Element {
   }, [pageContent]);
 
   return (
-    <div class="settings-page">
+    <div class="settings-page" >
       <div id="top-bar" style={TopbarColor}>
         <div id="username">{username}</div>
         {notVerifiedMessageDiv}
+        <p style="position: absolute; font-size: 1vmin; right: 0%; bottom: 0%;">Version: {commitHash}</p>
       </div>
       <button
         class="back-button"
