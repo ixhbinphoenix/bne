@@ -299,7 +299,7 @@ export default function Lernbueros(): JSX.Element {
           flexDirection: "row"
         };
 
-        let filter = sessionStorage.getItem("filterItems");
+        let filter = localStorage.getItem("filterItems");
 
         for (let k: number = 0; k < lessons.length; k++) {
           if (lessons[k].day == i && lessons[k].start - 1 == j && (!filter || JSON.parse(filter)[lessons[k].subject_short])) {
