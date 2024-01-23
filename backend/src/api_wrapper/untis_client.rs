@@ -450,6 +450,7 @@ impl UntisClient {
         let mut all_lbs: Vec<FormattedLesson> = vec![];
         let mut future_lessons = JoinSet::new();
 
+        // Get IDs of EF, Q1, Q2
         let ef_id = self.ids.get(&"EF".to_string()).ok_or("Couldn't find field EF").map_err(|err| Error::UntisError(err.to_string() + " 454"))?;
         let q1_id = self.ids.get(&"Q1".to_string()).ok_or("Couldn't find field Q1").map_err(|err| Error::UntisError(err.to_string() + " 455"))?;
         let q2_id = self.ids.get(&"Q2".to_string()).ok_or("Couldn't find field Q2").map_err(|err| Error::UntisError(err.to_string() + " 456"))?;
@@ -464,6 +465,7 @@ impl UntisClient {
         q1_parameter.options.element.id = q1_id.to_owned();
         q2_parameter.options.element.id = q2_id.to_owned();
 
+        // Fetch timetables of EF, Q1, Q2 in parallel
         let ef_client = Arc::new(self.clone());
         future_lessons.spawn(async move { ef_client.clone().get_timetable(ef_parameter).await });
         let q1_client = Arc::new(self.clone());
@@ -477,6 +479,7 @@ impl UntisClient {
             lessons.push(res.map_err(|err| Error::UntisError(err.to_string()))?.map_err(|err| Error::UntisError(err.to_string() + " 478"))?)
         }
 
+        // Combine lernbueros of EF, Q1, Q2 into a single vec
         all_lbs.append(
             &mut lessons[0].clone().into_iter().filter(|lesson| lesson.is_lb).collect::<Vec<FormattedLesson>>(),
         );
@@ -489,18 +492,18 @@ impl UntisClient {
 
         let mut additional_lbs: Vec<FormattedLesson> = vec![];
 
+        // Add additional subjects the Teacher does lernbueros for, as well as substitution info
         for lb in all_lbs.clone() {
             let mut new_room = "".to_string();
-            if let Some(sub) = lb.clone().substitution {
-                if sub.clone().cancelled {
-                    continue;
-                }
-                if let Some(r) = sub.room {
-                    new_room = r;
+            // Checks for substitution on lesson, and if, sets the new room
+            if let Some(sub) = &lb.substitution {
+                if let Some(r) = &sub.room {
+                    new_room = r.to_string();
                 }
             }
-            let pot_teacher = Teacher::get_from_shortname(self.db.clone(), lb.clone().teacher).await.expect("gg");
+            let pot_teacher = Teacher::get_from_shortname(self.db.clone(), lb.clone().teacher).await.expect("teacher shortname to exist in DB");
             if let Some(teacher) = pot_teacher {
+                // Push a Version of the Lernbuero for every Subject to array
                 for lesson in teacher.lessons {
                     additional_lbs.push(FormattedLesson {
                         teacher: teacher.shortname.clone(),
@@ -532,10 +535,18 @@ impl UntisClient {
             .map_err(|err| Error::UntisError(err.to_string() + " 533"))?;
 
         #[allow(clippy::type_complexity)]
+        // "My code is self-explained" MFs:
+        // Holy shit there's a reason for that type complexity warning
+        // HashMap (for weekdays+lesson) containing a HashMap (for subject) of
+        // a Vec of (Teacher, Room, Option<SubstitutionInfo>)
         let mut lbs_per_week: HashMap<String, HashMap<String, Vec<(String, String, Option<Substitution>)>>> =
             HashMap::new();
 
+        // Structures all LBs into a HashMap
         for lb in all_lbs {
+            // Why tf is this check here? We would save so much computation if we checked this
+            // beforehand
+            // TODOO: Move this check to somewhere more sensible
             if !lb.is_lb {
                 continue;
             };
@@ -544,7 +555,7 @@ impl UntisClient {
                 .and_modify(|lessons| {
                     debug!("4 {:#?}", lessons);
                     lessons
-                        .entry(lb.clone().subject_short)
+                        .entry(lb.subject_short.to_string())
                         .and_modify(|subject| {
                             subject.push((lb.teacher.to_string(), lb.room.to_string(), lb.clone().substitution))
                         })
@@ -552,60 +563,56 @@ impl UntisClient {
                 })
                 .or_insert(HashMap::from([(
                     lb.clone().subject_short,
-                    vec![(lb.teacher.to_string(), lb.room.to_string(), lb.clone().substitution)],
+                    vec![(lb.teacher.to_string(), lb.room.to_string(), lb.substitution)],
                 )]));
         }
 
         let mut every_lb: Vec<FormattedLesson> = vec![];
 
+        // Merges LBs with the same Subject in parallel into a single FormattedLesson
+        //  Lessons in a week
         for week_lesson in lbs_per_week {
-            let lessons = week_lesson.1;
+            // See Type explanation in line 539
+            let lessons = week_lesson.1; // HashMap of subject_short->LB
             let time: Vec<&str> = week_lesson.0.split(';').collect();
             let day = time[0].parse::<u8>().map_err(|err| Error::UntisError(err.to_string() + " 565"))?;
             let start = time[1].parse::<u8>().map_err(|err| Error::UntisError(err.to_string() + " 566"))?;
 
+            // Irritatingly false variable name
+            // subject_short->Vec<LB per Subject individually>
+            // Loops over SUBJECTS???
             for lesson in lessons {
+
                 let mut teachers = "".to_string();
                 let mut sub = "".to_string();
                 let mut rooms = "".to_string();
-                let mut cancelled = false;
+
+                // Loops over LERNBUEROS of a SUBJECT????
                 for subject in lesson.1 {
-                    if teachers.contains(&subject.clone().0)
-                        || (lesson.0 == "IF" && (*"O 2-16NT" != subject.1.clone() && *"H NT" != subject.1.clone()))
-                    {
-                        cancelled = true;
+                    // If, for some reason, the teacher has multiple parallel lernbueros, we don't
+                    // want to count them multiple times
+                    if teachers.contains(&subject.clone().0) {
                         continue;
                     }
-                    if !sub.is_empty() {
+                    // If there's no subject yet, set it
+                    if sub.is_empty() {
+                        sub = subject.0.clone();
+                    } else { // If the subject is already set, we add another "," for seperation
                         teachers += ", ";
                         rooms += ", ";
-                    } else {
-                        sub = subject.0.clone();
                     }
                     let mut new_room = subject.1;
+                    // Checks if there's a room change, and then instead adds that room
                     if let Some(sub) = subject.2 {
-                        if sub.cancelled {
-                            cancelled = true;
-                        }
-                        if let Some(t) = sub.teacher {
-                            if t == *"---" {
-                                cancelled = true;
-                            }
-                        }
                         if let Some(room) = sub.room {
                             new_room = room;
                         }
                     }
-                    if cancelled {
-                        continue;
-                    } else {
-                        teachers += &subject.0;
-                        rooms += &new_room;
-                    }
+                    // Adds the teacher and rooms to the already added ones.
+                    teachers += &subject.0;
+                    rooms += &new_room;
                 }
-                if cancelled {
-                    continue;
-                }
+                // Why does this check exist? This case is non-existent but go for it?
                 if rooms == *"" {
                     continue;
                 } else {
