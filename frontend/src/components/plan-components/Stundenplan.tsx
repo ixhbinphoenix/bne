@@ -176,10 +176,6 @@ export default function Stundenplan(): JSX.Element {
     for (let i: number = 0; i < 5; i++) {
       for (let j: number = 0; j < 10; j++) {
         let lessonElements: Array<JSX.Element> = [];
-        let flexId = j + 1;
-        if (j + (1 % 2) == 0 && j != 10) {
-          flexId = j - 1;
-        }
         let flexStyle;
         let hasDoubleLesson = false;
         for (let k: number = 0; k < lessons.length; k++) {
@@ -404,7 +400,7 @@ export default function Stundenplan(): JSX.Element {
         }
         if (lessonElements.length) {
           tableElements[i].push(
-            <div className="parent-flex" style={flexStyle} id={"lesson-" + flexId}>
+            <div className="parent-flex" style={flexStyle}>
               {lessonElements}
             </div>
           );
