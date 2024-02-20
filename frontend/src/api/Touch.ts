@@ -39,7 +39,7 @@ export function onSwipe(query: string, { direction, renew = false }: Options, ca
     const swipeDuration = new Date().getTime() - touchStartTime;
     const swipeThreshold = 100; // Schwellenwert für die minimale Wischstrecke in Pixeln
     const maxSwipeDuration = 500; // Maximale Dauer der Wischgeste in Millisekunden
-    const verticalThreshold = 100; // Schwellenwert für die maximale vertikale Bewegung in Pixeln
+    const verticalThreshold = 300; // Schwellenwert für die maximale vertikale Bewegung in Pixeln
     const minSwipeSpeed = 0.5; // Minimale Geschwindigkeit der Wischgeste in Pixeln pro Millisekunde
 
     if (

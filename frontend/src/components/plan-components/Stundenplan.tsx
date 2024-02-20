@@ -176,21 +176,25 @@ export default function Stundenplan(): JSX.Element {
     for (let i: number = 0; i < 5; i++) {
       for (let j: number = 0; j < 10; j++) {
         let lessonElements: Array<JSX.Element> = [];
-
-        let flexStyle = {
-          gridRowStart: "1",
-          gridRowEnd: "span 1"
-        };
-
+        let flexStyle;
+        let hasDoubleLesson = false;
         for (let k: number = 0; k < lessons.length; k++) {
-          if (lessons[k].day == i && lessons[k].start - 1 == j) {
+          if (
+            hasDoubleLesson &&
+            lessons[k].day == i &&
+            lessons[k].start - 2 == j &&
+            (lessons[k].start == 2 || lessons[k].start == 4 || lessons[k].start == 6)
+          ) {
             let subjectType = lessons[k].subject;
             if (lessons[k].subject_short != "") {
               subjectType = lessons[k].subject_short;
             }
-            const objectStyle = {
+            let objectStyle = {
               backgroundColor: SubjectColor[lessons[k].subject_short],
-              opacity: 1
+              opacity: 1,
+              height: "50%",
+              alignSelf: "end",
+              borderBottom: "none"
             };
             let roomStyle = {
               textDecoration: "none"
@@ -207,13 +211,23 @@ export default function Stundenplan(): JSX.Element {
             let substitutionTextStyle = {
               display: "none"
             };
-            flexStyle = {
-              gridRowStart: lessons[k].start.toString(),
-              gridRowEnd: "span " + lessons[k].length
-            };
+            if (!flexStyle) {
+              flexStyle = {
+                gridRowStart: lessons[k].start.toString(),
+                gridRowEnd: "span " + lessons[k].length
+              };
+              objectStyle = {
+                backgroundColor: SubjectColor[lessons[k].subject_short],
+                opacity: 1,
+                height: "inhert",
+                alignSelf: "inhert",
+                borderBottom: "inhert"
+              };
+            }
             if (!lessons[k].substitution) {
               lessonElements.push(
-                <div class="lesson"
+                <div
+                  class="lesson"
                   style={objectStyle}
                   onClick={() => {
                     openPopup();
@@ -255,7 +269,109 @@ export default function Stundenplan(): JSX.Element {
                 substitutionTextStyle = { display: "block" };
               }
               lessonElements.push(
-                <div class="lesson"
+                <div
+                  class="lesson"
+                  style={objectStyle}
+                  onClick={() => {
+                    openPopup();
+                    setPopupContent(
+                      <div style={objectStyle}>
+                        <p style={roomStyle}>{lessons[k].room}</p>
+                        <p style={substitutionRoomStyle}>{lessons[k].substitution?.room}</p>
+                        <h2>{subjectType}</h2>
+                        <strong style={substitutionTextStyle}>{lessons[k].substitution?.substitution_text}</strong>
+                        <p style={teacherStyle}>{lessons[k].teacher}</p>
+                        <p style={substitutionTeacherStyle}>{lessons[k].substitution?.teacher}</p>
+                      </div>
+                    );
+                  }}>
+                  <p style={roomStyle}>{lessons[k].room}</p>
+                  <p style={substitutionRoomStyle}>{lessons[k].substitution?.room}</p>
+                  <h2>{subjectType}</h2>
+                  <p style={teacherStyle}>{lessons[k].teacher}</p>
+                  <p style={substitutionTeacherStyle}>{lessons[k].substitution?.teacher}</p>
+                </div>
+              );
+            }
+            lessons.splice(k, 1);
+          } else if (lessons[k].day == i && lessons[k].start - 1 == j) {
+            let subjectType = lessons[k].subject;
+            if (lessons[k].length == 2) hasDoubleLesson = true;
+            if (lessons[k].subject_short != "") {
+              subjectType = lessons[k].subject_short;
+            }
+            const objectStyle = {
+              backgroundColor: SubjectColor[lessons[k].subject_short],
+              opacity: 1
+            };
+            let roomStyle = {
+              textDecoration: "none"
+            };
+            let teacherStyle = {
+              textDecoration: "none"
+            };
+            let substitutionRoomStyle = {
+              display: "none"
+            };
+            let substitutionTeacherStyle = {
+              display: "none"
+            };
+            let substitutionTextStyle = {
+              display: "none"
+            };
+            if (flexStyle?.gridRowEnd != "span 2") {
+              flexStyle = {
+                gridRowStart: lessons[k].start.toString(),
+                gridRowEnd: "span " + lessons[k].length
+              };
+            }
+            if (!lessons[k].substitution) {
+              lessonElements.push(
+                <div
+                  class="lesson"
+                  style={objectStyle}
+                  onClick={() => {
+                    openPopup();
+                    setPopupContent(
+                      <div style={objectStyle}>
+                        <p>{lessons[k].room}</p>
+                        <h2>{subjectType}</h2>
+                        <p>{lessons[k].teacher}</p>
+                      </div>
+                    );
+                  }}>
+                  <p>{lessons[k].room}</p>
+                  <h2>{subjectType}</h2>
+                  <p>{lessons[k].teacher}</p>
+                </div>
+              );
+            } else {
+              if (lessons[k].substitution?.room && lessons[k].substitution?.room != "---") {
+                roomStyle = { textDecoration: "line-through" };
+                substitutionRoomStyle = { display: "block" };
+              }
+              if (lessons[k].substitution?.room == "---") {
+                roomStyle = { textDecoration: "line-through" };
+              }
+              if (lessons[k].substitution?.teacher && lessons[k].substitution?.teacher != "---") {
+                teacherStyle = { textDecoration: "line-through" };
+                substitutionTeacherStyle = { display: "block" };
+              }
+              if (lessons[k].substitution?.teacher == "---") {
+                objectStyle.opacity = 0.5;
+                teacherStyle = { textDecoration: "line-through" };
+              }
+              if (lessons[k].substitution?.cancelled) {
+                objectStyle.opacity = 0.5;
+                roomStyle = { textDecoration: "line-through" };
+                teacherStyle = { textDecoration: "line-through" };
+              }
+              if (lessons[k].substitution?.substitution_text) {
+                substitutionTextStyle = { display: "block" };
+              }
+              lessonElements.push(
+                <div
+                  class="lesson"
                   style={objectStyle}
                   onClick={() => {
                     openPopup();
