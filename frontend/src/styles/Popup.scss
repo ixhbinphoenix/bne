@@ -16,7 +16,7 @@
     height: 35%;
 
     & > div {
-      height: 100%;
+      height: 100% !important;
       width: 100%;
       display: flex;
       flex-direction: column;

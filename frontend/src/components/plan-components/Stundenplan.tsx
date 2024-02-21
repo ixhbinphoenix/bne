@@ -171,7 +171,7 @@ export default function Stundenplan(): JSX.Element {
   const closePopup = () => {
     setPopupStatus(false);
   };
-  const addToDivs = (lessons: TheScheduleObject[]) => {
+  const addToDivs = (lessons: (TheScheduleObject & {skip?: boolean})[]) => {
     tableElements = [[], [], [], [], []];
     for (let i: number = 0; i < 5; i++) {
       for (let j: number = 0; j < 10; j++) {
@@ -181,6 +181,7 @@ export default function Stundenplan(): JSX.Element {
         for (let k: number = 0; k < lessons.length; k++) {
           if (
             hasDoubleLesson &&
+            !lessons[k].skip &&
             lessons[k].day == i &&
             lessons[k].start - 2 == j &&
             (lessons[k].start == 2 || lessons[k].start == 4 || lessons[k].start == 6)
@@ -225,6 +226,7 @@ export default function Stundenplan(): JSX.Element {
               };
             }
             if (!lessons[k].substitution) {
+              console.log(lessons[k], k);
               lessonElements.push(
                 <div
                   class="lesson"
@@ -293,8 +295,8 @@ export default function Stundenplan(): JSX.Element {
                 </div>
               );
             }
-            lessons.splice(k, 1);
-          } else if (lessons[k].day == i && lessons[k].start - 1 == j) {
+            lessons[k].skip = true;
+          } else if (lessons[k].day == i && lessons[k].start - 1 == j && !lessons[k].skip) {
             let subjectType = lessons[k].subject;
             if (lessons[k].length == 2) hasDoubleLesson = true;
             if (lessons[k].subject_short != "") {
