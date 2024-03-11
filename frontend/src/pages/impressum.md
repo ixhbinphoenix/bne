@@ -7,7 +7,7 @@ title: "Impressum"
 
 Herr Sascha Thiel
 
-Beethovenstraße 18
+Beethovenstraße 28
 
 48165 Münster
 
