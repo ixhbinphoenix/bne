@@ -232,7 +232,6 @@ export default function Lernbueros(): JSX.Element {
         N0: true,
         S0: true,
         SW: true,
-        SP: true,
         PA: true,
         EK: true,
         LI: true
@@ -257,6 +256,7 @@ export default function Lernbueros(): JSX.Element {
     if (filterStatus) {
       const FilterItems = [];
       for (const item in SubjectNames) {
+        if (item != "SP") {
         FilterItems.push(
           <label htmlFor={item}>
             {SubjectNames[item]}
@@ -271,7 +271,7 @@ export default function Lernbueros(): JSX.Element {
             />
             <span className="checkbox"></span>
           </label>
-        );
+        );}
       }
       setFilterContent(
         <div class="filter-background">
