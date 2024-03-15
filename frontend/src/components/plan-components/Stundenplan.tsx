@@ -176,7 +176,7 @@ export default function Stundenplan(): JSX.Element {
     for (let i: number = 0; i < 5; i++) {
       for (let j: number = 0; j < 10; j++) {
         let lessonElements: Array<JSX.Element> = [];
-        let flexStyle;
+        let gridStyle;
         let hasDoubleLesson = false;
         for (let k: number = 0; k < lessons.length; k++) {
           if (
@@ -193,8 +193,7 @@ export default function Stundenplan(): JSX.Element {
             let objectStyle = {
               backgroundColor: SubjectColor[lessons[k].subject_short],
               opacity: 1,
-              height: "50%",
-              alignSelf: "end",
+              gridRow: "2 / span 1",
               borderBottom: "none"
             };
             let roomStyle = {
@@ -212,16 +211,15 @@ export default function Stundenplan(): JSX.Element {
             let substitutionTextStyle = {
               display: "none"
             };
-            if (!flexStyle) {
-              flexStyle = {
+            if (!gridStyle) {
+              gridStyle = {
                 gridRowStart: lessons[k].start.toString(),
                 gridRowEnd: "span " + lessons[k].length
               };
               objectStyle = {
                 backgroundColor: SubjectColor[lessons[k].subject_short],
                 opacity: 1,
-                height: "inhert",
-                alignSelf: "inhert",
+                gridRow: "inhert",
                 borderBottom: "inhert"
               };
             }
@@ -304,7 +302,8 @@ export default function Stundenplan(): JSX.Element {
             }
             const objectStyle = {
               backgroundColor: SubjectColor[lessons[k].subject_short],
-              opacity: 1
+              opacity: 1,
+              gridRow: "1 / span " + lessons[k].length
             };
             let roomStyle = {
               textDecoration: "none"
@@ -321,10 +320,11 @@ export default function Stundenplan(): JSX.Element {
             let substitutionTextStyle = {
               display: "none"
             };
-            if (flexStyle?.gridRowEnd != "span 2") {
-              flexStyle = {
+            if (gridStyle?.gridRowEnd != "span 2") {
+              gridStyle = {
                 gridRowStart: lessons[k].start.toString(),
-                gridRowEnd: "span " + lessons[k].length
+                gridRowEnd: "span " + lessons[k].length,
+                gridTemplateRows: `repeat(${lessons[k].length}, 1fr)`
               };
             }
             if (!lessons[k].substitution) {
@@ -400,7 +400,7 @@ export default function Stundenplan(): JSX.Element {
         }
         if (lessonElements.length) {
           tableElements[i].push(
-            <div className="parent-flex" style={flexStyle}>
+            <div className="parent-grid" style={gridStyle}>
               {lessonElements}
             </div>
           );
