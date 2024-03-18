@@ -590,7 +590,7 @@ impl UntisClient {
                 let all_cancelled: bool = lesson.1.iter().all(|x| {
                     if let Some(sub) = &x.2 {
                         sub.cancelled ||
-                        (sub.teacher.as_ref().is_some_and(|x| x == &"---".to_string()) && sub.substitution_text.as_ref().is_some_and(|x| x == &"Vtr. ohne Lehrer".to_string()))
+                        (sub.teacher.as_ref().is_some_and(|x| x == "---") && sub.substitution_text.as_ref().is_some_and(|x| x == "Vtr. ohne Lehrer"))
                     } else {
                         false
                     }
@@ -606,7 +606,7 @@ impl UntisClient {
                     // If not every lesson is "cancelled" and this one is, skip this one
                     if !all_cancelled && subject.2.clone().is_some_and(|x| {
                         x.cancelled ||
-                        (x.teacher.is_some_and(|y| y == "---".to_string()) && x.substitution_text.is_some_and(|y| y == "Vtr. ohne Lehrer".to_string()))
+                        (x.teacher.is_some_and(|y| y == "---") && x.substitution_text.is_some_and(|y| y == "Vtr. ohne Lehrer"))
                     }) {
                         continue;
                     }
