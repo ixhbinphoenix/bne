@@ -587,11 +587,27 @@ impl UntisClient {
                 let mut sub = "".to_string();
                 let mut rooms = "".to_string();
 
+                let all_cancelled: bool = lesson.1.iter().all(|x| {
+                    if let Some(sub) = &x.2 {
+                        sub.cancelled ||
+                        (sub.teacher.as_ref().is_some_and(|x| x == &"---".to_string()) && sub.substitution_text.as_ref().is_some_and(|x| x == &"Vtr. ohne Lehrer".to_string()))
+                    } else {
+                        false
+                    }
+                });
+
                 // Loops over LERNBUEROS of a SUBJECT????
                 for subject in lesson.1 {
                     // If, for some reason, the teacher has multiple parallel lernbueros, we don't
                     // want to count them multiple times
                     if teachers.contains(&subject.clone().0) {
+                        continue;
+                    }
+                    // If not every lesson is "cancelled" and this one is, skip this one
+                    if !all_cancelled && subject.2.clone().is_some_and(|x| {
+                        x.cancelled ||
+                        (x.teacher.is_some_and(|y| y == "---".to_string()) && x.substitution_text.is_some_and(|y| y == "Vtr. ohne Lehrer".to_string()))
+                    }) {
                         continue;
                     }
                     // If there's no subject yet, set it
@@ -625,7 +641,16 @@ impl UntisClient {
                         subject: lesson.0.clone(),
                         subject_short: lesson.0.clone(),
                         room: rooms,
-                        substitution: None,
+                        substitution: if all_cancelled {
+                            Some(Substitution {
+                                teacher: Some("---".to_string()),
+                                room: None,
+                                substitution_text: Some("Vtr. ohne Lehrer".to_string()),
+                                cancelled: false
+                            })
+                        } else {
+                            None
+                        },
                     });
                 }
             }

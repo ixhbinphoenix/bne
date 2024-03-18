@@ -11,12 +11,12 @@ proxy = []
 
 [dependencies]
 actix-identity = "0.6.0"
-actix-session = { version = "0.8.0", features = ["cookie-session"] } 
-actix-web = { version = "4.2.1", features = ["rustls"] }
+actix-session = { version = "0.9.0", features = ["cookie-session"] } 
+actix-web = { version = "4.5.0", features = ["rustls"] }
 rustls = "0.20"
 rustls-pemfile = "1"
 actix-web-lab = "0.18.9"
-actix-session-surrealdb = "0.1.7"
+actix-session-surrealdb = "0.1.8"
 argon2 = "0.4.1"
 async-stream = "0.3.3"
 backend-derive = { version = "0.1.0", path = "backend-derive" }

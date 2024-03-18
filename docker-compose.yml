@@ -14,11 +14,11 @@ services:
       - file:/db-data
 
   backend:
-    build: ./backend/Dockerfile
+    image: ghcr.io/ixhbinphoenix/bne:latest
     env_file: ./backend/docker.env
     restart: unless-stopped # Needed for startup, 1st startup tries connecting to db before it's online
     ports:
-      - 8080:8080
+      - 0.0.0.0:8080:8080
     volumes:
       - ./backend/key.pem:/key.pem
       - ./backend/cert.pem:/cert.pem

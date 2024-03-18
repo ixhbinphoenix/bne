@@ -148,7 +148,7 @@ async fn main() -> io::Result<()> {
             .allowed_origin(if cfg!(debug_assertions) {
                 "http://localhost:3000"
             } else {
-                "https://theschedule.de"
+                "https://localhost:3000"
             })
             .supports_credentials()
             .allow_any_method()
