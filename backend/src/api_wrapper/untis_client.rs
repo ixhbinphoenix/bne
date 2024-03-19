@@ -7,10 +7,10 @@ use log::debug;
 use reqwest::{Client, Response};
 
 use super::utils::{
-    self, day_of_week, DetailedSubject, FormattedLesson, Holidays, Klasse, LoginResults, PeriodObject, Schoolyear, Substitution, TimegridUnits, TimetableParameter, UntisArrayResponse
+    self, day_of_week, DetailedSubject, FormattedFreeRoom, FormattedLesson, Holidays, Klasse, LoginResults, PeriodObject, Schoolyear, Substitution, TimegridUnits, TimetableParameter, UntisArrayResponse
 };
 use crate::{
-    api_wrapper::utils::UntisResponse, models::{model::DBConnection, teacher_model::Teacher}, prelude::Error
+    api_wrapper::utils::UntisResponse, models::{model::DBConnection, teacher_model::Teacher, room_model::Room}, prelude::Error
 };
 
 #[derive(Clone)]
@@ -665,6 +665,83 @@ impl UntisClient {
 
         Ok(every_lb)
     }
+
+    pub async fn get_free_rooms(&self, mut parameter: TimetableParameter) -> Result<Vec<FormattedFreeRoom>, Error> {
+        let mut future_lessons = JoinSet::new();
+
+        // Get IDs of EF, Q1, Q2
+        let ef_id = self.ids.get(&"EF".to_string()).ok_or("Couldn't find field EF").map_err(|err| Error::UntisError(err.to_string() + " 684"))?;
+        let q1_id = self.ids.get(&"Q1".to_string()).ok_or("Couldn't find field Q1").map_err(|err| Error::UntisError(err.to_string() + " 685"))?;
+        let q2_id = self.ids.get(&"Q2".to_string()).ok_or("Couldn't find field Q2").map_err(|err| Error::UntisError(err.to_string() + " 686"))?;
+
+        parameter.options.element.r#type = 1;
+
+        let mut ef_parameter = parameter.clone();
+        let mut q1_parameter = parameter.clone();
+        let mut q2_parameter = parameter.clone();
+
+        ef_parameter.options.element.id = ef_id.to_owned();
+        q1_parameter.options.element.id = q1_id.to_owned();
+        q2_parameter.options.element.id = q2_id.to_owned();
+
+        // Fetch timetables of EF, Q1, Q2 in parallel
+        let ef_client = Arc::new(self.clone());
+        future_lessons.spawn(async move { ef_client.clone().get_timetable(ef_parameter).await });
+        let q1_client = Arc::new(self.clone());
+        future_lessons.spawn(async move { q1_client.clone().get_timetable(q1_parameter).await });
+        let q2_client = Arc::new(self.clone());
+        future_lessons.spawn(async move { q2_client.clone().get_timetable(q2_parameter).await });
+
+        let mut lessons: Vec<Vec<FormattedLesson>> = vec![];
+
+        while let Some(res) = future_lessons.join_next().await {
+            lessons.push(res.map_err(|err| Error::UntisError(err.to_string()))?.map_err(|err| Error::UntisError(err.to_string() + " 698"))?)
+        }
+        let all_rooms = Room::get_rooms(self.db.clone()).await.expect("db to have rooms");
+        //Vec of Days, containing Vec of lessons, containing a Vector of all Rooms
+        let mut all_days: Vec<Vec<Vec<Room>>> = vec![];
+        for _ in 0..5 {
+            let mut day: Vec<Vec<Room>> = vec![];
+            for _ in 0..10 {
+                day.push(all_rooms.clone());
+            }
+            all_days.push(day);
+        }
+        let mut block_room = |lesson: FormattedLesson| {
+            let day = &mut all_days[lesson.day as usize];
+            for n in lesson.start..lesson.start+lesson.length-1 {
+                let current_lesson = &mut day[n as usize];
+                if let Some(substitution) = lesson.substitution.clone() {
+                    if let Some(sub_room) = substitution.room {
+                        current_lesson.retain(|x| *x.name != sub_room)
+                    }
+                    else {
+                        current_lesson.retain(|x| *x.name != lesson.room);
+                    }
+                }
+                else {
+                    current_lesson.retain(|x| *x.name != lesson.room);
+                }
+            }
+        };
+        lessons.into_iter().flatten().for_each(|lesson| {
+            block_room(lesson);
+        });
+        let mut free_rooms: Vec<FormattedFreeRoom> = vec![];
+        for (day_index, day) in all_days.iter().enumerate() {
+            for (lesson_index, lesson) in day.iter().enumerate() {
+                lesson.into_iter().for_each(|free_room| {
+                    free_rooms.push( FormattedFreeRoom {
+                        room: free_room.name.clone(),
+                        day: day_index,
+                        start: lesson_index,
+                        length: 1
+                    })
+                })
+            }
+        }
+        Ok(free_rooms)
+    } 
 
     pub async fn get_subjects(&mut self) -> Result<Vec<DetailedSubject>, Error> {
         let response =

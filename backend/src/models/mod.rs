@@ -3,3 +3,4 @@ pub mod model;
 pub mod sessions_model;
 pub mod teacher_model;
 pub mod user_model;
+pub mod room_model;
