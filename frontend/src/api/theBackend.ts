@@ -6,7 +6,7 @@ class Request {
 
   public static async Post<T>(path: string, data?: object): Promise<T> {
     try {
-      let result = await fetch("https://172.17.0.1:8080/" + path, {
+      let result = await fetch("https://api.theschedule.de/" + path, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -29,7 +29,7 @@ class Request {
   }
   public static async Get<T>(path: string, headers?: HeadersInit): Promise<T> {
     try {
-      let result = await fetch("https://172.17.0.1:8080/" + path, {
+      let result = await fetch("https://api.theschedule.de/" + path, {
         headers,
         method: "GET",
         credentials: "include"
