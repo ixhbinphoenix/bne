@@ -367,6 +367,9 @@ export default function Lernbueros(): JSX.Element {
               if (lessons[k].substitution?.teacher && lessons[k].substitution?.teacher != "---") {
                 teacherStyle = { textDecoration: "line-through" };
                 substitutionTeacherStyle = { display: "block" };
+              }
+              if (lessons[k].substitution?.teacher == "---") {
+                teacherStyle = { textDecoration: "line-through" };
                 objectStyle.opacity = 0.5;
               }
               if (lessons[k].substitution?.cancelled) {
