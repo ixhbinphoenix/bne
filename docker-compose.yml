@@ -22,5 +22,6 @@ services:
     volumes:
       - ./backend/key.pem:/key.pem
       - ./backend/cert.pem:/cert.pem
+      - ./backend/email-templates/:/email-templates
     links:
       - surreal
