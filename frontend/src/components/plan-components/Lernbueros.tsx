@@ -302,14 +302,19 @@ export default function Lernbueros(): JSX.Element {
         let filter = localStorage.getItem("filterItems");
 
         for (let k: number = 0; k < lessons.length; k++) {
-          if (lessons[k].day == i && lessons[k].start - 1 == j && (!filter || JSON.parse(filter)[lessons[k].subject_short])) {
+          if (
+            lessons[k].day == i &&
+            lessons[k].start - 1 == j &&
+            (!filter || JSON.parse(filter)[lessons[k].subject_short])
+          ) {
             let subjectType = lessons[k].subject;
             if (lessons[k].subject_short != "") {
               subjectType = lessons[k].subject_short;
             }
             const objectStyle = {
               backgroundColor: SubjectColor[lessons[k].subject_short],
-              cursor: "pointer"
+              cursor: "pointer",
+              opacity: 1
             };
             let roomStyle = {
               textDecoration: "none"
@@ -365,10 +370,11 @@ export default function Lernbueros(): JSX.Element {
               }
               if (lessons[k].substitution?.teacher == "---") {
                 teacherStyle = { textDecoration: "line-through" };
+                objectStyle.opacity = 0.5;
               }
               if (lessons[k].substitution?.cancelled) {
                 roomStyle = { textDecoration: "line-through" };
-                teacherStyle = { textDecoration: "line-through" };
+                teacherStyle = { textDecoration: "line-through"};
               }
               if (lessons[k].substitution?.substitution_text) {
                 substitutionTextStyle = { display: "block" };
@@ -391,11 +397,8 @@ export default function Lernbueros(): JSX.Element {
                     );
                   }}>
                   <p style={roomStyle}>{lessons[k].room}</p>
-                  <p style={substitutionRoomStyle}>{lessons[k].substitution?.room}</p>
                   <h2>{subjectType}</h2>
-                  <strong style={substitutionTextStyle}>{lessons[k].substitution?.substitution_text}</strong>
                   <p style={teacherStyle}>{lessons[k].teacher}</p>
-                  <p style={substitutionTeacherStyle}>{lessons[k].substitution?.teacher}</p>
                 </div>
               );
             }

@@ -224,7 +224,6 @@ export default function Stundenplan(): JSX.Element {
               };
             }
             if (!lessons[k].substitution) {
-              console.log(lessons[k], k);
               lessonElements.push(
                 <div
                   class="lesson"
