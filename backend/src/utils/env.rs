@@ -20,11 +20,21 @@ pub fn get_env_or(key: &str, default: &str) -> String {
 ///
 /// ## Panics
 /// Panics if the variable does not exist
-pub fn get_env(key: &str) -> String {
+pub fn get_env_unsafe(key: &str) -> String {
     let envv = get_envv();
     if envv.contains_key(key) {
         envv.get(key).unwrap().clone()
     } else {
         panic!("Enviroment variable {0} is not set", key)
+    }
+}
+
+/// Returns the value of an enviroment variable if it exists
+pub fn get_env(key: &str) -> Option<String> {
+    let envv = get_envv();
+    if envv.contains_key(key) {
+        Some(envv.get(key).unwrap().clone())
+    } else {
+        None
     }
 }

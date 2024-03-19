@@ -40,7 +40,7 @@ use rustls_pemfile::{certs, pkcs8_private_keys};
 use surrealdb::{engine::remote::ws::Ws, opt::auth::Root, Surreal};
 
 use crate::{
-    mail::utils::Mailer, models::{links_model::Link, model::CRUD, user_model::User}, utils::env::{get_env, get_env_or}
+    mail::utils::Mailer, models::{links_model::Link, model::CRUD, user_model::User}, utils::env::{get_env_unsafe, get_env_or, get_env}
 };
 
 #[cfg(feature = "proxy")]
@@ -65,6 +65,10 @@ async fn main() -> io::Result<()> {
     let config = load_rustls_config();
 
     info!("Connecting database...");
+
+    let domain = get_env_or("DOMAIN", "localhost:3000");
+
+    let cookie_domain = get_env("COOKIE_DOMAIN");
 
     let db_location = get_env_or("DB_LOCATION", "127.0.0.1:8000");
 
@@ -105,11 +109,11 @@ async fn main() -> io::Result<()> {
 
     info!("Connecting SMTP...");
 
-    let smtp_username = get_env("MAIL_USERNAME");
-    let smtp_password = get_env("MAIL_PASSWORD");
+    let smtp_username = get_env_unsafe("MAIL_USERNAME");
+    let smtp_password = get_env_unsafe("MAIL_PASSWORD");
     let creds = Credentials::new(smtp_username, smtp_password);
 
-    let smtp_server = get_env("MAIL_SERVER");
+    let smtp_server = get_env_unsafe("MAIL_SERVER");
     let mailer: Mailer = AsyncSmtpTransport::<Tokio1Executor>::starttls_relay(&smtp_server)
         .expect("SMTP Server to connect")
         .credentials(creds)
@@ -118,8 +122,8 @@ async fn main() -> io::Result<()> {
 
     info!("SMTP Connected!");
 
-    let school = get_env("UNTIS_SCHOOL");
-    let subdomain = get_env("UNTIS_SUBDOMAIN");
+    let school = get_env_unsafe("UNTIS_SCHOOL");
+    let subdomain = get_env_unsafe("UNTIS_SUBDOMAIN");
 
     let untis_data = GlobalUntisData { school, subdomain };
 
@@ -132,7 +136,7 @@ async fn main() -> io::Result<()> {
     let port = get_env_or("PORT", "8080");
 
     #[cfg(feature = "proxy")]
-    let reverse_proxy = get_env("REVERSE_PROXY").parse::<IpAddr>().unwrap();
+    let reverse_proxy = get_env_unsafe("REVERSE_PROXY").parse::<IpAddr>().unwrap();
 
     HttpServer::new(move || {
         let logger = Logger::default();
@@ -145,11 +149,7 @@ async fn main() -> io::Result<()> {
 
         // This is not ok
         let cors = Cors::default()
-            .allowed_origin(if cfg!(debug_assertions) {
-                "http://localhost:3000"
-            } else {
-                "https://theschedule.de"
-            })
+            .allowed_origin(&domain)
             .supports_credentials()
             .allow_any_method()
             .allow_any_header()
@@ -184,11 +184,7 @@ async fn main() -> io::Result<()> {
                 .cookie_same_site(actix_web::cookie::SameSite::None)
                 .cookie_secure(true)
                 .cookie_http_only(true)
-                .cookie_domain(if cfg!(debug_assertions) {
-                    None
-                } else {
-                    Some("theschedule.de".to_string())
-                })
+                .cookie_domain(cookie_domain.clone())
                 .session_lifecycle(
                     PersistentSession::default()
                         .session_ttl_extension_policy(actix_session::config::TtlExtensionPolicy::OnStateChanges)
