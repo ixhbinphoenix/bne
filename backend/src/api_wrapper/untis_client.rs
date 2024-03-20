@@ -435,7 +435,7 @@ impl UntisClient {
                         None
                     },
                 };
-                formatted_lesson.is_lb = formatted_lesson.length == 1 && !is_exam;
+                formatted_lesson.is_lb = formatted_lesson.length == 1 && !is_exam && !formatted_lesson.room.contains("TH");
                 if formatted_lesson.length > 1 && !lesson.su.is_empty() {
                     skip.insert(lesson.su[0].id, formatted_lesson.length - 1);
                 }
