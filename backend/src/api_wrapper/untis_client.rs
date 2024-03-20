@@ -243,7 +243,7 @@ impl UntisClient {
                 let d = &day;
                 days.push(d.to_owned());
                 let new_date = &l.date;
-                date = new_date.to_owned();
+                new_date.clone_into(&mut date);
                 day = vec![l];
             } else {
                 day.push(l)
@@ -280,9 +280,10 @@ impl UntisClient {
                 let mut subject = "".to_string();
                 let mut subject_short = "".to_string();
 
+                #[allow(clippy::assigning_clones)]
                 if !lesson.su.is_empty() {
-                    subject = lesson.su[0].name.to_owned();
-                    subject_short = lesson.su[0].name.to_owned();
+                    lesson.su[0].name.clone_into(&mut subject);
+                    lesson.su[0].name.clone_into(&mut subject_short);
                     subject_short = subject_short.split(' ').collect::<Vec<&str>>()[0].to_owned();
                 }
 
@@ -300,7 +301,7 @@ impl UntisClient {
                             if lesson.activity_type.is_none() {
                                 match lesson.lstext {
                                     Some(text) => {
-                                        subject = text.clone();
+                                        subject.clone_from(&text);
                                         let mut split: Vec<&str> = text.split_whitespace().collect();
                                         if split.len() >= 2 {
                                             split.remove(0);
@@ -316,8 +317,8 @@ impl UntisClient {
                             } else {
                                 match lesson.lstext {
                                     Some(text) => {
-                                        subject = text.clone();
-                                        subject_short = text.clone();
+                                        subject.clone_from(&text);
+                                        subject_short.clone_from(&text);
                                     }
                                     None => {
                                         subject = "N/A".to_string();
@@ -451,9 +452,9 @@ impl UntisClient {
         let mut future_lessons = JoinSet::new();
 
         // Get IDs of EF, Q1, Q2
-        let ef_id = self.ids.get(&"EF".to_string()).ok_or("Couldn't find field EF").map_err(|err| Error::UntisError(err.to_string() + " 454"))?;
-        let q1_id = self.ids.get(&"Q1".to_string()).ok_or("Couldn't find field Q1").map_err(|err| Error::UntisError(err.to_string() + " 455"))?;
-        let q2_id = self.ids.get(&"Q2".to_string()).ok_or("Couldn't find field Q2").map_err(|err| Error::UntisError(err.to_string() + " 456"))?;
+        let ef_id = self.ids.get("EF").ok_or("Couldn't find field EF").map_err(|err| Error::UntisError(err.to_string() + " 454"))?;
+        let q1_id = self.ids.get("Q1").ok_or("Couldn't find field Q1").map_err(|err| Error::UntisError(err.to_string() + " 455"))?;
+        let q2_id = self.ids.get("Q2").ok_or("Couldn't find field Q2").map_err(|err| Error::UntisError(err.to_string() + " 456"))?;
 
         parameter.options.element.r#type = 1;
 
@@ -461,9 +462,9 @@ impl UntisClient {
         let mut q1_parameter = parameter.clone();
         let mut q2_parameter = parameter.clone();
 
-        ef_parameter.options.element.id = ef_id.to_owned();
-        q1_parameter.options.element.id = q1_id.to_owned();
-        q2_parameter.options.element.id = q2_id.to_owned();
+        ef_id.clone_into(&mut ef_parameter.options.element.id);
+        q1_id.clone_into(&mut q1_parameter.options.element.id);
+        q2_id.clone_into(&mut q2_parameter.options.element.id);
 
         // Fetch timetables of EF, Q1, Q2 in parallel
         let ef_client = Arc::new(self.clone());
@@ -612,7 +613,7 @@ impl UntisClient {
                     }
                     // If there's no subject yet, set it
                     if sub.is_empty() {
-                        sub = subject.0.clone();
+                        sub.clone_from(&subject.0);
                     } else { // If the subject is already set, we add another "," for seperation
                         teachers += ", ";
                         rooms += ", ";
