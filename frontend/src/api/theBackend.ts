@@ -1,5 +1,5 @@
 import { getLocalUntisCredentials, fetchJSessionId, deleteLocalUntisCredentials } from "./untisAPI";
-import { JSESSIONIDCookieString, type TheScheduleObject } from "./main";
+import { FreeRoom, JSESSIONIDCookieString, type TheScheduleObject } from "./main";
 
 class Request {
   //class to handle primitive requests
@@ -117,6 +117,24 @@ export async function getLernbueros(monday: string, friday: string): Promise<The
       body = await Request.Get<{ lessons: TheScheduleObject[] }>("get_lernbueros" + searchQuery);
     }
     return body.lessons;
+  } catch (error) {
+    return Promise.reject(error);
+  }
+}
+export async function getFreeRooms(monday: string, friday: string): Promise<FreeRoom[]> {
+  try {
+    let body: { rooms: FreeRoom[] };
+    const searchQuery = `?from=${monday}&until=${friday}`;
+    const storedJSessionId = document.cookie.match("(^|;)\\s*" + "JSESSIONID" + "\\s*=\\s*([^;]+)")?.pop() || "";
+    const untisCredentials = getLocalUntisCredentials();
+    if (!storedJSessionId && getLocalUntisCredentials()) {
+      const result = await fetchJSessionId(untisCredentials.username, untisCredentials.password);
+      document.cookie = JSESSIONIDCookieString(result.JSessionId);
+      body = await Request.Get<{ rooms: FreeRoom[] }>("get_free_rooms" + searchQuery);
+    } else {
+      body = await Request.Get<{ rooms: FreeRoom[] }>("get_free_rooms" + searchQuery);
+    }
+    return body.rooms;
   } catch (error) {
     return Promise.reject(error);
   }

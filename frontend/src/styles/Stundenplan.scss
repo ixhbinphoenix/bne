@@ -41,7 +41,7 @@
   .table-body {
     display: flex;
     width: 100%;
-    height: calc(100% - var(--spacing-top));
+    height: calc(100% - var(--spacing-top) - 1px);
 
     .table-sidebar-left {
       position: relative;

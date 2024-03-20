@@ -26,7 +26,7 @@ use actix_web::{
     cookie::{time::Duration, Key}, middleware::Logger, web::{self, Data}, App, HttpResponse, HttpServer
 };
 use api::{
-    change_email::change_email_get, change_password::change_password_post, change_untis_data::change_untis_data_post, check_session::check_session_get, delete::delete_post, forgot_password::forgot_password_post, gdpr_data_compliance::gdpr_data_compliance_get, get_lernbueros::get_lernbueros, get_timetable::get_timetable, link::{
+    change_email::change_email_get, change_password::change_password_post, change_untis_data::change_untis_data_post, check_session::check_session_get, delete::delete_post, forgot_password::forgot_password_post, gdpr_data_compliance::gdpr_data_compliance_get, get_lernbueros::get_lernbueros, get_timetable::get_timetable, get_free_rooms::get_free_rooms, link::{
         check_uuid::check_uuid_get, email_change::email_change_post, email_reset::email_reset_post, password::reset_password_post, verify::verify_get
     }, login::login_post, logout::logout_post, logout_all::logout_all_post, register::register_post, resend_mail::resend_mail_get, verified::verified_get
 };
@@ -205,6 +205,7 @@ async fn main() -> io::Result<()> {
             .service(web::resource("/check_session").route(web::get().to(check_session_get)))
             .service(web::resource("/get_timetable").route(web::get().to(get_timetable)))
             .service(web::resource("/get_lernbueros").route(web::get().to(get_lernbueros)))
+            .service(web::resource("/get_free_rooms").route(web::get().to(get_free_rooms)))
             .service(web::resource("/change_email").route(web::get().to(change_email_get)))
             .service(web::resource("/change_password").route(web::post().to(change_password_post)))
             .service(web::resource("/forgot_password").route(web::post().to(forgot_password_post)))

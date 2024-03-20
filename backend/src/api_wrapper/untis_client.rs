@@ -700,31 +700,50 @@ impl UntisClient {
         let all_rooms = Room::get_rooms(self.db.clone()).await.expect("db to have rooms");
         //Vec of Days, containing Vec of lessons, containing a Vector of all Rooms
         let mut all_days: Vec<Vec<Vec<Room>>> = vec![];
-        for _ in 0..5 {
+        for day_index in 0..5 {
             let mut day: Vec<Vec<Room>> = vec![];
-            for _ in 0..10 {
+            for lesson_index in 0..10 {
+                if day_index == 1 && lesson_index >= 7 {
+                    continue;
+                }
                 day.push(all_rooms.clone());
             }
             all_days.push(day);
         }
+
+        debug!("{:?}", all_rooms);
+
         let mut block_room = |lesson: FormattedLesson| {
             let day = &mut all_days[lesson.day as usize];
-            for n in lesson.start..lesson.start+lesson.length-1 {
+            for n in lesson.start-1..=lesson.start-1+lesson.length-1 {
                 let current_lesson = &mut day[n as usize];
                 if let Some(substitution) = lesson.substitution.clone() {
                     if let Some(sub_room) = substitution.room {
-                        current_lesson.retain(|x| *x.name != sub_room)
+                        current_lesson.retain(|x| {
+                            debug!("{:?}", x);
+                            debug!("{:?}", sub_room);
+                            x.name != sub_room
+                        });
                     }
                     else {
-                        current_lesson.retain(|x| *x.name != lesson.room);
+                        current_lesson.retain(|x| {
+                            debug!("{:?}", x);
+                            debug!("{:?}", lesson.room);
+                            x.name != lesson.room
+                        });
                     }
                 }
                 else {
-                    current_lesson.retain(|x| *x.name != lesson.room);
+                    current_lesson.retain(|x| {
+                        debug!("{:?}", x);
+                        debug!("{:?}", lesson.room);
+                        x.name != lesson.room
+                    });
                 }
             }
         };
         lessons.into_iter().flatten().for_each(|lesson| {
+            debug!("rooms ------------------------------------------------------");
             block_room(lesson);
         });
         let mut free_rooms: Vec<FormattedFreeRoom> = vec![];
@@ -734,7 +753,7 @@ impl UntisClient {
                     free_rooms.push( FormattedFreeRoom {
                         room: free_room.name.clone(),
                         day: day_index,
-                        start: lesson_index,
+                        start: lesson_index+1,
                         length: 1
                     })
                 })
