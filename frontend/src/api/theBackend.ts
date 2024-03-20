@@ -17,6 +17,9 @@ class Request {
       if (!result.body) {
         return Promise.reject({ status: 500, message: "Server Connection Failed" });
       }
+      if (result.status == 429) {
+        return Promise.reject(new Error("Too many requests. Try again later"));
+      }
       let stream = await Request.readStream(result.body);
       let body = JSON.parse(stream);
       if (!body.success) {
@@ -34,6 +37,9 @@ class Request {
         method: "GET",
         credentials: "include"
       });
+      if (result.status == 429) {
+        return Promise.reject(new Error("Too many requests. Try again later"));
+      }
       const body = await result.json();
       if (!body.success) {
         return Promise.reject(body.body);
