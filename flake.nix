@@ -9,6 +9,7 @@
   outputs = { self, nixpkgs, flake-utils, fenix }:
     flake-utils.lib.eachDefaultSystem (system: let
       toolchain = fenix.packages.${system}.latest.toolchain;
+      fenixpkgs = fenix.packages.${system};
       pkgs = nixpkgs.legacyPackages.${system};
     in rec {
       devShells.default = pkgs.mkShell {
@@ -17,10 +18,18 @@
           pkgs = import nixpkgs {
             inherit system;
           };
+          rust = fenixpkgs.complete.withComponents [
+            "cargo"
+            "clippy"
+            "rust-src"
+            "rust-analyzer"
+            "rustc"
+            "rustfmt"
+          ];
         in
           with pkgs;
           [
-            rustup
+            rust
             openssl
             pkg-config
             gcc
@@ -29,11 +38,6 @@
           ];
 
         PKG_CONFIG_PATH = "${pkgs.openssl.dev}/lib/pkgconfig";
-
-        shellHook = ''
-          rustup default nightly
-          rustup component add rust-analyzer
-        '';
       };
 
       the-backend-bin = (pkgs.makeRustPlatform {
