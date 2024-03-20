@@ -28,6 +28,7 @@ where
         }
     }
 
+    #[allow(dead_code)]
     async fn create_id(db: ConnectionData, id: Thing, data: D) -> Result<D, Error> {
         let res: Option<D> = db.create(id).content(data).await?;
 
