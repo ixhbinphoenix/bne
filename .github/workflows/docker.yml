@@ -1,6 +1,10 @@
 name: Build docker container
 on:
   push:
+    paths:
+      - backend/**
+      - flake.lock
+      - flake.nix
     branches: [ master ]
   release:
     types: [published]

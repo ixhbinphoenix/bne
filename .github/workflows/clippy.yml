@@ -1,5 +1,10 @@
 name: Clippy check
-on: push
+on:
+  push:
+    paths:
+      - backend/**
+      - flake.lock
+      - flake.nix
 
 env:
   CARGO_TERM_COLOR: always
