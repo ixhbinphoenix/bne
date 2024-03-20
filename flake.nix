@@ -67,6 +67,8 @@
 
         created = "now"; # Fuck binary compatibility
 
+        contents = [ pkgs.cacert ./backend/email-templates/. ];
+
         config = {
           Cmd = [
             "${the-backend-bin}/bin/the-backend"
