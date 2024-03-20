@@ -19,5 +19,7 @@ jobs:
       - uses: DeterminateSystems/flake-checker-action@main
 
       - name: Run clippy
-        run:
+        run: |
+          cd backend
+          nix develop -c cargo clippy 
 
