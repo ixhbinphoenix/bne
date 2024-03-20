@@ -671,9 +671,9 @@ impl UntisClient {
         let mut future_lessons = JoinSet::new();
 
         // Get IDs of EF, Q1, Q2
-        let ef_id = self.ids.get(&"EF".to_string()).ok_or("Couldn't find field EF").map_err(|err| Error::UntisError(err.to_string() + " 684"))?;
-        let q1_id = self.ids.get(&"Q1".to_string()).ok_or("Couldn't find field Q1").map_err(|err| Error::UntisError(err.to_string() + " 685"))?;
-        let q2_id = self.ids.get(&"Q2".to_string()).ok_or("Couldn't find field Q2").map_err(|err| Error::UntisError(err.to_string() + " 686"))?;
+        let ef_id = self.ids.get("EF").ok_or("Couldn't find field EF").map_err(|err| Error::UntisError(err.to_string() + " 684"))?;
+        let q1_id = self.ids.get("Q1").ok_or("Couldn't find field Q1").map_err(|err| Error::UntisError(err.to_string() + " 685"))?;
+        let q2_id = self.ids.get("Q2").ok_or("Couldn't find field Q2").map_err(|err| Error::UntisError(err.to_string() + " 686"))?;
 
         parameter.options.element.r#type = 1;
 
@@ -681,9 +681,9 @@ impl UntisClient {
         let mut q1_parameter = parameter.clone();
         let mut q2_parameter = parameter.clone();
 
-        ef_parameter.options.element.id = ef_id.to_owned();
-        q1_parameter.options.element.id = q1_id.to_owned();
-        q2_parameter.options.element.id = q2_id.to_owned();
+        ef_id.clone_into(&mut ef_parameter.options.element.id);
+        q1_id.clone_into(&mut q1_parameter.options.element.id);
+        q2_id.clone_into(&mut q2_parameter.options.element.id);
 
         // Fetch timetables of EF, Q1, Q2 in parallel
         let ef_client = Arc::new(self.clone());
@@ -750,7 +750,7 @@ impl UntisClient {
         let mut free_rooms: Vec<FormattedFreeRoom> = vec![];
         for (day_index, day) in all_days.iter().enumerate() {
             for (lesson_index, lesson) in day.iter().enumerate() {
-                lesson.into_iter().for_each(|free_room| {
+                lesson.iter().for_each(|free_room| {
                     free_rooms.push( FormattedFreeRoom {
                         room: free_room.name.clone(),
                         day: day_index,
