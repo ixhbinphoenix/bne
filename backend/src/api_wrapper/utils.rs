@@ -262,6 +262,14 @@ where
 //
 
 #[derive(Serialize, Debug, Clone)]
+pub struct FormattedFreeRoom {
+    pub room: String,
+    pub day: usize,
+    pub start: usize,
+    pub length: u8,
+}
+
+#[derive(Serialize, Debug, Clone)]
 pub struct FormattedLesson {
     pub teacher: String,
     pub is_lb: bool,

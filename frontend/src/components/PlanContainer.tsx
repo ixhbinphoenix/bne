@@ -8,7 +8,7 @@ import Loading from "./Loading";
 
 const Stundenplan = lazy(() => import("./plan-components/Stundenplan"));
 const Lernbuero = lazy(() => import("./plan-components/Lernbueros"));
-const Kontakt = lazy(() => import("./plan-components/Kontakt"));
+const FreeRooms = lazy(() => import("./plan-components/FreeRooms"));
 const Settings = lazy(() => import("./plan-components/Settings"));
 
 export default function Sidebar(): JSX.Element {
@@ -53,21 +53,21 @@ export default function Sidebar(): JSX.Element {
           </button>
           <button
             class="sidebar-element"
+            id="freiräume"
+            onClick={() => {
+              setActivePage(<FreeRooms />);
+              highlightButton("freiräume");
+            }}>
+            Freiräume
+          </button>
+          <button
+            class="sidebar-element"
             id="settings"
             onClick={() => {
               setActivePage(<Settings />);
               highlightButton("settings");
             }}>
             Einstellungen
-          </button>
-          <button
-            class="sidebar-element"
-            id="kontakt"
-            onClick={() => {
-              setActivePage(<Kontakt />);
-              highlightButton("kontakt");
-            }}>
-            Kontakt
           </button>
         </div>
         <Suspense fallback={<Loading />}>{activePage}</Suspense>

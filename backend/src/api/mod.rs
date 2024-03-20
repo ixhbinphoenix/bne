@@ -7,6 +7,7 @@ pub mod forgot_password;
 pub mod gdpr_data_compliance;
 pub mod get_lernbueros;
 pub mod get_timetable;
+pub mod get_free_rooms;
 pub mod link;
 pub mod login;
 pub mod logout;

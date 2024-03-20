@@ -95,7 +95,7 @@ export default function Settings(): JSX.Element {
   }, [pageContent]);
 
   return (
-    <div class="settings-page" >
+    <div class="settings-page">
       <div id="top-bar" style={TopbarColor}>
         <div id="username">{username}</div>
         {notVerifiedMessageDiv}
@@ -115,6 +115,9 @@ export default function Settings(): JSX.Element {
         <a href="/datenschutz">Datenschutzerklärung</a>
         <a href="/passwort-vergessen">Passwort vergessen</a>
         <a href="/nutzungsbedingungen">Nutzungsbedingungen</a>
+        <a href="mailto:support@theschedule.de">Support</a>
+        <a href="https://github.com/ixhbinphoenix/bne">Source-Code</a>
+        <a href="https://raw.githubusercontent.com/ixhbinphoenix/bne/master/LICENSE">Lizenz</a>
       </div>
     </div>
   );
