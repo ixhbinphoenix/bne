@@ -102,7 +102,7 @@ pub async fn get_lernbueros(
         Some(until) => until,
         None => format_for_untis(get_this_friday()),
     };
-
+    
     let lernbueros = match untis.clone().get_lernbueros(TimetableParameter::default(untis, from, until)).await {
         Ok(lernbueros) => lernbueros,
         Err(err) => {

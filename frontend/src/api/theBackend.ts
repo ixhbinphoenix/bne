@@ -6,7 +6,7 @@ class Request {
 
   public static async Post<T>(path: string, data?: object): Promise<T> {
     try {
-      let result = await fetch("https://api.theschedule.de/" + path, {
+      let result = await fetch("https://localhost:8080/" + path, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -32,7 +32,7 @@ class Request {
   }
   public static async Get<T>(path: string, headers?: HeadersInit): Promise<T> {
     try {
-      let result = await fetch("https://api.theschedule.de/" + path, {
+      let result = await fetch("https://localhost:8080/" + path, {
         headers,
         method: "GET",
         credentials: "include"
@@ -91,10 +91,14 @@ export async function registerAccount(
     return Promise.reject(error);
   }
 }
-export async function getTimetable(monday: string, friday: string): Promise<TheScheduleObject[]> {
+export async function getTimetable(monday: string, friday: string, className?: string): Promise<TheScheduleObject[]> {
   try {
+    console.log(className)
     let body: { lessons: TheScheduleObject[] };
-    const searchQuery = `?from=${monday}&until=${friday}`;
+    let searchQuery = `?from=${monday}&until=${friday}`;
+    if (className) {
+      searchQuery += `&class_name=${className}`;
+    }
     const storedJSessionId = document.cookie.match("(^|;)\\s*" + "JSESSIONID" + "\\s*=\\s*([^;]+)")?.pop() || "";
     const untisCredentials = getLocalUntisCredentials();
     if (!storedJSessionId && getLocalUntisCredentials()) {
