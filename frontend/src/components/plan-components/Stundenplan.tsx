@@ -18,6 +18,7 @@ import {
 } from "../../api/dateHandling";
 import { onSwipe } from "../../api/Touch";
 import type { ChangeEvent } from "preact/compat";
+import Loading from "../Loading";
 
 export default function Stundenplan(): JSX.Element {
   const [currentWeek, setCurrentWeek] = useState(getMondayAndFridayDates());
@@ -108,7 +109,7 @@ export default function Stundenplan(): JSX.Element {
     setClasses(items);
   };
   const changeClass = (event: ChangeEvent) => {
-    const className = event!.target!.value;
+    const className = event!.target!.value!;
     className != "Mein Stundenplan" ? setActiveClass(className) : setActiveClass(undefined)
 
   };
@@ -454,7 +455,7 @@ export default function Stundenplan(): JSX.Element {
       }
     }
   };
-  const [tableDays, setTableDays] = useState<Array<JSX.Element>>([]);
+  const [tableDays, setTableDays] = useState<Array<JSX.Element>>([<Loading />]);
 
   return (
     <div className="table-layout">

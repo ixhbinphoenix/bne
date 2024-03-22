@@ -17,6 +17,7 @@ import {
   getCurrentLesson
 } from "../../api/dateHandling";
 import { onSwipe } from "../../api/Touch";
+import Loading from "../Loading";
 
 var lb_saves: TheScheduleObject[];
 
@@ -434,7 +435,7 @@ export default function Lernbueros(): JSX.Element {
       }
     }
   };
-  const [tableDays, setTableDays] = useState<Array<JSX.Element>>([]);
+  const [tableDays, setTableDays] = useState<Array<JSX.Element>>([<Loading />]);
   return (
     <div className="table-layout">
       <img

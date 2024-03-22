@@ -1,9 +1,8 @@
 /* @jsxImportSource preact */
 
 import type { FreeRoom } from "../../api/main";
-import { SubjectColor, SubjectNames } from "../../api/main";
-import { fetchJSessionId, getLocalUntisCredentials } from "../../api/untisAPI";
 import { getFreeRooms } from "../../api/theBackend";
+import Loading from "../Loading"
 import Popup from "./Popup";
 import type { JSX } from "preact";
 import "../../styles/Stundenplan.scss";
@@ -214,7 +213,7 @@ export default function FreeRooms(): JSX.Element {
   const closePopup = () => {
     setPopupStatus(false);
   };
-  const [tableDays, setTableDays] = useState<Array<JSX.Element>>([]);
+  const [tableDays, setTableDays] = useState<Array<JSX.Element>>([<Loading />]);
   return (
     <div className="table-layout">
       <div className="table-top">
