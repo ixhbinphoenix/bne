@@ -116,29 +116,11 @@ impl UntisClient {
     async fn get_ids(&mut self) -> Result<HashMap<String, u16>, Error> {
         let klassen: Vec<Klasse> = self.get_klassen().await.map_err(|err| Error::UntisError(err.to_string() + " 118"))?;
 
-        let ef_id = klassen
-            .clone()
-            .into_iter()
-            .find(|klasse| klasse.name == "EF")
-            .ok_or("Couldn't find EF")
-            .map_err(|err| Error::UntisError(err.to_string() + " 125"))?;
-        let q1_id = klassen
-            .clone()
-            .into_iter()
-            .find(|klasse| klasse.name == "Q1")
-            .ok_or("Couldn't find Q1")
-            .map_err(|err| Error::UntisError(err.to_string() + " 131"))?;
-        let q2_id = klassen
-            .into_iter()
-            .find(|klasse| klasse.name == "Q2")
-            .ok_or("Couldn't find Q2")
-            .map_err(|err| Error::UntisError(err.to_string() + " 136"))?;
+        let mut ids: HashMap<String, u16> = HashMap::new();
 
-        Ok(HashMap::from([
-            ("EF".into(), ef_id.id),
-            ("Q1".into(), q1_id.id),
-            ("Q2".into(), q2_id.id),
-        ]))
+        klassen.clone().into_iter().for_each(|klasse|  {ids.insert(klasse.name, klasse.id);});
+
+        Ok(ids)
     }
 
     pub fn logout(&mut self) -> Result<bool, Error> {
@@ -147,7 +129,13 @@ impl UntisClient {
         Ok(true)
     }
 
-    pub async fn get_timetable(&self, parameter: TimetableParameter) -> Result<Vec<FormattedLesson>, Error> {
+    pub async fn get_timetable(&self, mut parameter: TimetableParameter, class_name: Option<String>) -> Result<Vec<FormattedLesson>, Error> {
+        if let Some(name) = class_name {
+            let id = self.ids.get(&name).ok_or(format!("Could not find field {}", name)).map_err(|err| Error::UntisError(err.to_string()))?;
+            id.clone_into(&mut parameter.options.element.id);
+            parameter.options.element.r#type = 1;
+        }
+
         let response = self
             .request(utils::Parameter::TimetableParameter(parameter.clone()), "getTimetable".to_string())
             .await
@@ -447,32 +435,23 @@ impl UntisClient {
         Ok(formatted)
     }
 
-    pub async fn get_lernbueros(&self, mut parameter: TimetableParameter) -> Result<Vec<FormattedLesson>, Error> {
+    pub async fn get_lernbueros(&self, parameter: TimetableParameter) -> Result<Vec<FormattedLesson>, Error> {
         let mut all_lbs: Vec<FormattedLesson> = vec![];
         let mut future_lessons = JoinSet::new();
 
         // Get IDs of EF, Q1, Q2
-        let ef_id = self.ids.get("EF").ok_or("Couldn't find field EF").map_err(|err| Error::UntisError(err.to_string() + " 454"))?;
-        let q1_id = self.ids.get("Q1").ok_or("Couldn't find field Q1").map_err(|err| Error::UntisError(err.to_string() + " 455"))?;
-        let q2_id = self.ids.get("Q2").ok_or("Couldn't find field Q2").map_err(|err| Error::UntisError(err.to_string() + " 456"))?;
 
-        parameter.options.element.r#type = 1;
-
-        let mut ef_parameter = parameter.clone();
-        let mut q1_parameter = parameter.clone();
-        let mut q2_parameter = parameter.clone();
-
-        ef_id.clone_into(&mut ef_parameter.options.element.id);
-        q1_id.clone_into(&mut q1_parameter.options.element.id);
-        q2_id.clone_into(&mut q2_parameter.options.element.id);
+        let ef_parameter = parameter.clone();
+        let q1_parameter = parameter.clone();
+        let q2_parameter = parameter.clone();
 
         // Fetch timetables of EF, Q1, Q2 in parallel
         let ef_client = Arc::new(self.clone());
-        future_lessons.spawn(async move { ef_client.clone().get_timetable(ef_parameter).await });
+        future_lessons.spawn(async move { ef_client.clone().get_timetable(ef_parameter, Some("EF".to_string())).await });
         let q1_client = Arc::new(self.clone());
-        future_lessons.spawn(async move { q1_client.clone().get_timetable(q1_parameter).await });
+        future_lessons.spawn(async move { q1_client.clone().get_timetable(q1_parameter, Some("Q1".to_string())).await });
         let q2_client = Arc::new(self.clone());
-        future_lessons.spawn(async move { q2_client.clone().get_timetable(q2_parameter).await });
+        future_lessons.spawn(async move { q2_client.clone().get_timetable(q2_parameter, Some("Q2".to_string())).await });
 
         let mut lessons: Vec<Vec<FormattedLesson>> = vec![];
 
@@ -667,31 +646,20 @@ impl UntisClient {
         Ok(every_lb)
     }
 
-    pub async fn get_free_rooms(&self, mut parameter: TimetableParameter) -> Result<Vec<FormattedFreeRoom>, Error> {
+    pub async fn get_free_rooms(&self, parameter: TimetableParameter) -> Result<Vec<FormattedFreeRoom>, Error> {
         let mut future_lessons = JoinSet::new();
 
-        // Get IDs of EF, Q1, Q2
-        let ef_id = self.ids.get("EF").ok_or("Couldn't find field EF").map_err(|err| Error::UntisError(err.to_string() + " 684"))?;
-        let q1_id = self.ids.get("Q1").ok_or("Couldn't find field Q1").map_err(|err| Error::UntisError(err.to_string() + " 685"))?;
-        let q2_id = self.ids.get("Q2").ok_or("Couldn't find field Q2").map_err(|err| Error::UntisError(err.to_string() + " 686"))?;
-
-        parameter.options.element.r#type = 1;
-
-        let mut ef_parameter = parameter.clone();
-        let mut q1_parameter = parameter.clone();
-        let mut q2_parameter = parameter.clone();
-
-        ef_id.clone_into(&mut ef_parameter.options.element.id);
-        q1_id.clone_into(&mut q1_parameter.options.element.id);
-        q2_id.clone_into(&mut q2_parameter.options.element.id);
+        let ef_parameter = parameter.clone();
+        let q1_parameter = parameter.clone();
+        let q2_parameter = parameter.clone();
 
         // Fetch timetables of EF, Q1, Q2 in parallel
         let ef_client = Arc::new(self.clone());
-        future_lessons.spawn(async move { ef_client.clone().get_timetable(ef_parameter).await });
+        future_lessons.spawn(async move { ef_client.clone().get_timetable(ef_parameter, Some("EF".to_string())).await });
         let q1_client = Arc::new(self.clone());
-        future_lessons.spawn(async move { q1_client.clone().get_timetable(q1_parameter).await });
+        future_lessons.spawn(async move { q1_client.clone().get_timetable(q1_parameter, Some("Q1".to_string())).await });
         let q2_client = Arc::new(self.clone());
-        future_lessons.spawn(async move { q2_client.clone().get_timetable(q2_parameter).await });
+        future_lessons.spawn(async move { q2_client.clone().get_timetable(q2_parameter, Some("Q2".to_string())).await });
 
         let mut lessons: Vec<Vec<FormattedLesson>> = vec![];
 
@@ -712,7 +680,6 @@ impl UntisClient {
             all_days.push(day);
         }
 
-        debug!("{:?}", all_rooms);
 
         let mut block_room = |lesson: FormattedLesson| {
             let day = &mut all_days[lesson.day as usize];
@@ -721,30 +688,23 @@ impl UntisClient {
                 if let Some(substitution) = lesson.substitution.clone() {
                     if let Some(sub_room) = substitution.room {
                         current_lesson.retain(|x| {
-                            debug!("{:?}", x);
-                            debug!("{:?}", sub_room);
                             x.name != sub_room
                         });
                     }
                     else {
                         current_lesson.retain(|x| {
-                            debug!("{:?}", x);
-                            debug!("{:?}", lesson.room);
                             x.name != lesson.room
                         });
                     }
                 }
                 else {
                     current_lesson.retain(|x| {
-                        debug!("{:?}", x);
-                        debug!("{:?}", lesson.room);
                         x.name != lesson.room
                     });
                 }
             }
         };
         lessons.into_iter().flatten().for_each(|lesson| {
-            debug!("rooms ------------------------------------------------------");
             block_room(lesson);
         });
         let mut free_rooms: Vec<FormattedFreeRoom> = vec![];

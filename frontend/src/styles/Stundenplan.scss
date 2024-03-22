@@ -23,19 +23,45 @@
     position: relative;
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: space-around;
     position: relative;
     left: var(--spacing-left);
     height: var(--spacing-top);
     width: calc(100% - var(--spacing-left));
-
-    & > span {
+    & > div {
+      width: 100%;
+    }
+    span {
       text-align: center;
       width: 20%;
       font-size: clamp(0.55rem, 125%, 1vh);
     }
-    & > span.highlighted {
+    span.highlighted {
       color: var(--highlight-red);
+    }
+
+    & > .select-class {
+      height: 50%;
+      & > form {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        & > select {
+          cursor: pointer;
+          padding-right: 1%;
+          background-color: transparent;
+          border: none;
+          border-bottom: 2px solid;
+          border-image: var(--text-gradient) 1;
+          color: var(--text-color);
+          font-family: "Inter", sans-serif;
+          font-size: clamp(0rem, 100%, 2vh);
+        }
+        & > select option {
+          
+          background-color: #24273a;
+        }
+      }
     }
   }
   .table-body {

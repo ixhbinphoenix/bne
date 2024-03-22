@@ -17,9 +17,13 @@ import {
   getCurrentLesson
 } from "../../api/dateHandling";
 import { onSwipe } from "../../api/Touch";
+import type { ChangeEvent } from "preact/compat";
+import Loading from "../Loading";
 
 export default function Stundenplan(): JSX.Element {
   const [currentWeek, setCurrentWeek] = useState(getMondayAndFridayDates());
+  const [classes, setClasses] = useState<JSX.Element[]>([]);
+  const [activeClass, setActiveClass] = useState();
 
   const highlightDates = (currentMonday: string, currentFriday: string) => {
     const days = document.getElementsByClassName("day");
@@ -39,6 +43,7 @@ export default function Stundenplan(): JSX.Element {
     highlightDates(getMondayAndFridayDates().currentMonday, getMondayAndFridayDates().currentFriday);
 
     setCurrentDates(getWeekDays(currentWeek.currentMonday));
+    addClasses();
     getTimetable(currentWeek.currentMonday, currentWeek.currentFriday).then(
       (lessons) => {
         addToDivs(lessons);
@@ -64,7 +69,50 @@ export default function Stundenplan(): JSX.Element {
     onSwipe(".table-layout", { direction: "left" }, nextWeek);
     onSwipe(".table-layout", { direction: "right" }, previousWeek);
   }, [currentWeek]);
+  useEffect(() => {
+    getTimetable(currentWeek.currentMonday, currentWeek.currentFriday, activeClass).then(
+      (lessons) => {
+        addToDivs(lessons);
+        const tableDaysTemp = [];
+        for (let i: number = 0; i < 5; i++) {
+          tableDaysTemp.push(<div className="table-day">{tableElements[i]}</div>);
+        }
+        setTableDays(tableDaysTemp);
+      },
+      (error) => {
+        console.error(error);
+        setPopupContent(
+          <div>
+            <h1 style="text-align: center;">{error.message}</h1>
+          </div>
+        );
+        openPopup();
+      }
+    );
+  }, [activeClass])
+  const addClasses = () => {
+    const classNames = ["Mein Stundenplan", "EF", "Q1", "Q2"];
+    for (let i = 5; i < 11; i++) {
+      classNames.push(i + "a");
+      classNames.push(i + "b");
+      classNames.push(i + "c");
+      classNames.push(i + "d");
+    }
+    const items = classNames.map((className) => {
+      console.log(className, typeof className);
+      return (
+        <option key={className} value={className}>
+          {className}
+        </option>
+      );
+    });
+    setClasses(items);
+  };
+  const changeClass = (event: ChangeEvent) => {
+    const className = event!.target!.value!;
+    className != "Mein Stundenplan" ? setActiveClass(className) : setActiveClass(undefined)
 
+  };
   const nextWeek = () => {
     closePopup();
     let week = shiftForward(currentWeek.currentMonday, currentWeek.currentFriday);
@@ -171,7 +219,7 @@ export default function Stundenplan(): JSX.Element {
   const closePopup = () => {
     setPopupStatus(false);
   };
-  const addToDivs = (lessons: (TheScheduleObject & {skip?: boolean})[]) => {
+  const addToDivs = (lessons: (TheScheduleObject & { skip?: boolean })[]) => {
     tableElements = [[], [], [], [], []];
     for (let i: number = 0; i < 5; i++) {
       for (let j: number = 0; j < 10; j++) {
@@ -407,35 +455,45 @@ export default function Stundenplan(): JSX.Element {
       }
     }
   };
-  const [tableDays, setTableDays] = useState<Array<JSX.Element>>([]);
+  const [tableDays, setTableDays] = useState<Array<JSX.Element>>([<Loading />]);
+
   return (
     <div className="table-layout">
-      <div className="table-top">
-        <span id="day1" class="day">
-          {currentDates[0]}
-          <br />
-          Mo.
-        </span>
-        <span id="day2" class="day">
-          {currentDates[1]}
-          <br />
-          Di.
-        </span>
-        <span id="day3" class="day">
-          {currentDates[2]}
-          <br />
-          Mi.
-        </span>
-        <span id="day4" class="day">
-          {currentDates[3]}
-          <br />
-          Do.
-        </span>
-        <span id="day5" class="day">
-          {currentDates[4]}
-          <br />
-          Fr.
-        </span>
+      <div className="table-top" style="flex-direction: column; --spacing-top: clamp(45px, 7%, 10vh);">
+        <div className="select-class">
+          <form>
+            <select id="classes" onChange={changeClass}>
+              {classes}
+            </select>
+          </form>
+        </div>
+        <div className="dates" style="display: flex">
+          <span id="day1" class="day">
+            {currentDates[0]}
+            <br />
+            Mo.
+          </span>
+          <span id="day2" class="day">
+            {currentDates[1]}
+            <br />
+            Di.
+          </span>
+          <span id="day3" class="day">
+            {currentDates[2]}
+            <br />
+            Mi.
+          </span>
+          <span id="day4" class="day">
+            {currentDates[3]}
+            <br />
+            Do.
+          </span>
+          <span id="day5" class="day">
+            {currentDates[4]}
+            <br />
+            Fr.
+          </span>
+        </div>
       </div>
       <div className="table-body">
         <div className="table-sidebar-left">

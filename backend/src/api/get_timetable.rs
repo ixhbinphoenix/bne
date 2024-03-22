@@ -21,6 +21,7 @@ struct TimetableResponse {
 pub struct TimetableQuery {
     from: Option<String>,
     until: Option<String>,
+    class_name: Option<String>
 }
 
 pub async fn get_timetable(
@@ -105,8 +106,8 @@ pub async fn get_timetable(
         Some(until) => until,
         None => format_for_untis(get_this_friday()),
     };
-
-    let timetable = match untis.clone().get_timetable(TimetableParameter::default(untis, from, until)).await {
+    let class_name: Option<String> = query.class_name.clone();
+    let timetable = match untis.clone().get_timetable(TimetableParameter::default(untis, from, until), class_name).await {
         Ok(timetable) => timetable,
         Err(err) => {
             return Ok(Response::new_error(500, "Untis done fucked up ".to_string() + &err.to_string()).into());

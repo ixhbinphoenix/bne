@@ -16,7 +16,7 @@ body {
   font-family: Inter, sans-serif;
 }
 .title {
-  height: min(14.5vw, 14.5%);
+  height: min(15vw, 6.5%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -36,7 +36,7 @@ h1 {
 }
 .content {
   display: flex;
-  height: calc(99.5% - min(14.5vw, 14.5%));
+  height: calc(99.5% - min(15vw, 6.5%));
   width: 100%;
 }
 .sidebar {
