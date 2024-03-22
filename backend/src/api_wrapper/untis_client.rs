@@ -132,7 +132,7 @@ impl UntisClient {
     pub async fn get_timetable(&self, mut parameter: TimetableParameter, class_name: Option<String>) -> Result<Vec<FormattedLesson>, Error> {
         if let Some(name) = class_name {
             let id = self.ids.get(&name).ok_or(format!("Could not find field {}", name)).map_err(|err| Error::UntisError(err.to_string()))?;
-            parameter.options.element.id = id.to_owned();
+            id.clone_into(&mut parameter.options.element.id);
             parameter.options.element.r#type = 1;
         }
 
