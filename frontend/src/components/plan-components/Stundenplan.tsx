@@ -495,7 +495,7 @@ export default function Stundenplan(): JSX.Element {
           </span>
         </div>
       </div>
-      <div className="table-body">
+      <div className="table-body" style="--spacing-top: clamp(45px, 7%, 10vh);">
         <div className="table-sidebar-left">
           <span class="lesson" id="lesson1">
             <div>07:55</div>1<div>08:40</div>
