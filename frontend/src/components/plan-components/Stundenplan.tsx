@@ -99,7 +99,6 @@ export default function Stundenplan(): JSX.Element {
       classNames.push(i + "d");
     }
     const items = classNames.map((className) => {
-      console.log(className, typeof className);
       return (
         <option key={className} value={className}>
           {className}
@@ -111,7 +110,6 @@ export default function Stundenplan(): JSX.Element {
   const changeClass = (event: ChangeEvent) => {
     const className = event!.target!.value!;
     className != "Mein Stundenplan" ? setActiveClass(className) : setActiveClass(undefined)
-
   };
   const nextWeek = () => {
     closePopup();
@@ -367,6 +365,13 @@ export default function Stundenplan(): JSX.Element {
             let substitutionTextStyle = {
               display: "none"
             };
+            if (gridStyle?.gridRowEnd != "span 3" && lessons[k].length == 3) {
+              gridStyle = {
+                gridRowStart: lessons[k].start.toString(),
+                gridRowEnd: "span " + lessons[k].length,
+                gridTemplateRows: `repeat(${lessons[k].length}, 1fr)`
+              };
+            }
             if (gridStyle?.gridRowEnd != "span 2") {
               gridStyle = {
                 gridRowStart: lessons[k].start.toString(),
