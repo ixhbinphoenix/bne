@@ -687,9 +687,11 @@ impl UntisClient {
             let mut day: Vec<Vec<Room>> = vec![];
             for lesson_index in 0..10 {
                 if day_index == 1 && lesson_index >= 7 {
-                    continue;
+                    day.push(vec![]);
                 }
-                day.push(all_rooms.clone());
+                else {
+                    day.push(all_rooms.clone());
+                }
             }
             all_days.push(day);
         }

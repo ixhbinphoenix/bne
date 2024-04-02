@@ -109,7 +109,7 @@ export default function Stundenplan(): JSX.Element {
   };
   const changeClass = (event: ChangeEvent) => {
     const className = event!.target!.value!;
-    className != "Mein Stundenplan" ? setActiveClass(className) : setActiveClass(undefined)
+    className != "Mein Stundenplan" ? setActiveClass(className) : setActiveClass(undefined);
   };
   const nextWeek = () => {
     closePopup();
@@ -117,7 +117,7 @@ export default function Stundenplan(): JSX.Element {
     highlightDates(week.currentMonday, week.currentFriday);
     setCurrentDates(getWeekDays(week.currentMonday));
 
-    getTimetable(week.currentMonday, week.currentFriday).then(
+    getTimetable(week.currentMonday, week.currentFriday, activeClass).then(
       (lessons) => {
         addToDivs(lessons);
         const tableDaysTemp = [];
@@ -144,7 +144,7 @@ export default function Stundenplan(): JSX.Element {
     highlightDates(week.currentMonday, week.currentFriday);
     setCurrentDates(getWeekDays(week.currentMonday));
 
-    getTimetable(week.currentMonday, week.currentFriday).then(
+    getTimetable(week.currentMonday, week.currentFriday, activeClass).then(
       (lessons) => {
         addToDivs(lessons);
         const tableDaysTemp = [];
