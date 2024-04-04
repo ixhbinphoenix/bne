@@ -438,7 +438,7 @@ impl UntisClient {
                  //EF Vertiefungskurse
                  !formatted_lesson.subject.contains("VX") &&
                  //Q2 Zusatzkurse
-                 !formatted_lesson.subject.contains("Z");
+                 !formatted_lesson.subject.contains('Z');
                 if formatted_lesson.length > 1 && !lesson.su.is_empty() {
                     skip.insert(lesson.su[0].id, formatted_lesson.length - 1);
                 }
