@@ -7,7 +7,7 @@ import { getTimetable } from "../../api/theBackend";
 import Popup from "./Popup";
 import type { JSX } from "preact";
 import "../../styles/Stundenplan.scss";
-import { useState, useEffect } from "preact/hooks";
+import { useState, useEffect, useRef } from "preact/hooks";
 import {
   getMondayAndFridayDates,
   shiftForward,
@@ -23,7 +23,9 @@ import Loading from "../Loading";
 export default function Stundenplan(): JSX.Element {
   const [currentWeek, setCurrentWeek] = useState(getMondayAndFridayDates());
   const [classes, setClasses] = useState<JSX.Element[]>([]);
-  const [activeClass, setActiveClass] = useState();
+  const [activeClass, setActiveClass] = useState<string | undefined>();
+  const classRef = useRef(activeClass);
+  classRef.current = activeClass
 
   const highlightDates = (currentMonday: string, currentFriday: string) => {
     const days = document.getElementsByClassName("day");
@@ -70,7 +72,7 @@ export default function Stundenplan(): JSX.Element {
     onSwipe(".table-layout", { direction: "right" }, previousWeek);
   }, [currentWeek]);
   useEffect(() => {
-    getTimetable(currentWeek.currentMonday, currentWeek.currentFriday, activeClass).then(
+    getTimetable(currentWeek.currentMonday, currentWeek.currentFriday, classRef.current).then(
       (lessons) => {
         addToDivs(lessons);
         const tableDaysTemp = [];
@@ -99,7 +101,6 @@ export default function Stundenplan(): JSX.Element {
       classNames.push(i + "d");
     }
     const items = classNames.map((className) => {
-      console.log(className, typeof className);
       return (
         <option key={className} value={className}>
           {className}
@@ -109,8 +110,8 @@ export default function Stundenplan(): JSX.Element {
     setClasses(items);
   };
   const changeClass = (event: ChangeEvent) => {
-    const className = event!.target!.value!;
-    className != "Mein Stundenplan" ? setActiveClass(className) : setActiveClass(undefined);
+    const className = (event!.target as HTMLOptionElement)!.value!;
+    className != "Mein Stundenplan" ? setActiveClass(className) : setActiveClass(undefined)
   };
   const nextWeek = () => {
     closePopup();
@@ -118,7 +119,7 @@ export default function Stundenplan(): JSX.Element {
     highlightDates(week.currentMonday, week.currentFriday);
     setCurrentDates(getWeekDays(week.currentMonday));
 
-    getTimetable(week.currentMonday, week.currentFriday, activeClass).then(
+    getTimetable(week.currentMonday, week.currentFriday, classRef.current).then(
       (lessons) => {
         addToDivs(lessons);
         const tableDaysTemp = [];
@@ -145,7 +146,7 @@ export default function Stundenplan(): JSX.Element {
     highlightDates(week.currentMonday, week.currentFriday);
     setCurrentDates(getWeekDays(week.currentMonday));
 
-    getTimetable(week.currentMonday, week.currentFriday, activeClass).then(
+    getTimetable(week.currentMonday, week.currentFriday, classRef.current).then(
       (lessons) => {
         addToDivs(lessons);
         const tableDaysTemp = [];
@@ -366,6 +367,13 @@ export default function Stundenplan(): JSX.Element {
             let substitutionTextStyle = {
               display: "none"
             };
+            if (gridStyle?.gridRowEnd != "span 3" && lessons[k].length == 3) {
+              gridStyle = {
+                gridRowStart: lessons[k].start.toString(),
+                gridRowEnd: "span " + lessons[k].length,
+                gridTemplateRows: `repeat(${lessons[k].length}, 1fr)`
+              };
+            }
             if (gridStyle?.gridRowEnd != "span 2") {
               gridStyle = {
                 gridRowStart: lessons[k].start.toString(),

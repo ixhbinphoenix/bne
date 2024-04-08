@@ -359,16 +359,21 @@ impl UntisClient {
                         && d.iter().any(|les| {
                             !les.su.is_empty()
                                 && les.su[0].id == lesson.su[0].id
+                                //double-lessons
                                 && (les.start_time == lesson.end_time
-                                    || les.start_time == lesson.end_time + 5
-                                    || les.start_time == lesson.end_time + 20) // !! Could break !!
+                                    //double-lessons in 9th and 10th lesson
+                                    || les.start_time == lesson.end_time + 5)
+
+                                    //|| les.start_time == lesson.end_time + 20) // !! Could break !! -> broke!
                         }) {
                         if d.iter().any(|les| {
                             !les.su.is_empty()
                                 && les.su[0].id == lesson.su[0].id
                                 && (les.end_time == lesson.start_time
                                     || les.end_time == lesson.start_time - 5
-                                    || les.start_time == lesson.end_time + 20)
+                                    || les.start_time == lesson.end_time + 20
+                                    //triple-lessons from 8th to 10th lesson
+                                    || les.start_time == lesson.end_time + 90)
                         }) {
                             3
                         } else {
@@ -424,7 +429,16 @@ impl UntisClient {
                         None
                     },
                 };
-                formatted_lesson.is_lb = formatted_lesson.length == 1 && !is_exam && !formatted_lesson.room.contains("TH");
+                formatted_lesson.is_lb = formatted_lesson.length == 1 &&
+                 !is_exam &&
+                 //Sport lessons
+                 !formatted_lesson.room.contains("TH") &&
+                 //goofy lessons from Untis
+                 !formatted_lesson.subject.contains("N/A") &&
+                 //EF Vertiefungskurse
+                 !formatted_lesson.subject.contains("VX") &&
+                 //Q2 Zusatzkurse
+                 !formatted_lesson.subject.contains('Z');
                 if formatted_lesson.length > 1 && !lesson.su.is_empty() {
                     skip.insert(lesson.su[0].id, formatted_lesson.length - 1);
                 }
