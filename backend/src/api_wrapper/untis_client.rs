@@ -1,16 +1,16 @@
-use std::{collections::HashMap, sync::Arc, ops::Add};
+use std::{collections::HashMap, ops::Add, sync::Arc};
 
 use actix_web::web;
 use actix_web_lab::__reexports::tokio::task::JoinSet;
 use chrono::{Days, NaiveDate};
-use log::debug;
+use log::{debug, error};
 use reqwest::{Client, Response};
 
 use super::utils::{
     self, day_of_week, DetailedSubject, FormattedFreeRoom, FormattedLesson, Holidays, Klasse, LoginResults, PeriodObject, Schoolyear, Substitution, TimegridUnits, TimetableParameter, UntisArrayResponse
 };
 use crate::{
-    api_wrapper::utils::UntisResponse, models::{model::DBConnection, teacher_model::Teacher, room_model::Room}, prelude::Error
+    api_wrapper::utils::UntisResponse, models::{manual_lb_model::ManualLB, model::DBConnection, room_model::Room, teacher_model::Teacher}, prelude::Error
 };
 
 #[derive(Clone)]
@@ -433,6 +433,8 @@ impl UntisClient {
                  !is_exam &&
                  //Sport lessons
                  !formatted_lesson.room.contains("TH") &&
+                 //Kunst lessons
+                 !formatted_lesson.room.contains("KU") &&
                  //goofy lessons from Untis
                  !formatted_lesson.subject.contains("N/A") &&
                  //EF Vertiefungskurse
@@ -478,13 +480,13 @@ impl UntisClient {
 
         // Combine lernbueros of EF, Q1, Q2 into a single vec
         all_lbs.append(
-            &mut lessons[0].clone().into_iter().filter(|lesson| lesson.is_lb).collect::<Vec<FormattedLesson>>(),
+            &mut lessons[0].clone().into_iter().filter(|lesson| lesson.is_lb && lesson.subject_short != "S0" && lesson.subject_short != "N0" && lesson.subject_short != "OS").collect::<Vec<FormattedLesson>>(),
+        );
+        all_lbs.append( 
+            &mut lessons[1].clone().into_iter().filter(|lesson| lesson.is_lb && lesson.subject_short != "S0" && lesson.subject_short != "N0" && lesson.subject_short != "OS").collect::<Vec<FormattedLesson>>(),
         );
         all_lbs.append(
-            &mut lessons[1].clone().into_iter().filter(|lesson| lesson.is_lb).collect::<Vec<FormattedLesson>>(),
-        );
-        all_lbs.append(
-            &mut lessons[2].clone().into_iter().filter(|lesson| lesson.is_lb).collect::<Vec<FormattedLesson>>(),
+            &mut lessons[2].clone().into_iter().filter(|lesson| lesson.is_lb && lesson.subject_short != "S0" && lesson.subject_short != "N0" && lesson.subject_short != "OS").collect::<Vec<FormattedLesson>>(),
         );
 
         let mut additional_lbs: Vec<FormattedLesson> = vec![];
@@ -522,6 +524,17 @@ impl UntisClient {
         }
 
         all_lbs = additional_lbs;
+
+        // Load manual lernbueros from DB
+        match self.get_manual_lernbueros().await {
+            Ok(mut a) => {
+                all_lbs.append(&mut a);
+                debug!("Loaded Manual LBs from Database");
+            },
+            Err(e) => {
+                error!("Error loading manual LBs: {e}");
+            },
+        };
 
         let holidays = self
             .get_period_holidays(
@@ -663,12 +676,50 @@ impl UntisClient {
         Ok(every_lb)
     }
 
+    async fn get_manual_lernbueros(&self) -> Result<Vec<FormattedLesson>, Error> {
+
+        // let file = File::open("./test.json").expect("file to exist");
+        // let reader = BufReader::new(file);
+        // let lbs_from_file: Vec<ManualLB> = serde_json::from_reader(reader).expect("json to be parsed");
+        
+        let db_lbs = ManualLB::get_manual_lbs(self.db.clone()).await?;
+
+        let mut lbs: Vec<FormattedLesson> = vec![];
+
+        for lb in db_lbs {
+            let pot_teacher = match Teacher::get_from_shortname(self.db.clone(), lb.clone().teacher).await {
+                Ok(a) => a,
+                Err(e) => {
+                    error!("Error fetching Teacher {} from DB: {}", lb.clone().teacher, e);
+                    continue;
+                },
+            };
+            if let Some(teacher) = pot_teacher {
+                // Push a Version of the Lernbuero for every Subject to array
+                for lesson in teacher.lessons {
+                    lbs.push(FormattedLesson {
+                        teacher: teacher.shortname.clone(),
+                        is_lb: true,
+                        start: lb.clone().start,
+                        length: 1,
+                        day: lb.clone().day,
+                        subject: lesson.to_string(),
+                        subject_short: lesson.to_string(),
+                        room: lb.clone().room,
+                        substitution: None
+                    });
+                }
+            }
+        }
+        Ok(lbs)
+    }
+    
     pub async fn get_free_rooms(&self, parameter: TimetableParameter) -> Result<Vec<FormattedFreeRoom>, Error> {
         let mut future_lessons = JoinSet::new();
 
         let ef_parameter = parameter.clone();
         let q1_parameter = parameter.clone();
-        // let q2_parameter = parameter.clone();
+        let q2_parameter = parameter.clone();
         let lbos_parameter = parameter.clone();
 
         // Fetch timetables of EF, Q1, Q2 in parallel
@@ -676,8 +727,8 @@ impl UntisClient {
         future_lessons.spawn(async move { ef_client.clone().get_timetable(ef_parameter, Some("EF".to_string())).await });
         let q1_client = Arc::new(self.clone());
         future_lessons.spawn(async move { q1_client.clone().get_timetable(q1_parameter, Some("Q1".to_string())).await });
-        // let q2_client = Arc::new(self.clone());
-        // future_lessons.spawn(async move { q2_client.clone().get_timetable(q2_parameter, Some("Q2".to_string())).await });
+        let q2_client = Arc::new(self.clone());
+        future_lessons.spawn(async move { q2_client.clone().get_timetable(q2_parameter, Some("Q2".to_string())).await });
         let lbos_client = Arc::new(self.clone());
         future_lessons.spawn(async move { lbos_client.clone().get_timetable(lbos_parameter, Some("LB_OS".to_string())).await });
 
@@ -686,6 +737,11 @@ impl UntisClient {
         while let Some(res) = future_lessons.join_next().await {
             lessons.push(res.map_err(|err| Error::UntisError(err.to_string()))?.map_err(|err| Error::UntisError(err.to_string() + " 698"))?)
         }
+        //load manual lernbueros from json file
+        let manual_lbs = self.get_manual_lernbueros().await.expect("manual lbs to exist");
+
+        lessons.push(manual_lbs);
+
         let all_rooms = Room::get_rooms(self.db.clone()).await.expect("db to have rooms");
         //Vec of Days, containing Vec of lessons, containing a Vector of all Rooms
         let mut all_days: Vec<Vec<Vec<Room>>> = vec![];
@@ -701,9 +757,15 @@ impl UntisClient {
             }
             all_days.push(day);
         }
-
-
-        let mut block_room = |lesson: FormattedLesson| {
+        /*
+        for day_index in 0..5 {
+            debug!("{:#?}", lessons[0]);
+            if lessons[day_index].is_empty() || &lessons[day_index].len() <= &3 {
+                debug!("empty day");
+                all_days.remove(day_index);
+            }
+        } */
+        let mut block_room = |lesson: &FormattedLesson| {
             let day = &mut all_days[lesson.day as usize];
             for n in lesson.start-1..=lesson.start-1+lesson.length-1 {
                 let current_lesson = &mut day[n as usize];
@@ -726,9 +788,10 @@ impl UntisClient {
                 }
             }
         };
-        lessons.into_iter().flatten().for_each(|lesson| {
-            block_room(lesson);
+        lessons.clone().into_iter().flatten().for_each(|lesson| {
+            block_room(&lesson);
         });
+        
         let mut free_rooms: Vec<FormattedFreeRoom> = vec![];
         for (day_index, day) in all_days.iter().enumerate() {
             for (lesson_index, lesson) in day.iter().enumerate() {

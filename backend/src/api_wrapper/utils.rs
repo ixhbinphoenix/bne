@@ -269,6 +269,14 @@ pub struct FormattedFreeRoom {
     pub length: u8,
 }
 
+// #[derive(Serialize, Deserialize, Debug, Clone)]
+// pub struct ManualLB {
+//     pub teacher: String,
+//     pub room: String,
+//     pub start: u8,
+//     pub day: u8
+// }
+
 #[derive(Serialize, Debug, Clone)]
 pub struct FormattedLesson {
     pub teacher: String,
