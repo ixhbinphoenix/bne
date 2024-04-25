@@ -1,16 +1,16 @@
-use std::{collections::HashMap, fs::File, io::BufReader, ops::Add, sync::Arc};
+use std::{collections::HashMap, ops::Add, sync::Arc};
 
 use actix_web::web;
 use actix_web_lab::__reexports::tokio::task::JoinSet;
 use chrono::{Days, NaiveDate};
-use log::debug;
+use log::{debug, error};
 use reqwest::{Client, Response};
 
 use super::utils::{
-    self, day_of_week, DetailedSubject, FormattedFreeRoom, FormattedLesson, Holidays, Klasse, LoginResults, ManualLB, PeriodObject, Schoolyear, Substitution, TimegridUnits, TimetableParameter, UntisArrayResponse
+    self, day_of_week, DetailedSubject, FormattedFreeRoom, FormattedLesson, Holidays, Klasse, LoginResults, PeriodObject, Schoolyear, Substitution, TimegridUnits, TimetableParameter, UntisArrayResponse
 };
 use crate::{
-    api_wrapper::utils::UntisResponse, models::{model::DBConnection, teacher_model::Teacher, room_model::Room}, prelude::Error
+    api_wrapper::utils::UntisResponse, models::{manual_lb_model::ManualLB, model::DBConnection, room_model::Room, teacher_model::Teacher}, prelude::Error
 };
 
 #[derive(Clone)]
@@ -525,10 +525,16 @@ impl UntisClient {
 
         all_lbs = additional_lbs;
 
-        //load manual lernbueros from json file
-        let mut manual_lbs = self.get_manual_lernbueros().await.expect("manual lbs to exist");
-
-        all_lbs.append(&mut manual_lbs);
+        // Load manual lernbueros from DB
+        match self.get_manual_lernbueros().await {
+            Ok(mut a) => {
+                all_lbs.append(&mut a);
+                debug!("Loaded Manual LBs from Database");
+            },
+            Err(e) => {
+                error!("Error loading manual LBs: {e}");
+            },
+        };
 
         let holidays = self
             .get_period_holidays(
@@ -671,12 +677,23 @@ impl UntisClient {
     }
 
     async fn get_manual_lernbueros(&self) -> Result<Vec<FormattedLesson>, Error> {
-        let file = File::open("./test.json").expect("file to exist");
-        let reader = BufReader::new(file);
-        let lbs_from_file: Vec<ManualLB> = serde_json::from_reader(reader).expect("json to be parsed");
+
+        // let file = File::open("./test.json").expect("file to exist");
+        // let reader = BufReader::new(file);
+        // let lbs_from_file: Vec<ManualLB> = serde_json::from_reader(reader).expect("json to be parsed");
+        
+        let db_lbs = ManualLB::get_manual_lbs(self.db.clone()).await?;
+
         let mut lbs: Vec<FormattedLesson> = vec![];
-        for lb in lbs_from_file {
-            let pot_teacher = Teacher::get_from_shortname(self.db.clone(), lb.clone().teacher).await.expect("teacher shortname to exist in DB");
+
+        for lb in db_lbs {
+            let pot_teacher = match Teacher::get_from_shortname(self.db.clone(), lb.clone().teacher).await {
+                Ok(a) => a,
+                Err(e) => {
+                    error!("Error fetching Teacher {} from DB: {}", lb.clone().teacher, e);
+                    continue;
+                },
+            };
             if let Some(teacher) = pot_teacher {
                 // Push a Version of the Lernbuero for every Subject to array
                 for lesson in teacher.lessons {

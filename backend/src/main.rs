@@ -40,7 +40,7 @@ use rustls_pemfile::{certs, pkcs8_private_keys};
 use surrealdb::{engine::remote::ws::Ws, opt::auth::Root, Surreal};
 
 use crate::{
-    mail::utils::Mailer, models::{links_model::Link, model::CRUD, user_model::User}, utils::env::{get_env_unsafe, get_env_or, get_env}
+    mail::utils::Mailer, models::{links_model::Link, model::CRUD, user_model::User, manual_lb_model::ManualLB}, utils::env::{get_env_unsafe, get_env_or, get_env}
 };
 
 #[cfg(feature = "proxy")]
@@ -94,6 +94,8 @@ async fn main() -> io::Result<()> {
     User::init_table(db.clone()).await.expect("Table initialization to work");
 
     Link::init_table(db.clone()).await.expect("Table initialization to work");
+
+    ManualLB::init_table(db.clone()).await.expect("Table initialization to somehow fail");
 
     let session_db = Surreal::new::<Ws>(db_location).await.expect("DB to connect");
 
