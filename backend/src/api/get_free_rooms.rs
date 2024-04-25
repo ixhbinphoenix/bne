@@ -109,6 +109,5 @@ pub async fn get_free_rooms(
             return Ok(Response::from(Error::UntisError(err.to_string())).into());
         }
     };
-    rooms.clone().into_iter().for_each(|room| debug!("{:?}", room));
     Ok(Response::new_success(TimetableResponse { rooms }).into())
 }

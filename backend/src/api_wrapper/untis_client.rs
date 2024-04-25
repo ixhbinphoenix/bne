@@ -702,7 +702,7 @@ impl UntisClient {
 
         let ef_parameter = parameter.clone();
         let q1_parameter = parameter.clone();
-        // let q2_parameter = parameter.clone();
+        let q2_parameter = parameter.clone();
         let lbos_parameter = parameter.clone();
 
         // Fetch timetables of EF, Q1, Q2 in parallel
@@ -710,8 +710,8 @@ impl UntisClient {
         future_lessons.spawn(async move { ef_client.clone().get_timetable(ef_parameter, Some("EF".to_string())).await });
         let q1_client = Arc::new(self.clone());
         future_lessons.spawn(async move { q1_client.clone().get_timetable(q1_parameter, Some("Q1".to_string())).await });
-        // let q2_client = Arc::new(self.clone());
-        // future_lessons.spawn(async move { q2_client.clone().get_timetable(q2_parameter, Some("Q2".to_string())).await });
+        let q2_client = Arc::new(self.clone());
+        future_lessons.spawn(async move { q2_client.clone().get_timetable(q2_parameter, Some("Q2".to_string())).await });
         let lbos_client = Arc::new(self.clone());
         future_lessons.spawn(async move { lbos_client.clone().get_timetable(lbos_parameter, Some("LB_OS".to_string())).await });
 
@@ -720,6 +720,11 @@ impl UntisClient {
         while let Some(res) = future_lessons.join_next().await {
             lessons.push(res.map_err(|err| Error::UntisError(err.to_string()))?.map_err(|err| Error::UntisError(err.to_string() + " 698"))?)
         }
+        //load manual lernbueros from json file
+        let manual_lbs = self.get_manual_lernbueros().await.expect("manual lbs to exist");
+
+        lessons.push(manual_lbs);
+
         let all_rooms = Room::get_rooms(self.db.clone()).await.expect("db to have rooms");
         //Vec of Days, containing Vec of lessons, containing a Vector of all Rooms
         let mut all_days: Vec<Vec<Vec<Room>>> = vec![];
@@ -735,9 +740,15 @@ impl UntisClient {
             }
             all_days.push(day);
         }
-
-
-        let mut block_room = |lesson: FormattedLesson| {
+        /*
+        for day_index in 0..5 {
+            debug!("{:#?}", lessons[0]);
+            if lessons[day_index].is_empty() || &lessons[day_index].len() <= &3 {
+                debug!("empty day");
+                all_days.remove(day_index);
+            }
+        } */
+        let mut block_room = |lesson: &FormattedLesson| {
             let day = &mut all_days[lesson.day as usize];
             for n in lesson.start-1..=lesson.start-1+lesson.length-1 {
                 let current_lesson = &mut day[n as usize];
@@ -760,9 +771,10 @@ impl UntisClient {
                 }
             }
         };
-        lessons.into_iter().flatten().for_each(|lesson| {
-            block_room(lesson);
+        lessons.clone().into_iter().flatten().for_each(|lesson| {
+            block_room(&lesson);
         });
+        
         let mut free_rooms: Vec<FormattedFreeRoom> = vec![];
         for (day_index, day) in all_days.iter().enumerate() {
             for (lesson_index, lesson) in day.iter().enumerate() {
