@@ -71,7 +71,13 @@
 
         created = "now"; # Fuck binary compatibility
 
-        contents = [ pkgs.cacert ./backend/email-templates/. ];
+        copyToRoot = with pkgs.dockerTools; [
+          usrBinEnv
+          binSh
+          caCertificates
+          pkgs.lsd
+          ./backend/email-templates
+        ];
 
         config = {
           Cmd = [
