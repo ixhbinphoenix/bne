@@ -1,7 +1,7 @@
 /* @jsxImportSource preact */
 
 import type { TheScheduleObject } from "../../api/main";
-import { SubjectColor, SubjectNames } from "../../api/main";
+import { JSESSIONIDCookieString, SubjectColor, SubjectNames } from "../../api/main";
 import { fetchJSessionId, getLocalUntisCredentials } from "../../api/untisAPI";
 import { getTimetable } from "../../api/theBackend";
 import Popup from "./Popup";
@@ -25,7 +25,7 @@ export default function Stundenplan(): JSX.Element {
   const [classes, setClasses] = useState<JSX.Element[]>([]);
   const [activeClass, setActiveClass] = useState<string | undefined>();
   const classRef = useRef(activeClass);
-  classRef.current = activeClass
+  classRef.current = activeClass;
 
   const highlightDates = (currentMonday: string, currentFriday: string) => {
     const days = document.getElementsByClassName("day");
@@ -56,13 +56,41 @@ export default function Stundenplan(): JSX.Element {
         setTableDays(tableDaysTemp);
       },
       (error) => {
-        console.error(error);
-        setPopupContent(
-          <div>
-            <h1 style="text-align: center;">{error.message}</h1>
-          </div>
-        );
-        openPopup();
+        if (error.message == "Untis done fucked up Fetching from Untis failed") {
+          fetchJSessionId(getLocalUntisCredentials().username, getLocalUntisCredentials().password).then((result) => {
+            if (result.JSessionId) {
+              closePopup()
+              document.cookie = JSESSIONIDCookieString(result.JSessionId);
+              getTimetable(currentWeek.currentMonday, currentWeek.currentFriday).then(
+                (lessons) => {
+                  addToDivs(lessons);
+                  const tableDaysTemp = [];
+                  for (let i: number = 0; i < 5; i++) {
+                    tableDaysTemp.push(<div className="table-day">{tableElements[i]}</div>);
+                  }
+                  setTableDays(tableDaysTemp);
+                },
+                (error) => {
+                  console.error(error);
+                  setPopupContent(
+                    <div>
+                      <h1 style="text-align: center;">{error.message}</h1>
+                    </div>
+                  );
+                  openPopup();
+                }
+              );
+            }
+          });
+        } else {
+          console.error(error);
+          setPopupContent(
+            <div>
+              <h1 style="text-align: center;">{error.message}</h1>
+            </div>
+          );
+          openPopup();
+        }
       }
     );
   }, []);
@@ -91,9 +119,9 @@ export default function Stundenplan(): JSX.Element {
         openPopup();
       }
     );
-  }, [activeClass])
+  }, [activeClass]);
   const addClasses = () => {
-    const classNames = ["Mein Stundenplan", "EF", "Q1", "Q2"];
+    const classNames = ["Mein Stundenplan", "EF", "Q1", "Q2", "LB_OS"];
     for (let i = 5; i < 11; i++) {
       classNames.push(i + "a");
       classNames.push(i + "b");
@@ -111,7 +139,7 @@ export default function Stundenplan(): JSX.Element {
   };
   const changeClass = (event: ChangeEvent) => {
     const className = (event!.target as HTMLOptionElement)!.value!;
-    className != "Mein Stundenplan" ? setActiveClass(className) : setActiveClass(undefined)
+    className != "Mein Stundenplan" ? setActiveClass(className) : setActiveClass(undefined);
   };
   const nextWeek = () => {
     closePopup();
@@ -129,13 +157,22 @@ export default function Stundenplan(): JSX.Element {
         setTableDays(tableDaysTemp);
       },
       (error) => {
-        console.error(error);
-        setPopupContent(
-          <div>
-            <h1 style="text-align: center;">{error.message}</h1>
-          </div>
-        );
-        openPopup();
+        if (error.message == "Untis done fucked up Fetching from Untis failed") {
+          fetchJSessionId(getLocalUntisCredentials().username, getLocalUntisCredentials().password).then((result) => {
+            if (result.JSessionId) {
+              document.cookie = JSESSIONIDCookieString(result.JSessionId);
+              nextWeek();
+            }
+          });
+        } else {
+          console.error(error);
+          setPopupContent(
+            <div>
+              <h1 style="text-align: center;">{error.message}</h1>
+            </div>
+          );
+          openPopup();
+        }
       }
     );
     setCurrentWeek(week);
@@ -156,13 +193,22 @@ export default function Stundenplan(): JSX.Element {
         setTableDays(tableDaysTemp);
       },
       (error) => {
-        console.error(error);
-        setPopupContent(
-          <div>
-            <h1 style="text-align: center;">{error.message}</h1>
-          </div>
-        );
-        openPopup();
+        if (error.message == "Untis done fucked up Fetching from Untis failed") {
+          fetchJSessionId(getLocalUntisCredentials().username, getLocalUntisCredentials().password).then((result) => {
+            if (result.JSessionId) {
+              document.cookie = JSESSIONIDCookieString(result.JSessionId)
+              previousWeek();
+            }
+          });
+        } else {
+          console.error(error);
+          setPopupContent(
+            <div>
+              <h1 style="text-align: center;">{error.message}</h1>
+            </div>
+          );
+          openPopup();
+        }
       }
     );
     setCurrentWeek(week);

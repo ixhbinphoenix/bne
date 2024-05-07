@@ -114,7 +114,7 @@ impl UntisClient {
     }
 
     async fn get_ids(&mut self) -> Result<HashMap<String, u16>, Error> {
-        let klassen: Vec<Klasse> = self.get_klassen().await.map_err(|err| Error::UntisError(err.to_string() + " 118"))?;
+        let klassen: Vec<Klasse> = self.get_klassen().await.map_err(|err| Error::UntisError(err.to_string()))?;
 
         let mut ids: HashMap<String, u16> = HashMap::new();
 

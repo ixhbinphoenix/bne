@@ -1,7 +1,7 @@
 /* @jsxImportSource preact */
 
 import type { TheScheduleObject } from "../../api/main";
-import { SubjectColor, SubjectNames } from "../../api/main";
+import { SubjectColor, SubjectNames, JSESSIONIDCookieString } from "../../api/main";
 import { fetchJSessionId, getLocalUntisCredentials } from "../../api/untisAPI";
 import { getLernbueros } from "../../api/theBackend";
 import Popup from "./Popup";
@@ -60,13 +60,41 @@ export default function Lernbueros(): JSX.Element {
         setTableDays(tableDaysTemp);
       },
       (error) => {
-        console.error(error);
-        setPopupContent(
-          <div>
-            <h1 style="text-align: center;">{error.message}</h1>
-          </div>
-        );
-        openPopup();
+        if (error.message == "Untis done fucked up Fetching from Untis failed") {
+          fetchJSessionId(getLocalUntisCredentials().username, getLocalUntisCredentials().password).then((result) => {
+            if (result.JSessionId) {
+              closePopup();
+              document.cookie = JSESSIONIDCookieString(result.JSessionId);
+              getLernbueros(currentWeek.currentMonday, currentWeek.currentFriday).then(
+                (lessons) => {
+                  addToDivs(lessons);
+                  const tableDaysTemp = [];
+                  for (let i: number = 0; i < 5; i++) {
+                    tableDaysTemp.push(<div className="table-day">{tableElements[i]}</div>);
+                  }
+                  setTableDays(tableDaysTemp);
+                },
+                (error) => {
+                  console.error(error);
+                  setPopupContent(
+                    <div>
+                      <h1 style="text-align: center;">{error.message}</h1>
+                    </div>
+                  );
+                  openPopup();
+                }
+              );
+            }
+          });
+        } else {
+          console.error(error);
+          setPopupContent(
+            <div>
+              <h1 style="text-align: center;">{error.message}</h1>
+            </div>
+          );
+          openPopup();
+        }
       }
     );
   }, []);
@@ -107,13 +135,22 @@ export default function Lernbueros(): JSX.Element {
         setTableDays(tableDaysTemp);
       },
       (error) => {
-        console.error(error);
-        setPopupContent(
-          <div>
-            <h1 style="text-align: center;">{error.message}</h1>
-          </div>
-        );
-        openPopup();
+        if (error.message == "Untis done fucked up Fetching from Untis failed") {
+          fetchJSessionId(getLocalUntisCredentials().username, getLocalUntisCredentials().password).then((result) => {
+            if (result.JSessionId) {
+              document.cookie = JSESSIONIDCookieString(result.JSessionId);
+              nextWeek();
+            }
+          });
+        } else {
+          console.error(error);
+          setPopupContent(
+            <div>
+              <h1 style="text-align: center;">{error.message}</h1>
+            </div>
+          );
+          openPopup();
+        }
       }
     );
     sessionStorage.setItem("monday", week.currentMonday);
@@ -136,13 +173,22 @@ export default function Lernbueros(): JSX.Element {
         setTableDays(tableDaysTemp);
       },
       (error) => {
-        console.error(error);
-        setPopupContent(
-          <div>
-            <h1 style="text-align: center;">{error.message}</h1>
-          </div>
-        );
-        openPopup();
+        if (error.message == "Untis done fucked up Fetching from Untis failed") {
+          fetchJSessionId(getLocalUntisCredentials().username, getLocalUntisCredentials().password).then((result) => {
+            if (result.JSessionId) {
+              document.cookie = JSESSIONIDCookieString(result.JSessionId);
+              previousWeek();
+            }
+          });
+        } else {
+          console.error(error);
+          setPopupContent(
+            <div>
+              <h1 style="text-align: center;">{error.message}</h1>
+            </div>
+          );
+          openPopup();
+        }
       }
     );
     sessionStorage.setItem("monday", week.currentMonday);
