@@ -1,6 +1,6 @@
 /* @jsxImportSource preact */
 
-import type { FreeRoom } from "../../api/main";
+import { JSESSIONIDCookieString, type FreeRoom } from "../../api/main";
 import { getFreeRooms } from "../../api/theBackend";
 import Loading from "../Loading"
 import Popup from "./Popup";
@@ -16,6 +16,7 @@ import {
   getCurrentLesson
 } from "../../api/dateHandling";
 import { onSwipe } from "../../api/Touch";
+import { fetchJSessionId, getLocalUntisCredentials } from "../../api/untisAPI";
 
 type Floor = "E" | "1" | "2";
 
@@ -50,13 +51,41 @@ export default function FreeRooms(): JSX.Element {
         setTableDays(tableDaysTemp);
       },
       (error) => {
-        console.error(error);
-        setPopupContent(
-          <div>
-            <h1 style="text-align: center;">{error.message}</h1>
-          </div>
-        );
-        openPopup();
+        if (error.message == "Untis done fucked up Fetching from Untis failed") {
+          fetchJSessionId(getLocalUntisCredentials().username, getLocalUntisCredentials().password).then((result) => {
+            if (result.JSessionId) {
+              closePopup();
+              document.cookie = JSESSIONIDCookieString(result.JSessionId);
+              getFreeRooms(currentWeek.currentMonday, currentWeek.currentFriday).then(
+                (lessons) => {
+                  addToDivs(lessons);
+                  const tableDaysTemp = [];
+                  for (let i: number = 0; i < 5; i++) {
+                    tableDaysTemp.push(<div className="table-day">{tableElements[i]}</div>);
+                  }
+                  setTableDays(tableDaysTemp);
+                },
+                (error) => {
+                  console.error(error);
+                  setPopupContent(
+                    <div>
+                      <h1 style="text-align: center;">{error.message}</h1>
+                    </div>
+                  );
+                  openPopup();
+                }
+              );
+            }
+          });
+        } else {
+          console.error(error);
+          setPopupContent(
+            <div>
+              <h1 style="text-align: center;">{error.message}</h1>
+            </div>
+          );
+          openPopup();
+        }
       }
     );
   }, []);
@@ -82,13 +111,22 @@ export default function FreeRooms(): JSX.Element {
         setTableDays(tableDaysTemp);
       },
       (error) => {
-        console.error(error);
-        setPopupContent(
-          <div>
-            <h1 style="text-align: center;">{error.message}</h1>
-          </div>
-        );
-        openPopup();
+        if (error.message == "Untis done fucked up Fetching from Untis failed") {
+          fetchJSessionId(getLocalUntisCredentials().username, getLocalUntisCredentials().password).then((result) => {
+            if (result.JSessionId) {
+              document.cookie = JSESSIONIDCookieString(result.JSessionId);
+              nextWeek();
+            }
+          });
+        } else {
+          console.error(error);
+          setPopupContent(
+            <div>
+              <h1 style="text-align: center;">{error.message}</h1>
+            </div>
+          );
+          openPopup();
+        }
       }
     );
     setCurrentWeek(week);
@@ -109,13 +147,22 @@ export default function FreeRooms(): JSX.Element {
         setTableDays(tableDaysTemp);
       },
       (error) => {
-        console.error(error);
-        setPopupContent(
-          <div>
-            <h1 style="text-align: center;">{error.message}</h1>
-          </div>
-        );
-        openPopup();
+        if (error.message == "Untis done fucked up Fetching from Untis failed") {
+          fetchJSessionId(getLocalUntisCredentials().username, getLocalUntisCredentials().password).then((result) => {
+            if (result.JSessionId) {
+              document.cookie = JSESSIONIDCookieString(result.JSessionId);
+              previousWeek();
+            }
+          });
+        } else {
+          console.error(error);
+          setPopupContent(
+            <div>
+              <h1 style="text-align: center;">{error.message}</h1>
+            </div>
+          );
+          openPopup();
+        }
       }
     );
     setCurrentWeek(week);
