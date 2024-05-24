@@ -75,19 +75,21 @@ export function getWeekDays(monday: string): string[] {
   return days;
 }
 export function getCurrentDay(currentMonday: string, currentFriday: string): number {
-  const today = new Date();
+  const today = new Date(2024,4,24,16);
   return isBetweenDates(currentMonday, currentFriday, today) ? today.getDay() : 6;
 }
 function isBetweenDates(startDateStr: string, endDateStr: string, todayDate: Date): boolean {
   const startDate = new Date(
     parseInt(startDateStr.slice(0, 4), 10),
     parseInt(startDateStr.slice(4, 6), 10) - 1,
-    parseInt(startDateStr.slice(6, 8), 10)
+    parseInt(startDateStr.slice(6, 8), 10),
+    2
   );
   const endDate = new Date(
     parseInt(endDateStr.slice(0, 4), 10),
     parseInt(endDateStr.slice(4, 6), 10) - 1,
-    parseInt(endDateStr.slice(6, 8), 10)
+    parseInt(endDateStr.slice(6, 8), 10) + 1,
+    2
   );
   return startDate <= todayDate && todayDate <= endDate;
 }
