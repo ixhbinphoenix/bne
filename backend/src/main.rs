@@ -10,7 +10,6 @@ mod models;
 mod prelude;
 mod utils;
 
-use crate::get_timetable_serviceworker::get_timetable_serviceworker;
 use std::{
     collections::HashMap, env, fs, io::{self, BufReader}
 };
@@ -27,7 +26,7 @@ use actix_web::{
     cookie::{time::Duration, Key}, middleware::Logger, web::{self, Data}, App, HttpResponse, HttpServer
 };
 use api::{
-    change_email::change_email_get, change_password::change_password_post, change_untis_data::change_untis_data_post, check_session::check_session_get, delete::delete_post, forgot_password::forgot_password_post, gdpr_data_compliance::gdpr_data_compliance_get, get_lernbueros::get_lernbueros, get_timetable::get_timetable, get_timetable_serviceworker, link::{
+    change_email::change_email_get, get_free_rooms::get_free_rooms, get_timetable_serviceworker::get_timetable_serviceworker, change_password::change_password_post, change_untis_data::change_untis_data_post, check_session::check_session_get, delete::delete_post, forgot_password::forgot_password_post, gdpr_data_compliance::gdpr_data_compliance_get, get_lernbueros::get_lernbueros, get_timetable::get_timetable, link::{
         check_uuid::check_uuid_get, email_change::email_change_post, email_reset::email_reset_post, password::reset_password_post, verify::verify_get
     }, login::login_post, logout::logout_post, logout_all::logout_all_post, register::register_post, resend_mail::resend_mail_get, verified::verified_get
 };
