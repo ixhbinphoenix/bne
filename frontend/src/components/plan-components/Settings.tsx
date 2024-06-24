@@ -13,6 +13,7 @@ import UserData from "./settings-components/UserData";
 import { onSwipe } from "../../api/Touch";
 import { accountIsVerified, resendVerifyEmail } from "../../api/theBackend";
 import { getCommitHash } from "../../api/main";
+import Notifications from "./settings-components/Notifications";
 
 export default function Settings(): JSX.Element {
   const [commitHash, setCommitHash] = useState("");
@@ -67,6 +68,7 @@ export default function Settings(): JSX.Element {
       {MenuButton("Account löschen", <DeleteAccount />)}
       {MenuButton("Abmelden", <Logout />)}
       {MenuButton("Daten anfordern", <UserData />)}
+      {MenuButton("Benachrichtigungen", <Notifications />)}
     </div>
   );
 
