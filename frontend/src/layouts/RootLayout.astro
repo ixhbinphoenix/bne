@@ -56,13 +56,7 @@ const { title } = Astro.props;
     <CookieBanner client:load />
     <slot />
   </body>
-  <script>
-  /*if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.register("/serviceWorker.js", { scope: "/" }).then((worker) => {
-      console.log(worker.scope);
-    });
-  }*/
-</script>
+  
  <style is:global>
   :root {
     --background-color: #24273a;

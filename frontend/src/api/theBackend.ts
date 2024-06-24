@@ -93,7 +93,6 @@ export async function registerAccount(
 }
 export async function getTimetable(monday: string, friday: string, className?: string): Promise<TheScheduleObject[]> {
   try {
-    console.log(className)
     let body: { lessons: TheScheduleObject[] };
     let searchQuery = `?from=${monday}&until=${friday}`;
     if (className) {
@@ -108,6 +107,21 @@ export async function getTimetable(monday: string, friday: string, className?: s
     } else {
       body = await Request.Get<{ lessons: TheScheduleObject[] }>("get_timetable" + searchQuery);
     }
+    return body.lessons;
+  } catch (error) {
+    return Promise.reject(error);
+  }
+}
+export async function getTimetableServiceWorker(monday: string, friday: string, JSessionId: string, className?: string): Promise<TheScheduleObject[]> {
+  try {
+    let body: { lessons: TheScheduleObject[] };
+    let searchQuery = `?from=${monday}&until=${friday}`;
+    if (className) {
+      searchQuery += `&class_name=${className}`;
+    }
+    body = await Request.Post<{ lessons: TheScheduleObject[] }>("get_timetable_serviceworker" + searchQuery, {
+      jsessionid: JSessionId
+    });
     return body.lessons;
   } catch (error) {
     return Promise.reject(error);
