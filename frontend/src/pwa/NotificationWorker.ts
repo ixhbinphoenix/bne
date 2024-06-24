@@ -3,63 +3,7 @@ import { getTimetableServiceWorker } from "../api/theBackend";
 import type { TheScheduleObject } from "../api/main";
 
 self.addEventListener("message", async (message) => {
-  requestTimetable(
-    message.data,[
-      {
-        teacher: "SMER",
-        is_lb: false,
-        start: 1,
-        length: 2,
-        day: 3,
-        subject: "MU G1",
-        subject_short: "MU",
-        room: "O E-02MU",
-        substitution: null
-      },
-      {
-        teacher: "PPOW",
-        is_lb: false,
-        start: 3,
-        length: 2,
-        day: 3,
-        subject: "SW L1",
-        subject_short: "SW",
-        room: "O 2-02",
-        substitution: {
-          teacher: null,
-          room: "O 1-19NW",
-          substitution_text: null,
-          cancelled: false
-        }
-      },
-      {
-        teacher: "MVCR",
-        is_lb: false,
-        start: 5,
-        length: 2,
-        day: 3,
-        subject: "SP G2",
-        subject_short: "SP",
-        room: "O TH2",
-        substitution: {
-          teacher: "---",
-          room: null,
-          substitution_text: "Vtr. ohne Lehrer",
-          cancelled: false
-        }
-      },
-      {
-        teacher: "FSMI",
-        is_lb: false,
-        start: 9,
-        length: 2,
-        day: 3,
-        subject: "ER G1",
-        subject_short: "ER",
-        room: "O 2-01",
-        substitution: null
-      }
-    ])
+  requestTimetable(message.data);
 });
 
 async function requestTimetable(untisData: { username: string; password: string }, oldLessons?: TheScheduleObject[]) {
@@ -69,17 +13,17 @@ async function requestTimetable(untisData: { username: string; password: string 
   let lessons = await getTimetableServiceWorker(today, today, JSessionId);
   if (oldLessons) {
     const changedLessons = compareLessons(oldLessons, lessons);
-    console.log(changedLessons)
-    handleChanges(changedLessons)
+    console.log(changedLessons);
+    handleChanges(changedLessons);
   }
   if (calculateTimeout() > 15 * 60 * 1000) {
-    lessons = []
+    lessons = [];
   }
-  console.log(calculateTimeout())
+  console.log(calculateTimeout());
   setTimeout(() => requestTimetable(untisData, lessons), calculateTimeout());
 }
 function sendNotification(title: string, options: NotificationOptions) {
-  console.log(title, options)
+  console.log(title, options);
   if (Notification.permission === "granted") {
     self.registration.showNotification(title, options);
   } else {
@@ -94,13 +38,14 @@ function compareLessons(oldLessons: TheScheduleObject[], newLessons: TheSchedule
     const newSubstitution = newLesson.substitution;
     if (oldSubstitution && newSubstitution) {
       // Check if the substitution's cancelled status or teacher has changed
-      console.log(oldSubstitution, newSubstitution)
+      console.log(oldSubstitution, newSubstitution);
       return (
-        oldSubstitution.cancelled !== newSubstitution.cancelled || oldSubstitution.teacher !== newSubstitution.teacher || oldSubstitution.room !== newSubstitution.room
+        oldSubstitution.cancelled !== newSubstitution.cancelled ||
+        oldSubstitution.teacher !== newSubstitution.teacher ||
+        oldSubstitution.room !== newSubstitution.room
       );
-    }
-    else if (!oldSubstitution && newSubstitution) {
-      return true
+    } else if (!oldSubstitution && newSubstitution) {
+      return true;
     }
     return false;
   });
@@ -141,8 +86,7 @@ function handleChanges(changedLessons: TheScheduleObject[]) {
           body: `${lesson.subject_short} bei ${lesson.teacher}`
         });
       }
-    }
-    else {
+    } else {
       if (lesson.length == 2) {
         sendNotification(`Änderungen in ${lesson.start}. - ${lesson.start + 1}. Stunde`, {
           body: `${lesson.subject_short} bei ${lesson.teacher}`
