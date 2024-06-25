@@ -8,7 +8,6 @@ self.addEventListener("message", async (message) => {
 
 async function requestTimetable(untisData: { username: string; password: string }, oldLessons?: TheScheduleObject[]) {
   let today = new Date().toISOString().slice(0, 10).replace(/-/g, "");
-  today = "20240620";
   const JSessionId = (await fetchJSessionId(untisData.username, untisData.password)).JSessionId;
   let lessons = await getTimetableServiceWorker(today, today, JSessionId);
   if (oldLessons) {
