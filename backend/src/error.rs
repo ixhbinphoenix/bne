@@ -7,7 +7,7 @@ pub enum Error {
     #[error("Fail to get Ctx")]
     CtxFail,
 
-    #[error("Fetching from Untis failed")]
+    #[error("{0}")]
     UntisError(String),
 
     #[error(transparent)]
