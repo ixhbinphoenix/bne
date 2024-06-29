@@ -136,6 +136,14 @@ impl UntisClient {
             parameter.options.element.r#type = 1;
         }
 
+        let start_date = chrono::NaiveDate::parse_from_str(&parameter.options.start_date, "%Y%m%d").map_err(|err| Error::UntisError(err.to_string()))?;
+        let end_date = chrono::NaiveDate::parse_from_str(&parameter.options.end_date, "%Y%m%d").map_err(|err| Error::UntisError(err.to_string()))?;
+        let max_date = chrono::NaiveDate::from_ymd_opt(2024, 07, 05).unwrap();
+        if (start_date > max_date) || (end_date > max_date) {
+            debug!("is out of bounds");
+            return Err(Error::UntisError("Date out of bounds".to_string()));
+        }
+        debug!("startdate: {}, enddate: {}, maxdate: {}", start_date, end_date, max_date);
         let response = self
             .request(utils::Parameter::TimetableParameter(parameter.clone()), "getTimetable".to_string())
             .await
