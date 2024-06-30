@@ -831,7 +831,7 @@ impl UntisClient {
             self.request(utils::Parameter::Null(), "getKlassen".to_string()).await.map_err(|err| Error::UntisError(err.to_string() + " 650"))?;
 
         let text = response.text().await.map_err(|err| Error::UntisError(err.to_string() + " 652"))?;
-        let json: UntisArrayResponse<Klasse> = serde_json::from_str(&text).map_err(|err| Error::UntisError("Fetching from Untis failed".to_string()))?;
+        let json: UntisArrayResponse<Klasse> = serde_json::from_str(&text).map_err(|_err| Error::UntisError("Fetching from Untis failed".to_string()))?;
 
         Ok(json.result)
     }
