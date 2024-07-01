@@ -1,5 +1,5 @@
 body {
-  color: #cad3f5;
+  color: var(--text-color);
   display: flex;
   position: fixed;
   background-color: #1e2030;

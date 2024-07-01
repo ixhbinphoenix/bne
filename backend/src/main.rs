@@ -23,7 +23,7 @@ use actix_identity::{config::LogoutBehaviour, IdentityMiddleware};
 use actix_session::{config::PersistentSession, SessionMiddleware};
 use actix_session_surrealdb::SurrealSessionStore;
 use actix_web::{
-    cookie::{time::Duration, Key}, middleware::Logger, web::{self, Data}, App, HttpResponse, HttpServer
+    cookie::{time::Duration, Key}, middleware::Logger, middleware::Compress, web::{self, Data}, App, HttpResponse, HttpServer
 };
 use api::{
     change_email::change_email_get, get_free_rooms::get_free_rooms, get_timetable_serviceworker::get_timetable_serviceworker, change_password::change_password_post, change_untis_data::change_untis_data_post, check_session::check_session_get, delete::delete_post, forgot_password::forgot_password_post, gdpr_data_compliance::gdpr_data_compliance_get, get_lernbueros::get_lernbueros, get_timetable::get_timetable, link::{
@@ -177,6 +177,7 @@ async fn main() -> io::Result<()> {
         let app = App::new()
             .wrap(Governor::new(&governor_config))
             .wrap(IdentityMiddleware::builder().logout_behaviour(LogoutBehaviour::PurgeSession).build())
+            .wrap(Compress::default())
             .wrap(logger)
             .wrap(
                 SessionMiddleware::builder(

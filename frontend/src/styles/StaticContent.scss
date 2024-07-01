@@ -4,7 +4,7 @@ html {
 
 body {
   font-size: clamp(10px, 1.5vmin, 30px);
-  color: #cad3f5;
+  color: var(--text-color);
   font-family: Inter, sans-serif;
   align-items: center;
   justify-content: space-between;

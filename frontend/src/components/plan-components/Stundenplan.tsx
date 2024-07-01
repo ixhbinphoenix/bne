@@ -516,6 +516,7 @@ export default function Stundenplan(): JSX.Element {
         <div className="select-class">
           <form>
             <select id="classes" onChange={changeClass}>
+              <label htmlFor="classes">Klasse auswählen</label>
               {classes}
             </select>
           </form>

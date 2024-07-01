@@ -138,7 +138,7 @@ impl UntisClient {
 
         let start_date = chrono::NaiveDate::parse_from_str(&parameter.options.start_date, "%Y%m%d").map_err(|err| Error::UntisError(err.to_string()))?;
         let end_date = chrono::NaiveDate::parse_from_str(&parameter.options.end_date, "%Y%m%d").map_err(|err| Error::UntisError(err.to_string()))?;
-        let max_date = chrono::NaiveDate::from_ymd_opt(2024, 07, 05).unwrap();
+        let max_date = chrono::NaiveDate::from_ymd_opt(2024, 7, 5).unwrap();
         if (start_date > max_date) || (end_date > max_date) {
             debug!("is out of bounds");
             return Err(Error::UntisError("Date out of bounds".to_string()));
@@ -831,7 +831,7 @@ impl UntisClient {
             self.request(utils::Parameter::Null(), "getKlassen".to_string()).await.map_err(|err| Error::UntisError(err.to_string() + " 650"))?;
 
         let text = response.text().await.map_err(|err| Error::UntisError(err.to_string() + " 652"))?;
-        let json: UntisArrayResponse<Klasse> = serde_json::from_str(&text).map_err(|err| Error::UntisError(err.to_string() + " 653"))?;
+        let json: UntisArrayResponse<Klasse> = serde_json::from_str(&text).map_err(|_err| Error::UntisError("Fetching from Untis failed".to_string()))?;
 
         Ok(json.result)
     }
