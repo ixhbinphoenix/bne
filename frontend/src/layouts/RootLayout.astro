@@ -198,29 +198,22 @@ const { title } = Astro.props;
     <CookieBanner client:load />
     <slot />
   </body>
-  <script>
-    /*if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.register("/serviceWorker.js", { scope: "/" }).then((worker) => {
-      console.log(worker.scope);
-    });
-  }*/
-  </script>
-  <style is:global>
-    :root {
-      --background-color: #24273a;
-      --text-color: #cad3f5;
-      --text-gradient: linear-gradient(
-        90deg,
-        rgba(198, 160, 246, 1) 0%,
-        rgba(237, 135, 150, 1) 50%,
-        rgba(238, 212, 159, 1) 100%
-      );
-      --highlight-blue: #5974e2;
-      --highlight-red: #e44040;
-    }
-    ::selection {
-      background: #1a1d2f;
-      color: #b8c0e0;
-    }
+ <style is:global>
+  :root {
+    --background-color: #24273a;
+    --text-color: #cad3f5;
+    --text-gradient: linear-gradient(
+      90deg,
+      rgba(198, 160, 246, 1) 0%,
+      rgba(237, 135, 150, 1) 50%,
+      rgba(238, 212, 159, 1) 100%
+    );
+    --highlight-blue: #5974e2;
+    --highlight-red: #e44040;
+  }
+  ::selection {
+    background: #1a1d2f;
+    color: #b8c0e0;
+  }
   </style>
 </html>

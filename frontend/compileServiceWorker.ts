@@ -6,11 +6,11 @@ const compileServiceWorker = () => ({
   name: "compile-typescript-service-worker",
   async writeBundle(_options: any, _outputBundle: any) {
     const inputOptions: InputOptions = {
-      input: "./src/pwa/serviceWorker.ts",
+      input: "./src/pwa/NotificationWorker.ts",
       plugins: [typescript(), terser()]
     };
     const outputOptions: OutputOptions = {
-      file: "./.vercel/output/static/serviceWorker.js",
+      file: "./.vercel/output/static/notificationWorker.js",
       format: "es",
       compact: true
     };
