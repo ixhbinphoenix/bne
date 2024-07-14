@@ -1,0 +1,4 @@
+#V2
+SELECT * FROM users
+exit
+SELECT * FROM users

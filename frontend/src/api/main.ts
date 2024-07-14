@@ -65,7 +65,7 @@ export const SubjectNames: { [key: string]: string } = {
   LI: "Literatur"
 };
 export function JSESSIONIDCookieString(JSESSIONID: string): string {
-  return `JSESSIONID=${JSESSIONID}; max-age=600; secure; samesite=none; domain=.theschedule.de`;
+  return `JSESSIONID=${JSESSIONID}; max-age=600; secure; samesite=none; domain=${import.meta.env.PUBLIC_COOKIE_DOMAIN}`;
 }
 export async function getCommitHash(): Promise<string> {
   const result = await fetch("https://api.github.com/repos/ixhbinphoenix/bne/commits/master", {
