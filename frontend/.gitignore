@@ -13,10 +13,6 @@ pnpm-debug.log*
 package-lock.json
 
 
-# environment variables
-.env
-.env.production
-
 #vercel
 .vercel
 
