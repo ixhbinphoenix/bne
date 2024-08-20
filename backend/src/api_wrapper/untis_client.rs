@@ -458,7 +458,7 @@ impl UntisClient {
 
         let ef_parameter = parameter.clone();
         let q1_parameter = parameter.clone();
-        // let q2_parameter = parameter.clone();
+        let q2_parameter = parameter.clone();
         let lbos_parameter = parameter.clone();
 
         // Fetch timetables of EF, Q1, Q2 in parallel
@@ -466,8 +466,8 @@ impl UntisClient {
         future_lessons.spawn(async move { ef_client.clone().get_timetable(ef_parameter, Some("EF".to_string())).await });
         let q1_client = Arc::new(self.clone());
         future_lessons.spawn(async move { q1_client.clone().get_timetable(q1_parameter, Some("Q1".to_string())).await });
-        // let q2_client = Arc::new(self.clone());
-        // future_lessons.spawn(async move { q2_client.clone().get_timetable(q2_parameter, Some("Q2".to_string())).await });
+        let q2_client = Arc::new(self.clone());
+        future_lessons.spawn(async move { q2_client.clone().get_timetable(q2_parameter, Some("Q2".to_string())).await });
         let lbos_client = Arc::new(self.clone());
         future_lessons.spawn(async move { lbos_client.clone().get_timetable(lbos_parameter, Some("LB_OS".to_string())).await });
 
