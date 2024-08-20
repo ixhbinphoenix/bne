@@ -2,8 +2,9 @@ class Request {
   //class to handle primitive requests
 
   public static async Post(path: string, data?: object): Promise<any> {
+    const domain = import.meta.env.PUBLIC_FRONTMATTER_API_DOMAIN;
     try {
-      let result = await fetch("https://api.theschedule.de/" + path, {
+      let result = await fetch(domain + path, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -28,8 +29,9 @@ class Request {
     }
   }
   public static async Get(path: string, headers?: HeadersInit): Promise<any> {
+    const domain = import.meta.env.PUBLIC_FRONTMATTER_API_DOMAIN;
     try {
-      let result = await fetch("https://api.theschedule.de/" + path, {
+      let result = await fetch(domain + path, {
         headers,
         method: "GET",
         credentials: "include"
