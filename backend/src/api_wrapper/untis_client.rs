@@ -439,7 +439,9 @@ impl UntisClient {
                  //EF Vertiefungskurse
                  !formatted_lesson.subject.contains("VX") &&
                  //Q2 Zusatzkurse
-                 !formatted_lesson.subject.contains('Z');
+                 !formatted_lesson.subject.contains('Z') &&
+                 //Swim lessons
+                 !formatted_lesson.room.contains("Bad");
                 if formatted_lesson.length > 1 && !lesson.su.is_empty() {
                     skip.insert(lesson.su[0].id, formatted_lesson.length - 1);
                 }
@@ -487,6 +489,10 @@ impl UntisClient {
         all_lbs.append(
             &mut lessons[2].clone().into_iter().filter(|lesson| lesson.is_lb && lesson.subject_short != "S0" && lesson.subject_short != "N0" && lesson.subject_short != "OS").collect::<Vec<FormattedLesson>>(),
         );
+        all_lbs.append(
+            &mut lessons[3].clone().into_iter().filter(|lesson| lesson.is_lb && lesson.subject_short != "S0" && lesson.subject_short != "N0" && lesson.subject_short != "OS").collect::<Vec<FormattedLesson>>(),
+        );
+
 
         let mut additional_lbs: Vec<FormattedLesson> = vec![];
 
