@@ -498,6 +498,9 @@ impl UntisClient {
 
         // Add additional subjects the Teacher does lernbueros for, as well as substitution info
         for lb in all_lbs.clone() {
+            if Self::manual_overwrite_lbs(&lb) {
+                continue;
+            }
             let mut new_room = "".to_string();
             // Checks for substitution on lesson, and if, sets the new room
             if let Some(sub) = &lb.substitution {
@@ -506,6 +509,7 @@ impl UntisClient {
                 }
             }
             let pot_teacher = Teacher::get_from_shortname(self.db.clone(), lb.clone().teacher).await.expect("teacher shortname to exist in DB");
+            
             if let Some(teacher) = pot_teacher {
                 // Push a Version of the Lernbuero for every Subject to array
                 for lesson in teacher.lessons {
@@ -680,6 +684,21 @@ impl UntisClient {
 
         Ok(every_lb)
     }
+    /// .
+    fn manual_overwrite_lbs(lb: &FormattedLesson) -> bool {
+        matches! (
+            (lb.day, lb.start, lb.teacher.as_str()),
+            (0, 6, "FSMI") | 
+            (0, 6 , "NIPR") |
+            (0, 6 , "UTHÜ") | 
+            (1, 1, "HPRA")  |
+            (4, 5, "FSMI") | 
+            (4, 5, "NIPR") |
+            (4, 5, "UTHÖ") |
+            (4, 6, "KHEL") |
+            (4, 7, "KHEL")
+        )
+    }
 
     async fn get_manual_lernbueros(&self) -> Result<Vec<FormattedLesson>, Error> {
 
@@ -718,7 +737,6 @@ impl UntisClient {
         }
         Ok(lbs)
     }
-    
     pub async fn get_free_rooms(&self, parameter: TimetableParameter) -> Result<Vec<FormattedFreeRoom>, Error> {
         let mut future_lessons = JoinSet::new();
 
