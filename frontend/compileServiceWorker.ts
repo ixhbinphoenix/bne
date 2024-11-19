@@ -2,6 +2,7 @@ import { rollup, InputOptions, OutputOptions } from "rollup";
 import typescript from "@rollup/plugin-typescript";
 import terser from "@rollup/plugin-terser"
 
+
 const compileServiceWorker = () => ({
   name: "compile-typescript-service-worker",
   async writeBundle(_options: any, _outputBundle: any) {
@@ -10,7 +11,7 @@ const compileServiceWorker = () => ({
       plugins: [typescript(), terser()]
     };
     const outputOptions: OutputOptions = {
-      file: "./.vercel/output/static/notificationWorker.js",
+      file: "./.vercel/output/static/serviceWorker.js",
       format: "es",
       compact: true
     };

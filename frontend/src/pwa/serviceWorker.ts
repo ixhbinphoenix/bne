@@ -23,7 +23,7 @@ async function cacheComponents(event: FetchEvent): Promise<Response> {
 async function handleFetch(event: FetchEvent): Promise<Response> {
   const url = new URL(event.request.url);
   const fileExtension = url.href.match(/\.[0-9a-z]+$/i);
-  const backend_url = import.meta.env.PUBLIC_BACKEND_API_DOMAIN;
+  const backend_url = "https://api.theschedule.de";
   const untis_domain = "https://borys.webuntis.com";
   if (url.href.startsWith(untis_domain) || event.request.method != "GET") {
     return Strategies.NetworkOnly(event)
