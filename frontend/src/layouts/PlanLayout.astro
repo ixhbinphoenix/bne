@@ -17,7 +17,7 @@ import { getLocalUntisCredentials } from "../api/untisAPI";
 
   if ("serviceWorker" in navigator) {
     if(Notification.permission == "granted") {
-      navigator.serviceWorker.register("/notificationWorker.js", { scope: "/home" }).then((worker) => {
+      navigator.serviceWorker.register("/serviceWorker.js", { scope: "/home" }).then((worker) => {
       });
       navigator.serviceWorker.ready.then((worker) => {
         worker.active?.postMessage(getLocalUntisCredentials())
