@@ -6,7 +6,7 @@ const compileServiceWorker = () => ({
   name: "compile-typescript-service-worker",
   async writeBundle(_options: any, _outputBundle: any) {
     const inputOptions: InputOptions = {
-      input: "./src/pwa/NotificationWorker.ts",
+      input: "./src/pwa/serviceWorker.ts",
       plugins: [typescript(), terser()]
     };
     const outputOptions: OutputOptions = {

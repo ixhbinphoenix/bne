@@ -12,30 +12,42 @@ async function cacheFonts(event: FetchEvent): Promise<Response> {
   return Strategies.CacheFirst(event);
 }
 async function cacheStyles(event: FetchEvent): Promise<Response> {
-  return Strategies.StaleWhileRevalidate(event);
+  return Strategies.CacheFirst(event);
 }
 async function cacheScripts(event: FetchEvent): Promise<Response> {
-  return Strategies.StaleWhileRevalidate(event);
+  return Strategies.CacheFirst(event);
 }
 async function cacheComponents(event: FetchEvent): Promise<Response> {
   return Strategies.StaleWhileRevalidate(event)
 }
 async function handleFetch(event: FetchEvent): Promise<Response> {
-  const url = event.request.url;
-  const fileExtension = url.match(/\.[0-9a-z]+$/i);
-  const blacklist = "https://localhost:8080";
-  if (url.startsWith(blacklist)) {
+  const url = new URL(event.request.url);
+  const fileExtension = url.href.match(/\.[0-9a-z]+$/i);
+  const backend_url = import.meta.env.PUBLIC_BACKEND_API_DOMAIN;
+  const untis_domain = "https://borys.webuntis.com";
+  if (url.href.startsWith(untis_domain) || event.request.method != "GET") {
+    return Strategies.NetworkOnly(event)
+  }
+  if (url.href.startsWith(backend_url)) {
     console.log(url, " is blacklisted")
+
+    switch (url.pathname) {
+      case "/get_timetable":
+        console.log("Timetable is network first")
+        return Strategies.StaleWhileRevalidate(event)
+      case "/get_lernbueros":
+        console.log("LBs is Cache first")
+        return Strategies.StaleWhileRevalidate(event)
+      case "/get_free_rooms":
+        console.log("Free Rooms is Cache first")
+        return Strategies.StaleWhileRevalidate(event)
+    }
     return Strategies.NetworkOnly(event)
   }
   if (!fileExtension) {
     return Strategies.NetworkRevalidateAndCache(event);
   } else {
     switch (fileExtension[0]) {
-      case ".woff":
-        console.log(url)
-        console.count("Font from Cache")
-        return cacheFonts(event);
       case ".woff2":
         console.log(url);
         console.count("Font from Cache");
@@ -44,22 +56,16 @@ async function handleFetch(event: FetchEvent): Promise<Response> {
         console.log(url);
         console.count("css from cache")
         return cacheStyles(event);
-      case ".scss":
-        console.log(url);
-        console.count("css from cache")
-        return cacheStyles(event)
-      case ".ts":
-        console.log(url);
-        console.count("script from cache")
+      case ".js":
+        console.log(url)
+        console.count("Script from Cache")
         return cacheScripts(event)
-      case ".tsx":
-        console.log(url);
-        console.count("component from cache")
-        return cacheComponents(event)
+      case ".svg":
+        return cacheStyles(event)
       default:
         console.log(url);
         console.count("default caching")
-        return Strategies.NetworkRevalidateAndCache(event);
+        return Strategies.NetworkOnly(event);
     }
   }
 }
