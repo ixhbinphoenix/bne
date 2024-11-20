@@ -30,7 +30,7 @@ pub async fn login_post(
         } {
             Some(u) => u,
             None => {
-                return Err(error::ErrorForbidden( "E-Mail or Password is incorrect!".to_owned()).into());
+                return Err(error::ErrorForbidden( "E-Mail or Password is incorrect!".to_owned()));
             }
         }
     };
@@ -42,9 +42,9 @@ pub async fn login_post(
             })),
             Err(e) => {
                 error!("Error: Unknown error trying to login to Identity\n{}", e);
-                Err(error::ErrorInternalServerError( "Internal Server Error".to_owned()).into())
+                Err(error::ErrorInternalServerError( "Internal Server Error".to_owned()))
             }
         },
-        Err(_) => Err(error::ErrorForbidden( "E-Mail or Password is incorrect!".to_owned()).into()),
+        Err(_) => Err(error::ErrorForbidden( "E-Mail or Password is incorrect!".to_owned())),
     }
 }

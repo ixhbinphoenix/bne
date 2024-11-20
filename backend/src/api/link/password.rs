@@ -95,7 +95,7 @@ pub async fn reset_password_post(
         Ok(a) => a.to_string(),
         Err(e) => {
             error!("Error trying to hash password\n{e}");
-            return Err(error::ErrorInternalServerError( "Unknown error trying to hash password".to_string()).into());
+            return Err(error::ErrorInternalServerError( "Unknown error trying to hash password".to_string()));
         }
     };
 

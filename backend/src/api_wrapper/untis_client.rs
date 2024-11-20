@@ -684,7 +684,6 @@ impl UntisClient {
 
         Ok(every_lb)
     }
-    /// 
     fn manual_overwrite_lbs(lb: &FormattedLesson) -> bool {
         matches! (
             (lb.day, lb.start, lb.teacher.as_str()),

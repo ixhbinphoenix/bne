@@ -34,7 +34,7 @@ pub async fn get_lernbueros(
     let jsessionid = if let Some(session_cookie) = req.cookie("JSESSIONID") {
         session_cookie.value().to_string()
     } else {
-        return Err(error::ErrorForbidden( "No JSESSIONID provided".to_string()).into());
+        return Err(error::ErrorForbidden( "No JSESSIONID provided".to_string()));
     };
 
     let pot_user: Option<User> = User::get_from_id(
@@ -46,12 +46,12 @@ pub async fn get_lernbueros(
                     Thing::from(split.unwrap())
                 } else {
                     error!("ID in session_cookie is wrong???");
-                    return Err(error::ErrorInternalServerError( "There was an error trying to get your id".to_string()).into());
+                    return Err(error::ErrorInternalServerError( "There was an error trying to get your id".to_string()));
                 }
             }
             Err(e) => {
                 error!("Error getting Identity id\n{e}");
-                return Err(error::ErrorInternalServerError( "There was an error trying to get your id".to_string()).into());
+                return Err(error::ErrorInternalServerError( "There was an error trying to get your id".to_string()));
             }
         },
     )
@@ -61,7 +61,7 @@ pub async fn get_lernbueros(
         Some(u) => u,
         None => {
             debug!("Deleted(?) User tried to log in with old session token");
-            return Err(error::ErrorNotFound( "This account doesn't exist!".to_string()).into());
+            return Err(error::ErrorNotFound( "This account doesn't exist!".to_string()));
         }
     };
 
@@ -85,7 +85,7 @@ pub async fn get_lernbueros(
             if let Error::Reqwest(_) = e {
                 return Err(error::ErrorUnprocessableEntity( "You done fucked up"));
             } else {
-               return Err(error::ErrorInternalServerError( "Untis done fucked up ".to_string() + &e.to_string()).into());
+               return Err(error::ErrorInternalServerError( "Untis done fucked up ".to_string() + &e.to_string()));
             }
         }
     };

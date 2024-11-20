@@ -12,10 +12,10 @@ pub async fn check_session_get(id: Option<Identity>) -> Result<impl Responder> {
             Ok(_) => Ok(web::Json(TextResponse { message: "Authenticated".to_string()})),
             Err(e) => {
                 error!("Error trying to get id.id()\n{}", e);
-                Err(error::ErrorInternalServerError( "NOPE Server Error".to_string()).into())
+                Err(error::ErrorInternalServerError( "NOPE Server Error".to_string()))
             }
         }
     } else {
-        Err(error::ErrorForbidden( "Not Authenticated".to_string()).into())
+        Err(error::ErrorForbidden( "Not Authenticated".to_string()))
     }
 }
