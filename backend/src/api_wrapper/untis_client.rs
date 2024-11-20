@@ -10,7 +10,7 @@ use super::utils::{
     self, day_of_week, DetailedSubject, FormattedFreeRoom, FormattedLesson, Holidays, Klasse, LoginResults, PeriodObject, Schoolyear, Substitution, TimegridUnits, TimetableParameter, UntisArrayResponse
 };
 use crate::{
-    api_wrapper::utils::UntisResponse, models::{manual_lb_model::ManualLB, model::DBConnection, room_model::Room, teacher_model::Teacher}, prelude::Error
+    api_wrapper::utils::UntisResponse, models::{manual_lb_model::ManualLB, model::DBConnection, room_model::Room, teacher_model::Teacher}, error::Error
 };
 
 #[derive(Clone)]
@@ -684,7 +684,7 @@ impl UntisClient {
 
         Ok(every_lb)
     }
-    /// .
+    /// 
     fn manual_overwrite_lbs(lb: &FormattedLesson) -> bool {
         matches! (
             (lb.day, lb.start, lb.teacher.as_str()),

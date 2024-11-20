@@ -1,6 +1,6 @@
 use actix_identity::Identity;
 use actix_web::{
-    web::{self, Json}, Responder, Result
+    error, web::{self, Json}, Responder, Result
 };
 use argon2::{password_hash::SaltString, Argon2, PasswordHasher};
 use chrono::{Days, Utc};
@@ -10,13 +10,12 @@ use rand_core::OsRng;
 use serde::Deserialize;
 use surrealdb::sql::Thing;
 
-use super::response::Response;
 use crate::{
-    database::sessions::delete_user_sessions, mail::{
+    api_wrapper::utils::TextResponse, database::sessions::delete_user_sessions, error::Error, mail::{
         mailing::{build_mail, send_mail}, utils::{load_template, Mailer}
     }, models::{
         links_model::{Link, LinkType}, model::{ConnectionData, CRUD}, user_model::User
-    }, prelude::Error, utils::password::valid_password
+    }, utils::password::valid_password
 };
 
 #[derive(Debug, Deserialize)]
@@ -30,7 +29,7 @@ pub async fn change_password_post(
     body: Json<PasswordChange>, id: Option<Identity>, db: ConnectionData, mailer: web::Data<Mailer>,
 ) -> Result<impl Responder> {
     if id.is_none() {
-        return Ok(web::Json(Response::new_error(403, "Not logged in".into())));
+        return Err(error::ErrorForbidden( "Not logged in"));
     }
 
     let id = id.unwrap();
@@ -38,7 +37,7 @@ pub async fn change_password_post(
         Ok(a) => a,
         Err(e) => {
             error!("Error trying to get id\n{e}");
-            return Ok(Response::new_error(500, "Internal Server Error".into()).into());
+            return Err(error::ErrorInternalServerError( "Internal Server Error"));
         }
     };
 
@@ -47,12 +46,12 @@ pub async fn change_password_post(
             Some(a) => a,
             None => {
                 error!("User not found?");
-                return Ok(Response::new_error(500, "Internal Server Error".into()).into());
+                return Err(error::ErrorInternalServerError( "Internal Server Error"));
             }
         },
         Err(e) => {
             error!("Error trying to get user\n{e}");
-            return Ok(Response::new_error(500, "Interal Server Error".into()).into());
+            return Err(error::ErrorInternalServerError( "Interal Server Error"));
         }
     };
 
@@ -61,12 +60,12 @@ pub async fn change_password_post(
     };
 
     if body.old_password == body.new_password {
-        return Ok(Response::new_error(400, "New Password can't be Old Password".into()).into());
+        return Err(error::ErrorUnprocessableEntity( "New Password can't be Old Password"));
     }
 
     if user.verify_password(body.old_password.clone()).is_err() {
         debug!("Wrong password");
-        return Ok(Response::new_error(403, "Wrong password".into()).into());
+        return Err(error::ErrorForbidden( "Wrong password"));
     }
 
     let argon2 = Argon2::default();
@@ -76,7 +75,7 @@ pub async fn change_password_post(
         Ok(a) => a,
         Err(e) => {
             error!("Error hashing password\n{e}");
-            return Ok(Response::new_error(500, "Internal Server Error".into()).into());
+            return Err(error::ErrorInternalServerError( "Internal Server Error"));
         }
     };
 
@@ -93,12 +92,12 @@ pub async fn change_password_post(
 
     if let Err(e) = User::update_replace(db.clone(), old_user.id, new_user.clone()).await {
         error!("Error updating user\n{e}");
-        return Ok(Response::new_error(500, "Internal Server Error".into()).into());
+        return Err(error::ErrorInternalServerError( "Internal Server Error"));
     }
 
     if let Err(e) = delete_user_sessions(db.clone(), new_user.clone().id.to_string()).await {
         error!("Error logging user out\n{e}");
-        return Ok(Response::new_error(500, "Internal Server Error".into()).into());
+        return Err(error::ErrorInternalServerError( "Internal Server Error"));
     }
 
     let expiry_time = Utc::now().checked_add_days(Days::new(2)).unwrap();
@@ -107,7 +106,7 @@ pub async fn change_password_post(
         Ok(a) => a.construct_link(),
         Err(e) => {
             error!("Error creating link\n{e}");
-            return Ok(Response::new_error(500, "Error sending mail".into()).into());
+            return Err(error::ErrorInternalServerError( "Error sending mail"));
         }
     };
 
@@ -115,7 +114,7 @@ pub async fn change_password_post(
         Ok(a) => a.replace("${{RESET_URL}}", &reset_link),
         Err(e) => {
             error!("Error loading template\n{e}");
-            return Ok(Response::new_error(500, "Error sending mail".into()).into());
+            return Err(error::ErrorInternalServerError( "Error sending mail"));
         }
     };
 
@@ -124,14 +123,14 @@ pub async fn change_password_post(
             Ok(a) => a,
             Err(e) => {
                 error!("Error building mail\n{e}");
-                return Ok(Response::new_error(500, "Error sending mail".into()).into());
+                return Err(error::ErrorInternalServerError( "Error sending mail"));
             }
         };
 
     if let Err(e) = send_mail(mailer, message).await {
         error!("Error sending mail\n{e}");
-        return Ok(Response::new_error(500, "Error sending mail".into()).into());
+        return Err(error::ErrorInternalServerError( "Error sending mail"));
     }
 
-    Ok(web::Json(Response::new_success("Successfully changed Password".to_string())))
+    Ok(web::Json(TextResponse { message: "Successfully changed Password".to_string()}))
 }

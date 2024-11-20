@@ -2,7 +2,7 @@
 
 import { JSESSIONIDCookieString, type FreeRoom } from "../../api/main";
 import { getFreeRooms } from "../../api/theBackend";
-import Loading from "../Loading"
+import Loading from "../Loading";
 import Popup from "./Popup";
 import type { JSX } from "preact";
 import "../../styles/Stundenplan.scss";

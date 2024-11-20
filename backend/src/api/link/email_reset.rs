@@ -1,6 +1,6 @@
 use std::str::FromStr;
 
-use actix_web::{web, Responder, Result};
+use actix_web::{error, web, Responder, Result};
 use lettre::Address;
 use log::{error, warn};
 use serde::Deserialize;
@@ -8,7 +8,7 @@ use surrealdb::sql::Thing;
 use uuid::Uuid;
 
 use crate::{
-    api::response::Response, database::sessions::delete_user_sessions, models::{
+    api_wrapper::utils::TextResponse, database::sessions::delete_user_sessions, models::{
         links_model::{Link, LinkType}, model::{ConnectionData, CRUD}, user_model::User
     }
 };
@@ -23,10 +23,10 @@ pub async fn email_reset_post(
     path: web::Path<String>, body: web::Json<NewMail>, db: ConnectionData,
 ) -> Result<impl Responder> {
     if body.mail.parse::<Address>().is_err() {
-        return Ok(web::Json(Response::new_error(400, "Not a valid e-mail".into())));
+        return Err(error::ErrorUnprocessableEntity( "Not a valid e-mail"));
     }
     if Uuid::from_str(&path).is_err() {
-        return Ok(Response::new_error(400, "UUID is not a valid uuid".into()).into());
+        return Err(error::ErrorUnprocessableEntity( "UUID is not a valid uuid"));
     }
 
     let pot_link = match Link::get_from_id(
@@ -41,12 +41,12 @@ pub async fn email_reset_post(
         Ok(a) => a,
         Err(e) => {
             error!("There was an error getting a link from the database\n{e}");
-            return Ok(Response::new_error(500, "There was a database error".into()).into());
+            return Err(error::ErrorInternalServerError( "There was a database error"));
         }
     };
 
     if pot_link.is_none() {
-        return Ok(Response::new_error(404, "Link not found".into()).into());
+        return Err(error::ErrorNotFound( "Link not found"));
     }
 
     let link = pot_link.unwrap();
@@ -57,7 +57,7 @@ pub async fn email_reset_post(
             // Potential Attacker really shouldn't know if there's a link of another type with the
             // provided UUID
             warn!("Link found but wrong type");
-            return Ok(Response::new_error(404, "Link not found".into()).into());
+            return Err(error::ErrorNotFound( "Link not found"));
         }
     }
 
@@ -68,12 +68,12 @@ pub async fn email_reset_post(
             Some(a) => a,
             None => {
                 error!("User ID in link is not valid");
-                return Ok(Response::new_error(500, "There was a database error".into()).into());
+                return Err(error::ErrorInternalServerError( "There was a database error"));
             }
         },
         Err(e) => {
             error!("Database error trying to get user from link\n{e}");
-            return Ok(Response::new_error(500, "There was a database error".into()).into());
+            return Err(error::ErrorInternalServerError( "There was a database error"));
         }
     };
 
@@ -81,11 +81,11 @@ pub async fn email_reset_post(
         Ok(a) => a.is_some(),
         Err(e) => {
             error!("Getting potential user from mail failed\n{e}");
-            return Ok(Response::new_error(500, "There was a database error".into()).into());
+            return Err(error::ErrorInternalServerError( "There was a database error"));
         }
     } {
         warn!("E-mail is already in use");
-        return Ok(Response::new_error(403, "Mail already in use".into()).into());
+        return Err(error::ErrorForbidden( "Mail already in use"));
     }
 
     let new_user = User {
@@ -99,7 +99,7 @@ pub async fn email_reset_post(
 
     if User::update_replace(db.clone(), user_id.clone(), new_user).await.is_err() {
         error!("Error updating user email");
-        return Ok(Response::new_error(500, "There was a database error".into()).into());
+        return Err(error::ErrorInternalServerError( "There was a database error"));
     }
 
     if let Err(e) = Link::delete(db.clone(), link.id).await {
@@ -109,8 +109,8 @@ pub async fn email_reset_post(
     // Logout user from all devices
     if let Err(e) = delete_user_sessions(db.clone(), user_id.to_string()).await {
         error!("Error deleting user sessions\n{e}");
-        return Ok(Response::new_error(500, "There was a database error".into()).into());
+        return Err(error::ErrorInternalServerError( "There was a database error"));
     };
 
-    Ok(web::Json(Response::new_success("Successfully updated e-mail".to_string())))
+    Ok(web::Json(TextResponse { message: "Successfully updated e-mail".to_string()}))
 }

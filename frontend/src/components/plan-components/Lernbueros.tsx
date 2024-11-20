@@ -107,11 +107,10 @@ export default function Lernbueros(): JSX.Element {
         tableDaysTemp.push(<div className="table-day">{tableElements[i]}</div>);
       }
       setTableDays(tableDaysTemp);
-    }
-    else {
+    } else {
       openPopup();
     }
-  }
+  };
 
   useEffect(() => {
     onSwipe(".table-layout", { direction: "left" }, nextWeek);
@@ -304,21 +303,22 @@ export default function Lernbueros(): JSX.Element {
       const FilterItems = [];
       for (const item in SubjectNames) {
         if (item != "SP") {
-        FilterItems.push(
-          <label htmlFor={item}>
-            {SubjectNames[item]}
-            <input
-              type="checkbox"
-              id={item}
-              defaultChecked={filterItems[item]}
-              onClick={() => {
-                filterItems[item] = !filterItems[item];
-                changeFilter(filterItems);
-              }}
-            />
-            <span className="checkbox"></span>
-          </label>
-        );}
+          FilterItems.push(
+            <label htmlFor={item}>
+              {SubjectNames[item]}
+              <input
+                type="checkbox"
+                id={item}
+                defaultChecked={filterItems[item]}
+                onClick={() => {
+                  filterItems[item] = !filterItems[item];
+                  changeFilter(filterItems);
+                }}
+              />
+              <span className="checkbox"></span>
+            </label>
+          );
+        }
       }
       setFilterContent(
         <div class="filter-background">
@@ -421,7 +421,7 @@ export default function Lernbueros(): JSX.Element {
               }
               if (lessons[k].substitution?.cancelled) {
                 roomStyle = { textDecoration: "line-through" };
-                teacherStyle = { textDecoration: "line-through"};
+                teacherStyle = { textDecoration: "line-through" };
               }
               if (lessons[k].substitution?.substitution_text) {
                 substitutionTextStyle = { display: "block" };

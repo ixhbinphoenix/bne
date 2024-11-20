@@ -20,7 +20,7 @@ export default function LoginForm(): JSX.Element {
     fetchJSessionId(event.target[3].value, event.target[4].value).then(
       (result) => {
         if (result.JSessionId && result.personId) {
-          document.cookie = JSESSIONIDCookieString(result.JSessionId); 
+          document.cookie = JSESSIONIDCookieString(result.JSessionId);
           sendRegister(
             event.target[0].value,
             event.target[1].value,
@@ -117,8 +117,17 @@ export default function LoginForm(): JSX.Element {
             required
           />
           <div class="checkbox-div">
-            <input type="checkbox" id="checkbox" required/>
-            <label htmlFor="checkbox">Ich akzeptiere die <a href="/datenschutz" style="color: var(--highlight-blue);">Datenschutzbestimmung</a> und <a href="/nutzungsbedingungen" style="color: var(--highlight-blue);">Nutzungsbedingungen</a></label>
+            <input type="checkbox" id="checkbox" required />
+            <label htmlFor="checkbox">
+              Ich akzeptiere die{" "}
+              <a href="/datenschutz" style="color: var(--highlight-blue);">
+                Datenschutzbestimmung
+              </a>{" "}
+              und{" "}
+              <a href="/nutzungsbedingungen" style="color: var(--highlight-blue);">
+                Nutzungsbedingungen
+              </a>
+            </label>
           </div>
           <div className="button-container">
             <input type="submit" id="submit-button" value="Absenden" />

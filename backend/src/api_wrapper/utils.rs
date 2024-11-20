@@ -328,3 +328,8 @@ pub fn day_of_week(date: u32) -> u8 {
     let h = (d + (13 * (m + 1)) / 5 + k + k / 4 + j / 4 + 5 * j) % 7;
     ((h + 5) % 7) as u8
 }
+
+#[derive(Serialize)]
+pub struct TextResponse {
+    pub message: String
+}

@@ -15,10 +15,10 @@ export interface TheScheduleObject {
   } | null;
 }
 export interface FreeRoom {
-  start: number,
-  length: number,
-  day: number,
-  room: string
+  start: number;
+  length: number;
+  day: number;
+  room: string;
 }
 export const SubjectColor: { [key: string]: string } = {
   M: "#dba402",
@@ -68,26 +68,25 @@ export function JSESSIONIDCookieString(JSESSIONID: string): string {
   return `JSESSIONID=${JSESSIONID}; max-age=600; secure; samesite=none; domain=${import.meta.env.PUBLIC_COOKIE_DOMAIN}`;
 }
 export async function getCommitHash(): Promise<string> {
-  const result = await fetch("https://api.github.com/repos/ixhbinphoenix/bne/commits/master", {
+  const result = (await fetch("https://api.github.com/repos/ixhbinphoenix/bne/commits/master", {
     method: "GET"
-  }) as unknown as Array<any>
+  })) as unknown as Array<any>;
   try {
-    return JSON.parse(await readStream(result.body)).sha.substring(0, 7)
-  }
-  catch (error) {
-    return Promise.reject(error)
+    return JSON.parse(await readStream(result.body)).sha.substring(0, 7);
+  } catch (error) {
+    return Promise.reject(error);
   }
 }
 async function readStream(stream: ReadableStream<Uint8Array>) {
-    const textDecode = new TextDecoder();
-    const chunks = [];
-    const reader = stream.getReader();
-    while (true) {
-      const { done, value } = await reader.read();
-      if (done) {
-        break;
-      }
-      chunks.push(textDecode.decode(value));
+  const textDecode = new TextDecoder();
+  const chunks = [];
+  const reader = stream.getReader();
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) {
+      break;
     }
-    return chunks.join("");
+    chunks.push(textDecode.decode(value));
+  }
+  return chunks.join("");
 }

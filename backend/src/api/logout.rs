@@ -1,13 +1,14 @@
 use actix_identity::Identity;
-use actix_web::{web, Responder, Result};
+use actix_web::{error, web, Responder, Result};
 
-use super::response::Response;
+use crate::api_wrapper::utils::TextResponse;
+
 
 pub async fn logout_post(id: Option<Identity>) -> Result<impl Responder> {
     if let Some(id) = id {
         id.logout();
-        Ok(Response::new_success("Logout successful!").into())
+        Ok(web::Json(TextResponse { message: "Logout successful!".to_string()}))
     } else {
-        Ok(web::Json(Response::new_error(403, "Not logged in!".into())))
+        Err(error::ErrorForbidden( "Not logged in!"))
     } 
 }

@@ -1,4 +1,4 @@
-use crate::{models::model::ConnectionData, prelude::Error};
+use crate::{models::model::ConnectionData, error::Error};
 
 // This is very hacky but it works
 /// NEXER EXPOSE THIS FUNCTION TO USER INPUT, IT WILL ALLOW THEM TO SQL INJECT
