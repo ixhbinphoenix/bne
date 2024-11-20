@@ -4,9 +4,6 @@ use crate::{mail::error::MailError, utils::password::PasswordError};
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
-    #[error("Fail to get Ctx")]
-    CtxFail,
-
     #[error("{0}")]
     UntisError(String),
 

@@ -15,18 +15,16 @@ class Request {
         credentials: "include",
         body: JSON.stringify(data)
       });
+      if (!result.ok) {
+        return Promise.reject({ status: result.status, message: await result.text() });
+      }
       if (!result.body) {
         return Promise.reject({ status: 500, message: "Server Connection Failed" });
       }
       if (result.status == 429) {
         return Promise.reject(new Error("Too many requests. Try again later"));
       }
-      let stream = await Request.readStream(result.body);
-      let body = JSON.parse(stream);
-      if (!body.success) {
-        return Promise.reject(body.body);
-      }
-      return body.body;
+      return result.json();
     } catch (error) {
       return Promise.reject(error);
     }
@@ -42,11 +40,10 @@ class Request {
       if (result.status == 429) {
         return Promise.reject(new Error("Too many requests. Try again later"));
       }
-      const body = await result.json();
-      if (!body.success) {
-        return Promise.reject(body.body);
+      if (result.headers.get("Content-Type") === "application/json") {
+        return await result.json();
       }
-      return body.body;
+      return await result.text();
     } catch (error) {
       return Promise.reject(error);
     }
@@ -104,7 +101,7 @@ export async function getTimetable(monday: string, friday: string, className?: s
     const untisCredentials = getLocalUntisCredentials();
     if (!storedJSessionId && getLocalUntisCredentials()) {
       const result = await fetchJSessionId(untisCredentials.username, untisCredentials.password);
-      document.cookie = JSESSIONIDCookieString(result.JSessionId) 
+      document.cookie = JSESSIONIDCookieString(result.JSessionId);
       body = await Request.Get<{ lessons: TheScheduleObject[] }>("get_timetable" + searchQuery);
     } else {
       body = await Request.Get<{ lessons: TheScheduleObject[] }>("get_timetable" + searchQuery);
@@ -114,7 +111,12 @@ export async function getTimetable(monday: string, friday: string, className?: s
     return Promise.reject(error);
   }
 }
-export async function getTimetableServiceWorker(monday: string, friday: string, JSessionId: string, className?: string): Promise<TheScheduleObject[]> {
+export async function getTimetableServiceWorker(
+  monday: string,
+  friday: string,
+  JSessionId: string,
+  className?: string
+): Promise<TheScheduleObject[]> {
   try {
     let body: { lessons: TheScheduleObject[] };
     let searchQuery = `?from=${monday}&until=${friday}`;

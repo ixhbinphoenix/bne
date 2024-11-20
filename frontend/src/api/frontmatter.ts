@@ -12,6 +12,9 @@ class Request {
         credentials: "include",
         body: JSON.stringify(data)
       });
+      if (!result.ok) {
+        return Promise.reject(result.status);
+      }
       if (!result.body) {
         return Promise.reject({ status: 500, message: "Server Connection Failed" });
       }
@@ -20,10 +23,7 @@ class Request {
       }
       let stream = await Request.readStream(result.body);
       let body = JSON.parse(stream);
-      if (!body.success) {
-        return Promise.reject(body.body);
-      }
-      return body.body;
+      return body;
     } catch (error) {
       return Promise.reject(error);
     }
@@ -36,14 +36,13 @@ class Request {
         method: "GET",
         credentials: "include"
       });
+      if (!result.ok) {
+        return Promise.reject(result.status);
+      }
       if (result.status == 429) {
         return Promise.reject(new Error("Too many requests. Try again later"));
       }
-      const body = await result.json();
-      if (!body.success) {
-        return Promise.reject(body.body);
-      }
-      return body.body;
+      return result.body;
     } catch (error) {
       return Promise.reject(error);
     }
@@ -65,6 +64,7 @@ class Request {
 export async function checkSessionIdAstro(id: string): Promise<any> {
   try {
     let result = await Request.Get("check_session", { Cookie: `id=${id}` });
+    console.log(result);
     return result;
   } catch (error) {
     return Promise.reject(error);

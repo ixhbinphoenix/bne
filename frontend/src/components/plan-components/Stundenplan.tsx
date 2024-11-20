@@ -59,7 +59,7 @@ export default function Stundenplan(): JSX.Element {
         if (error.message == "Untis done fucked up Fetching from Untis failed") {
           fetchJSessionId(getLocalUntisCredentials().username, getLocalUntisCredentials().password).then((result) => {
             if (result.JSessionId) {
-              closePopup()
+              closePopup();
               document.cookie = JSESSIONIDCookieString(result.JSessionId);
               getTimetable(currentWeek.currentMonday, currentWeek.currentFriday).then(
                 (lessons) => {
@@ -196,7 +196,7 @@ export default function Stundenplan(): JSX.Element {
         if (error.message == "Untis done fucked up Fetching from Untis failed") {
           fetchJSessionId(getLocalUntisCredentials().username, getLocalUntisCredentials().password).then((result) => {
             if (result.JSessionId) {
-              document.cookie = JSESSIONIDCookieString(result.JSessionId)
+              document.cookie = JSESSIONIDCookieString(result.JSessionId);
               previousWeek();
             }
           });

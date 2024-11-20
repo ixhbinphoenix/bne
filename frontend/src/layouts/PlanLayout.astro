@@ -13,18 +13,16 @@ const { title } = Astro.props;
 </RootLayout>
 
 <script>
-import { getLocalUntisCredentials } from "../api/untisAPI";
+  import { getLocalUntisCredentials } from "../api/untisAPI";
 
   if ("serviceWorker" in navigator) {
-    if(Notification.permission == "granted") {
-      navigator.serviceWorker.register("/serviceWorker.js", { scope: "/home" }).then((worker) => {
-      });
+    if (Notification.permission == "granted") {
+      navigator.serviceWorker.register("/serviceWorker.js", { scope: "/home" }).then((worker) => {});
       navigator.serviceWorker.ready.then((worker) => {
-        worker.active?.postMessage(getLocalUntisCredentials())
-      })
-    }
-    else {
-      console.log("permission denied")
+        worker.active?.postMessage(getLocalUntisCredentials());
+      });
+    } else {
+      console.log("permission denied");
     }
   }
 </script>

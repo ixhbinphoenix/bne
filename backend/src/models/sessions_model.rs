@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 use surrealdb::sql::{Datetime, Thing};
 
 use super::model::ConnectionData;
-use crate::prelude::Error;
+use crate::error::Error;
 
 
 #[derive(Debug, Serialize, Deserialize)]

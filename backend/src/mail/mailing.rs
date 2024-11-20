@@ -3,7 +3,7 @@ use lettre::{
 };
 
 use super::{error::MailError, utils::Mailer};
-use crate::prelude::Error;
+use crate::error::Error;
 
 pub fn build_mail<T>(to: &str, subject: &str, content_type: ContentType, body: T) -> Result<Message, Error>
 where

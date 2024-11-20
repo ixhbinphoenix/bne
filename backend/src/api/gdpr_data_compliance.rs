@@ -1,5 +1,5 @@
 use actix_identity::Identity;
-use actix_web::{web, Responder, Result};
+use actix_web::{error, web, Responder, Result};
 use chrono::Local;
 use lettre::{
     message::{header::ContentType, Attachment, Mailbox, MultiPart, SinglePart}, Message
@@ -9,7 +9,7 @@ use serde::Serialize;
 use surrealdb::sql::Thing;
 
 use crate::{
-    api::response::Response, internalError, mail::{
+    api_wrapper::utils::TextResponse, mail::{
         mailing::send_mail, utils::{load_template, Mailer}
     }, models::{
         links_model::Link, model::{ConnectionData, CRUD}, sessions_model::Session, user_model::User
@@ -27,7 +27,7 @@ pub async fn gdpr_data_compliance_get(
     id: Option<Identity>, db: ConnectionData, mailer: web::Data<Mailer>,
 ) -> Result<impl Responder> {
     if id.is_none() {
-        return Ok(web::Json(Response::new_error(403, "Not logged in".into())));
+        return Err(error::ErrorForbidden( "Not logged in"));
     }
 
     let id = id.unwrap();
@@ -35,7 +35,7 @@ pub async fn gdpr_data_compliance_get(
         Ok(a) => Thing::from(a.split_once(':').unwrap()),
         Err(e) => {
             error!("Error trying to get id\n{e}");
-            internalError!()
+            return Err(error::ErrorInternalServerError("Internal Server Error"));
         }
     };
 
@@ -44,12 +44,12 @@ pub async fn gdpr_data_compliance_get(
             Some(a) => a,
             None => {
                 error!("User not found?");
-                internalError!()
+                return Err(error::ErrorInternalServerError("Internal Server Error"));
             }
         },
         Err(e) => {
             error!("Error trying to get user\n{e}");
-            internalError!()
+            return Err(error::ErrorInternalServerError("Internal Server Error"));
         }
     };
 
@@ -57,7 +57,7 @@ pub async fn gdpr_data_compliance_get(
         Ok(a) => a,
         Err(e) => {
             error!("Error trying to get links\n{e}");
-            internalError!()
+            return Err(error::ErrorInternalServerError("Internal Server Error"));
         }
     };
 
@@ -65,7 +65,7 @@ pub async fn gdpr_data_compliance_get(
         Ok(a) => a,
         Err(e) => {
             error!("Error trying to get sessions\n{e}");
-            internalError!()
+            return Err(error::ErrorInternalServerError("Internal Server Error"));
         }
     };
 
@@ -83,7 +83,7 @@ pub async fn gdpr_data_compliance_get(
         Ok(a) => a.replace("${{TIMESTAMP}}", &timestamp),
         Err(e) => {
             error!("Error loading template\n{e}");
-            return Ok(Response::new_error(500, "Internal Server Error".into()).into());
+            return Err(error::ErrorInternalServerError( "Internal Server Error"));
         }
     };
 
@@ -91,7 +91,7 @@ pub async fn gdpr_data_compliance_get(
         Ok(a) => a,
         Err(e) => {
             error!("Error parsing mail\n{e}");
-            internalError!()
+            return Err(error::ErrorInternalServerError("Internal Server Error"));
         }
     };
 
@@ -99,7 +99,7 @@ pub async fn gdpr_data_compliance_get(
         Ok(a) => a,
         Err(e) => {
             error!("Error Serializing data to json\n{e}");
-            internalError!()
+            return Err(error::ErrorInternalServerError("Internal Server Error"));
         }
     };
 
@@ -120,14 +120,14 @@ pub async fn gdpr_data_compliance_get(
         Ok(a) => a,
         Err(e) => {
             error!("Error constructing message\n{e}");
-            internalError!()
+            return Err(error::ErrorInternalServerError("Internal Server Error"));
         }
     };
 
     if let Err(e) = send_mail(mailer, message).await {
         error!("Error sending mail\n{e}");
-        internalError!()
+        return Err(error::ErrorInternalServerError("Internal Server Error"));
     };
 
-    Ok(web::Json(Response::new_success("Sent E-Mail, check your inbox".to_string())))
+    Ok(web::Json(TextResponse { message: "Sent E-Mail, check your inbox".to_string()}))
 }

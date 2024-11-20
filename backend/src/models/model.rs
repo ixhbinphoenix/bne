@@ -2,7 +2,7 @@ use async_trait::async_trait;
 use serde::{Deserialize, Serialize};
 use surrealdb::{engine::remote::ws::Client, sql::Thing, Surreal};
 
-use crate::prelude::Error;
+use crate::error::Error;
 
 pub type DBConnection = Surreal<Client>;
 pub type ConnectionData = actix_web::web::Data<DBConnection>;

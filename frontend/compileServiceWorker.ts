@@ -1,7 +1,6 @@
 import { rollup, InputOptions, OutputOptions } from "rollup";
 import typescript from "@rollup/plugin-typescript";
-import terser from "@rollup/plugin-terser"
-
+import terser from "@rollup/plugin-terser";
 
 const compileServiceWorker = () => ({
   name: "compile-typescript-service-worker",
@@ -17,7 +16,7 @@ const compileServiceWorker = () => ({
     };
     const bundle = await rollup(inputOptions);
     await bundle.write(outputOptions);
-    await bundle.close()
+    await bundle.close();
   }
 });
-export default compileServiceWorker
+export default compileServiceWorker;
