@@ -2,7 +2,7 @@ use actix_identity::Identity;
 use actix_web::{error, web, Responder, Result};
 use log::error;
 
-use crate::api_wrapper::utils::TextResponse;
+use crate::api::utils::TextResponse;
 
 
 

@@ -5,7 +5,7 @@ use serde::Deserialize;
 use surrealdb::sql::Thing;
 
 use crate::{
-    api_wrapper::utils::TextResponse, database::sessions::delete_user_sessions, models::{
+    api::utils::TextResponse, database::sessions::delete_user_sessions, models::{
         model::{ConnectionData, CRUD}, user_model::User
     }
 };

@@ -7,7 +7,7 @@ use surrealdb::sql::Thing;
 use uuid::Uuid;
 
 use crate::{
-    api_wrapper::utils::TextResponse, models::{
+    api::utils::TextResponse, models::{
         links_model::{Link, LinkType}, model::{ConnectionData, CRUD}
     }
 };

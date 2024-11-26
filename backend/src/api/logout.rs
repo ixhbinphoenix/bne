@@ -1,7 +1,7 @@
 use actix_identity::Identity;
 use actix_web::{error, web, Responder, Result};
 
-use crate::api_wrapper::utils::TextResponse;
+use crate::api::utils::TextResponse;
 
 
 pub async fn logout_post(id: Option<Identity>) -> Result<impl Responder> {

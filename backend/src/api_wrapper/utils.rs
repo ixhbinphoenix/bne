@@ -329,7 +329,3 @@ pub fn day_of_week(date: u32) -> u8 {
     ((h + 5) % 7) as u8
 }
 
-#[derive(Serialize)]
-pub struct TextResponse {
-    pub message: String
-}

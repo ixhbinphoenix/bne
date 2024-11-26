@@ -2,7 +2,7 @@ use actix_identity::Identity;
 use actix_web::{error, web, Responder, Result};
 use log::error;
 
-use crate::{api_wrapper::utils::TextResponse, database::sessions::delete_user_sessions, models::model::DBConnection};
+use crate::{api::utils::TextResponse, database::sessions::delete_user_sessions, models::model::DBConnection};
 
 pub async fn logout_all_post(id: Option<Identity>, db: web::Data<DBConnection>) -> Result<impl Responder> {
     if let Some(identity) = id {

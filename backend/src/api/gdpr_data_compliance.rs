@@ -9,7 +9,7 @@ use serde::Serialize;
 use surrealdb::sql::Thing;
 
 use crate::{
-    api_wrapper::utils::TextResponse, mail::{
+    api::utils::TextResponse, mail::{
         mailing::send_mail, utils::{load_template, Mailer}
     }, models::{
         links_model::Link, model::{ConnectionData, CRUD}, sessions_model::Session, user_model::User

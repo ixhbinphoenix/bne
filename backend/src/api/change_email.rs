@@ -7,12 +7,14 @@ use surrealdb::sql::Thing;
 
 
 use crate::{
-    api_wrapper::utils::TextResponse, mail::{
+    mail::{
         mailing::{build_mail, send_mail}, utils::{load_template, Mailer}
     }, models::{
         links_model::{Link, LinkType}, model::{ConnectionData, CRUD}, user_model::User
     }
 };
+
+use super::utils::TextResponse;
 
 pub async fn change_email_get(
     id: Option<Identity>, db: ConnectionData, mailer: web::Data<Mailer>,

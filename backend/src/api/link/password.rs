@@ -13,7 +13,7 @@ use surrealdb::sql::Thing;
 use uuid::Uuid;
 
 use crate::{
-    api_wrapper::utils::TextResponse, database::sessions::delete_user_sessions, error::Error, models::{
+    api::utils::TextResponse, database::sessions::delete_user_sessions, error::Error, models::{
         links_model::{Link, LinkType}, model::{ConnectionData, CRUD}, user_model::User
     }, utils::password::valid_password
 };

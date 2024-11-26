@@ -16,6 +16,9 @@ class Request {
         body: JSON.stringify(data)
       });
       if (!result.ok) {
+        if (result.status === 403) {
+          window.location.href == "./login"
+        }
         return Promise.reject({ status: result.status, message: await result.text() });
       }
       if (!result.body) {

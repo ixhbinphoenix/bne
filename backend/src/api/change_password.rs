@@ -11,12 +11,13 @@ use serde::Deserialize;
 use surrealdb::sql::Thing;
 
 use crate::{
-    api_wrapper::utils::TextResponse, database::sessions::delete_user_sessions, error::Error, mail::{
+    database::sessions::delete_user_sessions, error::Error, mail::{
         mailing::{build_mail, send_mail}, utils::{load_template, Mailer}
     }, models::{
         links_model::{Link, LinkType}, model::{ConnectionData, CRUD}, user_model::User
     }, utils::password::valid_password
 };
+use crate::api::utils::TextResponse;
 
 #[derive(Debug, Deserialize)]
 pub struct PasswordChange {

@@ -6,7 +6,7 @@ use log::error;
 use surrealdb::sql::Thing;
 
 use crate::{
-    api_wrapper::utils::TextResponse, mail::{
+    api::utils::TextResponse, mail::{
         mailing::{build_mail, send_mail}, utils::{load_template, Mailer}
     }, models::{
         links_model::{Link, LinkType}, model::{ConnectionData, CRUD}, user_model::User
