@@ -1,13 +1,12 @@
 use actix_identity::Identity;
-use actix_web::{web, Responder, Result};
+use actix_web::{error, web, Responder, Result};
 use chrono::{Months, Utc};
 use lettre::message::header::ContentType;
 use log::error;
 use surrealdb::sql::Thing;
 
-use super::response::Response;
 use crate::{
-    internalError, mail::{
+    api::utils::TextResponse, mail::{
         mailing::{build_mail, send_mail}, utils::{load_template, Mailer}
     }, models::{
         links_model::{Link, LinkType}, model::{ConnectionData, CRUD}, user_model::User
@@ -19,7 +18,7 @@ pub async fn resend_mail_get(
     db: ConnectionData, mailer: web::Data<Mailer>, id: Option<Identity>,
 ) -> Result<impl Responder> {
     if id.is_none() {
-        return Ok(web::Json(Response::new_error(403, "Not logged in".to_string())));
+        return Err(error::ErrorForbidden( "Not logged in".to_string()));
     }
 
     let id = id.unwrap();
@@ -27,7 +26,7 @@ pub async fn resend_mail_get(
         Ok(a) => Thing::from(a.split_once(':').unwrap()),
         Err(e) => {
             error!("Error trying to get id\n{e}");
-            internalError!()
+            return Err(error::ErrorInternalServerError("Internal Server Error"));
         }
     };
 
@@ -36,22 +35,22 @@ pub async fn resend_mail_get(
             Some(a) => a,
             None => {
                 error!("User not found?");
-                internalError!()
+                return Err(error::ErrorInternalServerError("Internal Server Error"));
             }
         },
         Err(e) => {
             error!("Error trying to get user\n{e}");
-            internalError!()
+            return Err(error::ErrorInternalServerError("Internal Server Error"));
         }
     };
 
     if user.clone().verified {
-        return Ok(web::Json(Response::new_error(400, "You're already verified".to_string())));
+        return Err(error::ErrorUnprocessableEntity( "You're already verified".to_string()));
     }
 
     if let Err(e) = Link::delete_from_user_type(db.clone(), user.clone(), LinkType::VerifyAccount).await {
         error!("Error deleting verification links\n{e}");
-        internalError!()
+        return Err(error::ErrorInternalServerError("Internal Server Error"));
     }
 
     let expiry_time = Utc::now().checked_add_months(Months::new(1)).unwrap();
@@ -60,7 +59,7 @@ pub async fn resend_mail_get(
         Ok(a) => a.construct_link(),
         Err(e) => {
             error!("Error creating link\n{e}");
-            internalError!()
+            return Err(error::ErrorInternalServerError("Internal Server Error"));
         }
     };
 
@@ -68,7 +67,7 @@ pub async fn resend_mail_get(
         Ok(a) => a.replace("${{VERIFY_URL}}", &link),
         Err(e) => {
             error!("Error loading template\n{e}");
-            internalError!()
+            return Err(error::ErrorInternalServerError("Internal Server Error"));
         }
     };
 
@@ -76,14 +75,14 @@ pub async fn resend_mail_get(
         Ok(a) => a,
         Err(e) => {
             error!("Error building message\n{e}");
-            internalError!()
+            return Err(error::ErrorInternalServerError("Internal Server Error"));
         }
     };
 
     if let Err(e) = send_mail(mailer, message).await {
         error!("Error sending mail\n{e}");
-        internalError!()
+        return Err(error::ErrorInternalServerError("Internal Server Error"));
     }
 
-    Ok(web::Json(Response::new_success("Sent E-Mail, check your inbox".to_string())))
+    Ok(web::Json(TextResponse { message: "Sent E-Mail, check your inbox".to_string()}))
 }

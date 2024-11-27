@@ -1,11 +1,11 @@
 use actix_identity::Identity;
-use actix_web::{web, Responder, Result};
+use actix_web::{error, web, Responder, Result};
 use log::{error, warn};
 use serde::Deserialize;
 use surrealdb::sql::Thing;
 
 use crate::{
-    api::response::Response, database::sessions::delete_user_sessions, internalError, models::{
+    api::utils::TextResponse, database::sessions::delete_user_sessions, models::{
         model::{ConnectionData, CRUD}, user_model::User
     }
 };
@@ -19,7 +19,7 @@ pub async fn delete_post(
     body: web::Json<DeleteBody>, id: Option<Identity>, db: ConnectionData,
 ) -> Result<impl Responder> {
     if id.is_none() {
-        return Ok(web::Json(Response::new_error(403, "Not logged in".into())));
+        return Err(error::ErrorForbidden( "Not logged in"));
     }
 
     let id = id.unwrap();
@@ -27,7 +27,7 @@ pub async fn delete_post(
         Ok(a) => Thing::from(a.split_once(':').unwrap()),
         Err(e) => {
             error!("Error trying to get id\n{e}");
-            internalError!()
+            return Err(error::ErrorInternalServerError("Internal Server Error"));
         }
     };
 
@@ -36,18 +36,18 @@ pub async fn delete_post(
             Some(a) => a,
             None => {
                 error!("User not found?");
-                internalError!()
+                return Err(error::ErrorInternalServerError("Internal Server Error"));
             }
         },
         Err(e) => {
             error!("Error trying to get user\n{e}");
-            internalError!()
+            return Err(error::ErrorInternalServerError("Internal Server Error"));
         }
     };
 
     if user.verify_password(body.password.clone()).is_err() {
         warn!("Incorrect password");
-        return Ok(web::Json(Response::new_error(403, "Incorrect Password".into())));
+        return Err(error::ErrorForbidden( "Incorrect Password"));
     }
 
     if let Err(e) = delete_user_sessions(db.clone(), id.to_string()).await {
@@ -56,8 +56,8 @@ pub async fn delete_post(
 
     if let Err(e) = User::delete(db, id).await {
         error!("Failed to delete account\n{e}");
-        internalError!()
+        return Err(error::ErrorInternalServerError("Internal Server Error"));
     };
 
-    Ok(web::Json(Response::new_success("Deleted your Account, bye-bye!".to_string())))
+    Ok(web::Json(TextResponse { message: "Deleted your Account, bye-bye!".to_string()}))
 }

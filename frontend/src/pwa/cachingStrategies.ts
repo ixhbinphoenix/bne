@@ -19,8 +19,10 @@ export class Strategies {
     return (
       response ||
       fetch(event.request).then(async (response): Promise<Response> => {
-        const cache = await caches.open(cacheName);
-        cache.put(event.request, response.clone());
+        if (response.ok) {
+          const cache = await caches.open(cacheName);
+          cache.put(event.request, response.clone());
+        }
         return response;
       })
     );
@@ -40,8 +42,10 @@ export class Strategies {
   public static async StaleWhileRevalidate(event: FetchEvent, cacheName: string = "generic"): Promise<Response> {
     return caches.match(event.request).then((cacheResponse: Response | undefined) => {
       let fetchResponse = fetch(event.request).then(async (response): Promise<Response> => {
-        const cache = await caches.open(cacheName);
-        cache.put(event.request, response.clone());
+        if (response.ok) {
+          const cache = await caches.open(cacheName);
+          cache.put(event.request, response.clone());
+        }
         return response;
       });
       return cacheResponse || fetchResponse || this.ErrorMessage();

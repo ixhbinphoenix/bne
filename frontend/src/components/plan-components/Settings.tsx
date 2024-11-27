@@ -76,11 +76,9 @@ export default function Settings(): JSX.Element {
   const [pageContent, setPageContent] = useState<JSX.Element>(Menu);
   const [username, setUsername] = useState("");
   useEffect(() => {
-    getCommitHash().then(
-      (result) => {
-        setCommitHash(result)
-      }
-    )
+    getCommitHash().then((result) => {
+      setCommitHash(result);
+    });
     showNotVerifiedMessage();
     const usernameRaw = localStorage.getItem("untis_username");
     const nameParts = usernameRaw?.split("_");

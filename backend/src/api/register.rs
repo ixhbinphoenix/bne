@@ -1,5 +1,5 @@
 use actix_identity::Identity;
-use actix_web::{web, HttpMessage, HttpRequest, Responder, Result};
+use actix_web::{error, web, HttpMessage, HttpRequest, Responder, Result};
 use argon2::{password_hash::SaltString, Argon2, PasswordHasher};
 use chrono::{Months, Utc};
 use lettre::{message::header::ContentType, Address};
@@ -8,11 +8,11 @@ use rand_core::OsRng;
 use serde::Deserialize;
 
 use crate::{
-    api::response::Response, internalError, mail::{
+    api::utils::TextResponse, error::Error, mail::{
         mailing::{build_mail, send_mail}, utils::{load_template, Mailer}
     }, models::{
         links_model::{Link, LinkType}, model::{DBConnection, CRUD}, user_model::{User, UserCreate}
-    }, prelude::Error, utils::password::valid_password
+    }, utils::password::valid_password
 };
 
 #[derive(Deserialize)]
@@ -27,12 +27,12 @@ pub async fn register_post(
     data: web::Json<RegisterData>, db: web::Data<DBConnection>, request: HttpRequest, mailer: web::Data<Mailer>,
 ) -> Result<impl Responder> {
     if data.email.clone().parse::<Address>().is_err() {
-        return Ok(Response::new_error(400, "Not a valid email address".into()).into());
+        return Err(error::ErrorUnprocessableEntity( "Not a valid email address"));
     }
 
     let pot_user = User::get_from_email(db.clone(), data.email.clone()).await;
     if pot_user.is_ok() && pot_user.unwrap().is_some() {
-        return Ok(web::Json(Response::new_error(403, "E-mail already associated to account!".to_string())));
+        return Err(error::ErrorForbidden( "E-mail already associated to account!".to_string()));
     }
     if let Err(e) = valid_password(&data.password) {
         return Err(Error::from(e).into());
@@ -45,7 +45,7 @@ pub async fn register_post(
         Ok(str) => str.to_string(),
         Err(e) => {
             error!("Error: Unknown error trying to hash password\n{}", e);
-            internalError!("Error trying to hash password")
+            return Err(error::ErrorInternalServerError("Internal Server Error"));
         }
     };
 
@@ -68,7 +68,7 @@ pub async fn register_post(
         Ok(a) => a.construct_link(),
         Err(e) => {
             error!("Error creating link\n{e}");
-            internalError!()
+            return Err(error::ErrorInternalServerError("Internal Server Error"));
         }
     };
 
@@ -76,7 +76,7 @@ pub async fn register_post(
         Ok(a) => a.replace("${{VERIFY_URL}}", &link),
         Err(e) => {
             error!("Error loading template\n{e}");
-            internalError!()
+            return Err(error::ErrorInternalServerError("Internal Server Error"));
         }
     };
 
@@ -85,19 +85,19 @@ pub async fn register_post(
 
         Err(e) => {
             error!("Error building message\n{e}");
-            internalError!()
+            return Err(error::ErrorInternalServerError("Internal Server Error"));
         }
     };
 
     if let Err(e) = send_mail(mailer, message).await {
         error!("Error sending mail\n{e}");
-        internalError!()
+        return Err(error::ErrorInternalServerError("Internal Server Error"));
     }
 
     if let Err(e) = Identity::login(&request.extensions(), ret_user.id.to_string()) {
         error!("Error trying to log into Identity\n{}", e);
-        internalError!("Error trying to log in, please try again")
+        return Err(error::ErrorInternalServerError("Internal Server Error"));
     };
 
-    Ok(Response::new_success("Account successfully registered".to_string()).into())
+    Ok(web::Json(TextResponse { message: "Account successfully registered".to_string()}))
 }

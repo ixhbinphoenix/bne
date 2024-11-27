@@ -14,6 +14,6 @@ pub mod logout;
 pub mod logout_all;
 pub mod register;
 pub mod resend_mail;
-pub mod response;
 pub mod verified;
-pub mod get_timetable_serviceworker;
+//pub mod get_timetable_serviceworker;
+pub mod utils;

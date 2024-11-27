@@ -1,8 +1,8 @@
-export function getMondayAndFridayDates(strMonday? : string): { currentMonday: string; currentFriday: string } {
+export function getMondayAndFridayDates(strMonday?: string): { currentMonday: string; currentFriday: string } {
   let now = new Date();
   let currentDayOfWeek = now.getDay(); // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
 
-  if(strMonday){
+  if (strMonday) {
     currentDayOfWeek = 0;
     now = createDate(strMonday);
   }

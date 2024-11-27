@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 use surrealdb::sql::Thing;
 
 use super::model::{ConnectionData, DBConnection, CRUD};
-use crate::prelude::Error;
+use crate::error::Error;
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Room {

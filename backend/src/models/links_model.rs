@@ -6,7 +6,7 @@ use surrealdb::sql::{Id, Thing};
 use super::{
     model::{ConnectionData, DBConnection, CRUD}, user_model::User
 };
-use crate::{prelude::Error, utils::uuid::random_id};
+use crate::{error::Error, utils::uuid::random_id};
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Link {

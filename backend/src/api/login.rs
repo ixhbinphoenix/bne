@@ -1,9 +1,8 @@
 use actix_identity::Identity;
-use actix_web::{web, HttpMessage, HttpRequest, Responder, Result};
+use actix_web::{error, web, HttpMessage, HttpRequest, Responder, Result};
 use log::error;
 use serde::{Deserialize, Serialize};
 
-use super::response::Response;
 use crate::models::{model::DBConnection, user_model::User};
 
 #[derive(Deserialize)]
@@ -26,27 +25,26 @@ pub async fn login_post(
             Ok(n) => n,
             Err(e) => {
                 error!("Unknown error occured when trying to get user.\n{}", e);
-                return Ok(web::Json(Response::new_error(500, "Internal Server Error".to_owned())));
+                return Err(error::ErrorInternalServerError( "Internal Server Error".to_owned()));
             }
         } {
             Some(u) => u,
             None => {
-                return Ok(Response::new_error(403, "E-Mail or Password is incorrect!".to_owned()).into());
+                return Err(error::ErrorForbidden( "E-Mail or Password is incorrect!".to_owned()));
             }
         }
     };
 
     match db_user.verify_password(data.password.clone()) {
         Ok(_) => match Identity::login(&req.extensions(), db_user.id.to_string()) {
-            Ok(_) => Ok(Response::<LoginResponse>::new_success(LoginResponse {
+            Ok(_) => Ok(web::Json(LoginResponse {
                 untis_cypher: db_user.untis_cypher,
-            })
-            .into()),
+            })),
             Err(e) => {
                 error!("Error: Unknown error trying to login to Identity\n{}", e);
-                Ok(Response::new_error(500, "Internal Server Error".to_owned()).into())
+                Err(error::ErrorInternalServerError( "Internal Server Error".to_owned()))
             }
         },
-        Err(_) => Ok(Response::new_error(403, "E-Mail or Password is incorrect!".to_owned()).into()),
+        Err(_) => Err(error::ErrorForbidden( "E-Mail or Password is incorrect!".to_owned())),
     }
 }

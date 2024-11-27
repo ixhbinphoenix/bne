@@ -17,6 +17,7 @@ export default function ChangeEmail(props: IProps): JSX.Element {
         setErrorMessage(<p>Deine E-Mail-Adresse wurde geändert</p>);
       },
       (error) => {
+        console.log(error);
         setErrorMessage(<p>Etwas ist schief gegangen: {error.message}</p>);
       }
     );

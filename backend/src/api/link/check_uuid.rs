@@ -1,13 +1,13 @@
 use std::str::FromStr;
 
-use actix_web::{web, Responder, Result};
+use actix_web::{error, web, Responder, Result};
 use log::{error, warn};
 use serde::Deserialize;
 use surrealdb::sql::Thing;
 use uuid::Uuid;
 
 use crate::{
-    api::response::Response, internalError, models::{
+    api::utils::TextResponse, models::{
         links_model::{Link, LinkType}, model::{ConnectionData, CRUD}
     }
 };
@@ -23,7 +23,7 @@ pub async fn check_uuid_get(
     path: web::Path<String>, typequery: web::Query<UuidQuery>, db: ConnectionData,
 ) -> Result<impl Responder> {
     if Uuid::from_str(&path).is_err() {
-        return Ok(Response::new_error(400, "UUID is not a valid uuid".into()).into());
+        return Err(error::ErrorUnprocessableEntity( "UUID is not a valid uuid"));
     }
 
     let pot_link = match Link::get_from_id(
@@ -38,20 +38,20 @@ pub async fn check_uuid_get(
         Ok(a) => a,
         Err(e) => {
             error!("There was an error getting a link from the database\n{e}");
-            internalError!("There was a database error")
+            return Err(error::ErrorInternalServerError("Internal Server Error"));
         }
     };
 
     if pot_link.is_none() {
-        return Ok(Response::new_error(404, "Link not found".into()).into());
+        return Err(error::ErrorNotFound( "Link not found"));
     }
 
     let link = pot_link.unwrap();
 
     if link.link_type != typequery.link_type {
         warn!("Link found but wrong type");
-        return Ok(Response::new_error(404, "Link not found".into()).into());
+        return Err(error::ErrorNotFound( "Link not found"));
     }
 
-    Ok(web::Json(Response::new_success("Link found".to_string())))
+    Ok(web::Json(TextResponse { message: "Link found".to_string()}))
 }

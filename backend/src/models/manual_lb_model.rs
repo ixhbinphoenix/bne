@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 use surrealdb::sql::Thing;
 
-use crate::prelude::Error;
+use crate::error::Error;
 
 use super::model::{ConnectionData, DBConnection, CRUD};
 

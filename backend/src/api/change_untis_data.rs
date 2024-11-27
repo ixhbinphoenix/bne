@@ -1,12 +1,11 @@
 use actix_identity::Identity;
-use actix_web::{web, Responder, Result};
+use actix_web::{error, web, Responder, Result};
 use log::{error, warn};
 use serde::Deserialize;
 use surrealdb::sql::Thing;
 
-use super::response::Response;
 use crate::{
-    database::sessions::delete_user_sessions, internalError, models::{
+    api::utils::TextResponse, database::sessions::delete_user_sessions, models::{
         model::{ConnectionData, CRUD}, user_model::User
     }
 };
@@ -22,7 +21,7 @@ pub async fn change_untis_data_post(
     body: web::Json<UntisData>, db: ConnectionData, id: Option<Identity>,
 ) -> Result<impl Responder> {
     if id.is_none() {
-        return Ok(web::Json(Response::new_error(403, "Not logged in".into())));
+        return Err(error::ErrorForbidden( "Not logged in"));
     }
 
     let id = id.unwrap();
@@ -30,7 +29,7 @@ pub async fn change_untis_data_post(
         Ok(a) => Thing::from(a.split_once(':').unwrap()),
         Err(e) => {
             error!("Error trying to get id\n{e}");
-            internalError!()
+            return Err(error::ErrorInternalServerError("Internal Server Error"));
         }
     };
 
@@ -39,17 +38,17 @@ pub async fn change_untis_data_post(
             Some(a) => a,
             None => {
                 error!("User not found?");
-                internalError!()
+                return Err(error::ErrorInternalServerError("Internal Server Error"));
             }
         },
         Err(e) => {
             error!("Error trying to get user\n{e}");
-            internalError!()
+            return Err(error::ErrorInternalServerError("Internal Server Error"));
         }
     };
 
     if user.verify_password(body.password.clone()).is_err() {
-        return Ok(web::Json(Response::new_error(403, "Incorrect Password".to_string())));
+        return Err(error::ErrorForbidden( "Incorrect Password".to_string()));
     }
 
     let new_user = User {
@@ -63,12 +62,12 @@ pub async fn change_untis_data_post(
 
     if let Err(e) = User::update_replace(db.clone(), id.clone(), new_user).await {
         error!("Error updating user\n{e}");
-        internalError!()
+        return Err(error::ErrorInternalServerError("Internal Server Error"));
     }
 
     if let Err(e) = delete_user_sessions(db, id.to_string()).await {
         warn!("Error deleting user sessions, ignoring\n{e}");
     }
 
-    Ok(web::Json(Response::new_success("Successfully changed Untis Data".to_string())))
+    Ok(web::Json(TextResponse { message: "Successfully changed Untis Data".to_string()}))
 }
