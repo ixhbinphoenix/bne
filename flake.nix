@@ -11,6 +11,7 @@
       toolchain = fenix.packages.${system}.latest.toolchain;
       fenixpkgs = fenix.packages.${system};
       pkgs = nixpkgs.legacyPackages.${system};
+      lib = pkgs.lib;
     in rec {
       devShells.default = pkgs.mkShell {
         buildInputs =
@@ -69,6 +70,7 @@
         created = "now"; # Fuck binary compatibility
 
         copyToRoot = with pkgs.dockerTools; [
+          pkgs.openssl
           usrBinEnv
           binSh
           caCertificates
@@ -82,6 +84,7 @@
           ];
           Env = [
             "SSL_CERT_FILE=${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt"
+            "LD_LIBRARY_PATH=${lib.makeLibraryPath [ pkgs.openssl ]}"
           ];
         };
       };
