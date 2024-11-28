@@ -12,7 +12,6 @@ services:
       - start
       - -b
       - 0.0.0.0:8000
-      - --auth
       - --user
       - root
       - --pass
