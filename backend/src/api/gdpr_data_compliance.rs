@@ -6,7 +6,6 @@ use lettre::{
 };
 use log::error;
 use serde::Serialize;
-use surrealdb::sql::Thing;
 
 use crate::{
     api::utils::TextResponse, mail::{
@@ -32,7 +31,10 @@ pub async fn gdpr_data_compliance_get(
 
     let id = id.unwrap();
     let id = match id.id() {
-        Ok(a) => Thing::from(a.split_once(':').unwrap()),
+        Ok(a) => {
+            let b = a.split_once(':').unwrap();
+            (b.0.to_string(), b.1.to_string())
+        },
         Err(e) => {
             error!("Error trying to get id\n{e}");
             return Err(error::ErrorInternalServerError("Internal Server Error"));
@@ -61,7 +63,8 @@ pub async fn gdpr_data_compliance_get(
         }
     };
 
-    let sessions = match Session::get_user_sessions(db.clone(), user.clone().id.to_string()).await {
+    let user_id = user.clone().id;
+    let sessions = match Session::get_user_sessions(db.clone(), format!("{}:{}", user_id.0, user_id.1)).await {
         Ok(a) => a,
         Err(e) => {
             error!("Error trying to get sessions\n{e}");
