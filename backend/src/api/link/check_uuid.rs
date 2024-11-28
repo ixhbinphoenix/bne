@@ -3,7 +3,6 @@ use std::str::FromStr;
 use actix_web::{error, web, Responder, Result};
 use log::{error, warn};
 use serde::Deserialize;
-use surrealdb::sql::Thing;
 use uuid::Uuid;
 
 use crate::{
@@ -28,10 +27,7 @@ pub async fn check_uuid_get(
 
     let pot_link = match Link::get_from_id(
         db.clone(),
-        Thing {
-            tb: "links".into(),
-            id: path.into_inner().into(),
-        },
+        ("links".into(), path.into_inner())
     )
     .await
     {

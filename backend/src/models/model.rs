@@ -1,6 +1,6 @@
 use async_trait::async_trait;
 use serde::{Deserialize, Serialize};
-use surrealdb::{engine::remote::ws::Client, sql::Thing, Surreal};
+use surrealdb::{engine::remote::ws::Client, Surreal};
 
 use crate::error::Error;
 
@@ -18,18 +18,18 @@ where
 
 
     async fn create(db: ConnectionData, tb: String, data: C) -> Result<D, Error> {
-        let mut res: Vec<D> = db.create(tb).content(data).await?;
+        let res: Option<Vec<D>> = db.create(tb).content(data).await?;
 
-        if !res.is_empty() {
-            let a = res.pop().unwrap();
-            Ok(a)
-        } else {
-            Err(Error::DBOptionNone)
+        if let Some(mut res) = res {
+            if !res.is_empty() {
+                return Ok(res.pop().unwrap())
+            }
         }
+        Err(Error::DBOptionNone)
     }
 
     #[allow(dead_code)]
-    async fn create_id(db: ConnectionData, id: Thing, data: D) -> Result<D, Error> {
+    async fn create_id(db: ConnectionData, id: (String, String), data: D) -> Result<D, Error> {
         let res: Option<D> = db.create(id).content(data).await?;
 
         match res {
@@ -38,19 +38,19 @@ where
         }
     }
 
-    async fn get_from_id(db: ConnectionData, id: Thing) -> Result<Option<D>, Error> {
+    async fn get_from_id(db: ConnectionData, id: (String, String)) -> Result<Option<D>, Error> {
         let res: Option<D> = db.select(id).await?;
 
         Ok(res)
     }
 
-    async fn update_replace(db: ConnectionData, id: Thing, data: D) -> Result<(), Error> {
+    async fn update_replace(db: ConnectionData, id: (String, String), data: D) -> Result<(), Error> {
         let _: Option<D> = db.update(id).content(data).await?;
 
         Ok(())
     }
 
-    async fn delete(db: ConnectionData, id: Thing) -> Result<(), Error> {
+    async fn delete(db: ConnectionData, id: (String, String)) -> Result<(), Error> {
         let _: Option<D> = db.delete(id).await?;
 
 

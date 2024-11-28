@@ -5,7 +5,6 @@ use chrono::{Days, Utc};
 use lettre::{message::header::ContentType, Address};
 use log::{debug, error, warn};
 use serde::Deserialize;
-use surrealdb::sql::Thing;
 use uuid::Uuid;
 
 use crate::{
@@ -39,10 +38,7 @@ pub async fn email_change_post(
 
     let pot_link = match Link::get_from_id(
         db.clone(),
-        Thing {
-            tb: "links".into(),
-            id: path.into_inner().into(),
-        },
+        ("links".into(), path.into_inner())
     )
     .await
     {
@@ -134,7 +130,7 @@ pub async fn email_change_post(
     };
 
     // Logout user from all devices
-    if let Err(e) = delete_user_sessions(db.clone(), user_id.to_string()).await {
+    if let Err(e) = delete_user_sessions(db.clone(), format!("{}:{}", user_id.0, user_id.1)).await {
         error!("Error deleting user sessions\n{e}");
         return Err(error::ErrorInternalServerError( "There was a database error"));
     };
