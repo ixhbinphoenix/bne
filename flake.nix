@@ -59,9 +59,6 @@
 
         cargoLock = {
           lockFile = ./backend/Cargo.lock;
-          outputHashes = {
-            "actix-governor-0.5.0" = "sha256-3i0EZIjjPLzrONKKLZWTXRFIEMqpDYo6oEZWE7jQS/A=";
-          };
         };
       };
 
