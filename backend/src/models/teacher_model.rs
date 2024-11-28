@@ -1,12 +1,12 @@
 use serde::{Deserialize, Serialize};
-use surrealdb::sql::{Array, Thing};
+use surrealdb::sql::Array;
 
 use super::model::{ConnectionData, DBConnection, CRUD};
 use crate::error::Error;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Teacher {
-    pub id: Thing,
+    pub id: (String, String),
     pub shortname: String,
     pub longname: String,
     pub lessons: Vec<String>,

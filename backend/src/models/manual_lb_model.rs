@@ -1,5 +1,4 @@
 use serde::{Deserialize, Serialize};
-use surrealdb::sql::Thing;
 
 use crate::error::Error;
 
@@ -7,7 +6,7 @@ use super::model::{ConnectionData, DBConnection, CRUD};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ManualLB {
-    pub id: Thing,
+    pub id: (String, String),
     pub teacher: String,
     pub room: String,
     pub start: u8,

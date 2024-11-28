@@ -1,5 +1,5 @@
 use serde::{Deserialize, Serialize};
-use surrealdb::sql::{Datetime, Thing};
+use surrealdb::sql::Datetime;
 
 use super::model::ConnectionData;
 use crate::error::Error;
@@ -8,7 +8,7 @@ use crate::error::Error;
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Session {
     expiry: Datetime,
-    id: Thing,
+    id: (String, String),
     token: String,
 }
 
