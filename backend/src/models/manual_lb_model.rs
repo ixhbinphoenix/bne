@@ -4,21 +4,21 @@ use crate::error::Error;
 
 use super::model::{ConnectionData, DBConnection, CRUD};
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, sqlx::FromRow)]
 pub struct ManualLB {
     pub id: (String, String),
     pub teacher: String,
     pub room: String,
-    pub start: u8,
-    pub day: u8
+    pub start: i32,
+    pub day: i32
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, sqlxinsert::PgInsert)]
 pub struct ManualLBCreate {
     pub teacher: String,
     pub room: String,
-    pub start: u8,
-    pub day: u8
+    pub start: i32,
+    pub day: i32
 }
 
 #[async_trait::async_trait]

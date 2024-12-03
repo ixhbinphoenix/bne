@@ -1,10 +1,9 @@
 use serde::{Deserialize, Serialize};
-use surrealdb::sql::Array;
 
 use super::model::{ConnectionData, DBConnection, CRUD};
 use crate::error::Error;
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, sqlx::FromRow)]
 pub struct Teacher {
     pub id: (String, String),
     pub shortname: String,
@@ -12,11 +11,11 @@ pub struct Teacher {
     pub lessons: Vec<String>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, sqlxinsert::PgInsert)]
 pub struct TeacherCreate {
     pub shortname: String,
     pub longname: String,
-    pub lessons: Array,
+    pub lessons: Vec<String>,
 }
 
 #[async_trait::async_trait]
@@ -29,7 +28,7 @@ impl CRUD<Teacher, TeacherCreate> for Teacher {
             DEFINE INDEX longname ON teachers COLUMNS longname UNIQUE;\
             DEFINE FIELD lessons ON teachers TYPE array;\
             DEFINE FIELD lessons.* ON teachers TYPE string;";
-        db.query(sql).await?;
+        sqlx::query(sql).execute(&db).await.expect("DB Connection Failed");
 
         Ok(())
     }
@@ -38,16 +37,14 @@ impl CRUD<Teacher, TeacherCreate> for Teacher {
 #[allow(dead_code)]
 impl Teacher {
     pub async fn get_from_shortname(db: ConnectionData, shortname: String) -> Result<Option<Teacher>, Error> {
-        let mut res = db.query("SELECT * FROM teachers WHERE shortname=$name;").bind(("name", shortname)).await?;
-        let teacher: Option<Teacher> = res.take(0)?;
+let res: Option<Teacher> = sqlx::query_as("SELECT * FROM teachers WHERE shortname=?;").bind(shortname).fetch_optional(&db.db).await.expect("DB Connection Failed");
 
-        Ok(teacher)
+        Ok(res)
     }
 
     pub async fn get_from_longname(db: ConnectionData, longname: String) -> Result<Option<Teacher>, Error> {
-        let mut res = db.query("SELECT * FROM teachers WHERE longname=$name;").bind(("name", longname)).await?;
-        let teacher: Option<Teacher> = res.take(0)?;
+        let res: Option<Teacher> = sqlx::query_as("SELECT * FROM teachers WHERE longname=?;").bind(longname).fetch_optional(&db.db).await.expect("DB Connection Failed");
 
-        Ok(teacher)
+        Ok(res)
     }
 }

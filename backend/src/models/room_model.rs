@@ -3,13 +3,13 @@ use serde::{Deserialize, Serialize};
 use super::model::{ConnectionData, DBConnection, CRUD};
 use crate::error::Error;
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone, sqlx::FromRow)]
 pub struct Room {
     pub id: (String, String),
     pub name: String
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, sqlxinsert::PgInsert)]
 pub struct RoomCreate {
     pub name: String
 }

@@ -36,6 +36,7 @@ use lettre::{
 use log::info;
 use rustls::{Certificate, PrivateKey, ServerConfig};
 use rustls_pemfile::{certs, pkcs8_private_keys};
+use sqlx::{Connection, Pool, Postgres};
 use surrealdb::{engine::remote::ws::Ws, opt::auth::Root, Surreal};
 
 use crate::{
@@ -49,6 +50,10 @@ use crate::governor::NginxIpKeyExctrator;
 pub struct GlobalUntisData {
     school: String,
     subdomain: String,
+}
+
+pub struct AppState {
+    db: Pool<Postgres>
 }
 
 #[actix_web::main]
@@ -71,24 +76,16 @@ async fn main() -> io::Result<()> {
 
     let db_location = get_env_or("DB_LOCATION", "127.0.0.1:8000");
 
-    let db = Surreal::new::<Ws>(db_location.clone()).await.expect("DB to connect");
-
+    
     let db_user = get_env_or("DB_USERNAME", "root");
     let db_pass = get_env_or("DB_PASSWORD", "root");
-
+    
     info!("Signing in...");
+    
+    
+    let db = sqlx::postgres::PgPoolOptions::new().connect("postgres://root:root@127.0.0.1:5432/test").await.expect("Wrong Database URL");
 
-    db.signin(Root {
-        username: db_user.as_str(),
-        password: db_pass.as_str(),
-    })
-    .await
-    .expect("DB Credentials to be correct");
-
-    let db_namespace = get_env_or("DB_NAMESPACE", "test");
     let db_database = get_env_or("DB_DATABASE", "test");
-
-    db.use_ns(db_namespace.clone()).use_db(db_database.clone()).await.expect("using namespace and db to work");
 
     User::init_table(db.clone()).await.expect("Table initialization to work");
 
@@ -196,7 +193,7 @@ async fn main() -> io::Result<()> {
             )
             .wrap(cors)
             .app_data(json_config)
-            .app_data(Data::new(db.clone()))
+            .app_data(Data::new(AppState {db: db.clone()}))
             .app_data(Data::new(mailer.clone()))
             .app_data(Data::new(untis_data.clone()))
             .service(web::resource("/register").route(web::post().to(register_post)))

@@ -7,7 +7,7 @@ use super::{
 };
 use crate::{error::Error, utils::uuid::random_id};
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, sqlx::FromRow, sqlxinsert::PgInsert)]
 pub struct Link {
     pub id: (String, String),
     pub user: (String, String),
