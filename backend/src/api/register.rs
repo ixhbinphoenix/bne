@@ -24,7 +24,7 @@ pub struct RegisterData {
 }
 
 pub async fn register_post(
-    data: web::Json<RegisterData>, db: web::Data<DBConnection>, request: HttpRequest, mailer: web::Data<Mailer>,
+    data: web::Json<RegisterData>, db: web::Data<crate::AppState>, request: HttpRequest, mailer: web::Data<Mailer>,
 ) -> Result<impl Responder> {
     if data.email.clone().parse::<Address>().is_err() {
         return Err(error::ErrorUnprocessableEntity( "Not a valid email address"));
@@ -57,9 +57,9 @@ pub async fn register_post(
         verified: false,
     };
 
-    let ret_user = match User::create(db.clone(), "users".to_owned(), db_user).await {
+    let ret_user = match User::create(db.clone(), db_user).await {
         Ok(a) => a,
-        Err(e) => return Err(e.into()),
+        Err(e) => return Err(error::ErrorInternalServerError("Interal Server Error")),
     };
 
     let expiry_time = Utc::now().checked_add_months(Months::new(1)).unwrap();
@@ -94,7 +94,7 @@ pub async fn register_post(
         return Err(error::ErrorInternalServerError("Internal Server Error"));
     }
 
-    if let Err(e) = Identity::login(&request.extensions(), format!("{}:{}", ret_user.id.0, ret_user.id.1)) {
+    if let Err(e) = Identity::login(&request.extensions(), format!("{}", ret_user.id)) {
         error!("Error trying to log into Identity\n{}", e);
         return Err(error::ErrorInternalServerError("Internal Server Error"));
     };

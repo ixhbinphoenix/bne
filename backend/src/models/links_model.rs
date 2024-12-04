@@ -1,21 +1,24 @@
 use chrono::{DateTime, Utc};
 use log::debug;
 use serde::{Deserialize, Serialize};
+use sqlx::{postgres::PgQueryResult, types::chrono};
 
 use super::{
     model::{ConnectionData, DBConnection, CRUD}, user_model::User
 };
 use crate::{error::Error, utils::uuid::random_id};
 
-#[derive(Debug, Serialize, Deserialize, sqlx::FromRow, sqlxinsert::PgInsert)]
+#[derive(Debug, Serialize, Deserialize, sqlx::FromRow)]
 pub struct Link {
-    pub id: (String, String),
-    pub user: (String, String),
+    pub id: String,
+    pub user: String,
     pub link_type: LinkType,
-    pub expiry: surrealdb::sql::Datetime,
+    pub expiry: chrono::NaiveDateTime,
 }
 
-#[derive(Debug, Serialize, Deserialize, PartialEq, Eq)]
+
+#[derive(Debug, Serialize, Deserialize, PartialEq, Eq, sqlx::Type)]
+#[serde(rename_all="kebab-case")]
 pub enum LinkType {
     EmailChange,
     EmailReset,
@@ -32,23 +35,29 @@ impl CRUD<Link, LinkCreate> for Link {
                    DEFINE FIELD user ON links TYPE record<users>;\
                    DEFINE FIELD link_type ON links TYPE string;\
                    DEFINE FIELD expiry ON links TYPE datetime;";
-        db.query(sql).await?;
+        sqlx::query(sql).execute(&db).await.expect("DB Connection Failed");
         Ok(())
     }
 
     /// DO NOT USE THIS IT WILL ALWAYS ERROR
     /// USE `Link::create_from_user` OR `Link::create_id` WITH A RANDOM UUIDv4 INSTEAD
-    async fn create(_: ConnectionData, _: String, _: LinkCreate) -> Result<Link, Error> {
+    async fn create(_: ConnectionData, _: LinkCreate) -> Result<Link, sqlx::Error> {
         panic!("I fucking warned you dude. I told you bro. (https://cat-girls.club/k2d0WWDA)")
     }
-
+    async fn create_id(db: ConnectionData, data: Link) -> Result<Link, sqlx::Error> {
+        sqlx::query_as("INSERT INTO links (id, user, link_type, expiry) values (?, ?, ?, ?);").bind(data.id).bind(data.user).bind(data.link_type).bind(data.expiry).fetch_one(&db.db).await
+    }
+    async fn update_replace(db: ConnectionData, data: Link) -> Result<Link, sqlx::Error> {
+        unimplemented!()
+    }
     async fn get_from_id(db: ConnectionData, id: (String, String)) -> Result<Option<Link>, Error> {
-        let res: Option<Link> = db.select(id.clone()).await?;
+        let res: Option<Link> = sqlx::query_as("SELECT id, user, link_type AS \"link_type: LinkType\", expiry FROM links WHERE user=?;").bind(id.1.clone()).fetch_optional(&db.db).await.expect("DB Connection Failed");
 
         if let Some(link) = res {
-            if link.expiry.timestamp_millis() < Utc::now().timestamp_millis() {
+            if link.expiry.and_utc().timestamp_millis() < Utc::now().timestamp_millis() {
                 debug!("Link expired, deleting.");
-                let _: Option<Link> = db.delete(id).await?;
+                let _: PgQueryResult
+                 = sqlx::query("DELETE FROM links WHERE id = ?").bind(id.1).execute(&db.db).await.expect("DB Connection Failed");
                 Ok(None)
             } else {
                 Ok(Some(link))
@@ -59,50 +68,34 @@ impl CRUD<Link, LinkCreate> for Link {
     }
 }
 
+
+
+
 #[allow(unused)]
 impl Link {
     pub async fn create_from_user(
         db: ConnectionData, user: User, expiry_time: DateTime<Utc>, link_type: LinkType,
-    ) -> Result<Self, Error> {
+    ) -> Result<Link, Error> {
         let link_id = random_id();
-        let user_id = user.id;
-        let db_id = ("links".to_string(), link_id);
 
-        let link = Link {
-            id: db_id.clone(),
-            user: user_id,
-            link_type,
-            expiry: surrealdb::sql::Datetime::from(expiry_time),
-        };
-
-        let res: Option<Self> = db.create(db_id).content(link).await?;
-
-        match res {
-            Some(a) => Ok(a),
-            None => Err(Error::DBOptionNone)
-        }
-    }
-
-    pub async fn get_from_user(db: ConnectionData, user: User) -> Result<Vec<Self>, Error> {
-        let sql = "SELECT * FROM links WHERE user=$user;";
-
-        let res: Vec<Self> = db.query(sql).bind(("user", user.id)).await?.take(0)?;
+        let res: Link = sqlx::query_as("INSERT INTO links (id , user, expiry, link_type) values (?, ?, ?, ?) RETURNING id, user, link_type AS \"link_type: LinkType\", expiry;").bind(link_id).bind(user.id).bind(expiry_time).bind(serde_json::to_string(&link_type).unwrap()).fetch_one(&db.db).await.expect("DB Connection Failed");
 
         Ok(res)
     }
 
-    pub async fn get_from_user_type(db: ConnectionData, user: User, link_type: LinkType) -> Result<Vec<Self>, Error> {
-        let sql = "SELECT * FROM links WHERE user=$user AND link_type=$link_type;";
+    pub async fn get_from_user(db: ConnectionData, user: User) -> Result<Vec<Link>, sqlx::Error> {
+        sqlx::query_as("SELECT id, user, link_type AS \"link_type: LinkType\", expiry FROM links WHERE user=?;").bind(user.id).fetch_all(&db.db).await
+    }
 
-        let res: Vec<Self> = db.query(sql).bind(("user", user.id)).bind(("link_type", link_type)).await?.take(0)?;
+    pub async fn get_from_user_type(db: ConnectionData, user: User, link_type: LinkType) -> Result<Vec<Self>, Error> {
+
+        let res: Vec<Self> = sqlx::query_as("SELECT * FROM links WHERE user=? AND link_type=?;").bind(user.id).bind(link_type).fetch_all(&db.db).await.expect("DB Connection Failed");
 
         Ok(res)
     }
 
     pub async fn delete_from_user_type(db: ConnectionData, user: User, link_type: LinkType) -> Result<(), Error> {
-        let sql = "DELETE links WHERE user=$user AND link_type=$link_type;";
-
-        let res: Vec<Self> = db.query(sql).bind(("user", user.id)).bind(("link_type", link_type)).await?.take(0)?;
+        let res: PgQueryResult = sqlx::query("DELETE links WHERE user=? AND link_type=?").bind(user.id).bind(link_type).execute(&db.db).await.expect("DB Connection Failed");
 
         Ok(())
     }
@@ -115,9 +108,9 @@ impl Link {
             LinkType::VerifyAccount => "verify",
         };
         if cfg!(debug_assertions) {
-            format!("http://localhost:3000/{}/{}", typestr, self.id.1)
+            format!("http://localhost:3000/{}/{}", typestr, self.id)
         } else {
-            format!("https://theschedule.de/{}/{}", typestr, self.id.1)
+            format!("https://theschedule.de/{}/{}", typestr, self.id)
         }
     }
 }

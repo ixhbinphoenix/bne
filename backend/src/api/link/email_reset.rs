@@ -59,7 +59,7 @@ pub async fn email_reset_post(
 
     let user_id = link.user;
 
-    let user = match User::get_from_id(db.clone(), user_id.clone()).await {
+    let user = match User::get_from_id(db.clone(), ("users".to_string(),user_id.clone())).await {
         Ok(a) => match a {
             Some(a) => a,
             None => {
@@ -93,17 +93,17 @@ pub async fn email_reset_post(
         verified: user.verified,
     };
 
-    if User::update_replace(db.clone(), user_id.clone(), new_user).await.is_err() {
+    if User::update_replace(db.clone(),  new_user).await.is_err() {
         error!("Error updating user email");
         return Err(error::ErrorInternalServerError( "There was a database error"));
     }
 
-    if let Err(e) = Link::delete(db.clone(), link.id).await {
+    if let Err(e) = Link::delete(db.clone(), ("links".to_string(),link.id)).await {
         warn!("Failed to delete link, ignoring\n{e}");
     }
 
     // Logout user from all devices
-    if let Err(e) = delete_user_sessions(db.clone(), format!("{}:{}", user_id.0, user_id.1)).await {
+    if let Err(e) = delete_user_sessions(db.clone(), format!("{}", user_id)).await {
         error!("Error deleting user sessions\n{e}");
         return Err(error::ErrorInternalServerError( "There was a database error"));
     };

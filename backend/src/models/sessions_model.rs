@@ -1,13 +1,13 @@
-use chrono::DateTime;
+use chrono::NaiveDateTime;
 use serde::{Deserialize, Serialize};
 
 use super::model::ConnectionData;
 use crate::error::Error;
 
 
-#[derive(Debug, Serialize, Deserialize, sqlx::FromRow, sqlxinsert::PgInsert)]
+#[derive(Debug, Serialize, Deserialize, sqlx::FromRow)]
 pub struct Session {
-    expiry: DateTime,
+    expiry: NaiveDateTime,
     id: (String, String),
     token: String,
 }

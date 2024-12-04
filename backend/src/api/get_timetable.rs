@@ -6,9 +6,9 @@ use serde::{Deserialize, Serialize};
 use crate::{
     api_wrapper::{
         untis_client::UntisClient, utils::{FormattedLesson, TimetableParameter}
-    }, models::{
+    }, error::Error, models::{
         model::{DBConnection, CRUD}, user_model::User
-    }, error::Error, utils::time::{format_for_untis, get_this_friday, get_this_monday}, GlobalUntisData
+    }, utils::time::{format_for_untis, get_this_friday, get_this_monday}, AppState, GlobalUntisData
 };
 
 
@@ -26,7 +26,7 @@ pub struct TimetableQuery {
 
 pub async fn get_timetable(
     id: Option<Identity>, query: web::Query<TimetableQuery>, req: HttpRequest, untis_data: web::Data<GlobalUntisData>,
-    db: web::Data<DBConnection>,
+    db: web::Data<crate::AppState>,
 ) -> Result<impl Responder> {
     if id.is_none() {
         return Err(error::ErrorForbidden("Not logged in"));

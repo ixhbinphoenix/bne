@@ -281,9 +281,9 @@ pub struct FormattedFreeRoom {
 pub struct FormattedLesson {
     pub teacher: String,
     pub is_lb: bool,
-    pub start: u8,
-    pub length: u8,
-    pub day: u8,
+    pub start: i32,
+    pub length: i32,
+    pub day: i32,
     pub subject: String,
     pub subject_short: String,
     pub room: String,

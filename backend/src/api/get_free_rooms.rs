@@ -24,7 +24,7 @@ pub struct TimetableQuery {
 
 pub async fn get_free_rooms(
     id: Option<Identity>, query: web::Query<TimetableQuery>, req: HttpRequest, untis_data: web::Data<GlobalUntisData>,
-    db: web::Data<DBConnection>,
+    db: web::Data<crate::AppState>,
 ) -> Result<impl Responder> {
     if id.is_none() {
         return Err(error::ErrorForbidden( "Not logged in".to_string()));

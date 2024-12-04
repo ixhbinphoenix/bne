@@ -5,11 +5,11 @@ use crate::error::Error;
 
 #[derive(Debug, Serialize, Deserialize, Clone, sqlx::FromRow)]
 pub struct Room {
-    pub id: (String, String),
+    pub id: String,
     pub name: String
 }
 
-#[derive(Debug, Serialize, Deserialize, sqlxinsert::PgInsert)]
+#[derive(Debug, Serialize, Deserialize, )]
 pub struct RoomCreate {
     pub name: String
 }
@@ -20,17 +20,25 @@ impl CRUD<Room, RoomCreate> for Room {
         let sql = "DEFINE TABLE rooms SCHEMAFULL;\
             DEFINE FIELD name ON rooms TYPE string;\
             DEFINE INDEX name ON rooms COLUMNS name UNIQUE;";
-        db.query(sql).await?;
+        sqlx::query(sql).execute(&db).await.expect("DB Connection Failed");
         Ok(())
+    }
+    async fn create(db: ConnectionData, data: RoomCreate) -> Result<Room, sqlx::Error> {
+        sqlx::query_as("INSERT INTO rooms (name) values (?);").bind(data.name).fetch_one(&db.db).await
+    }
+    async fn create_id(db: ConnectionData, data: Room) -> Result<Room, sqlx::Error> {
+        sqlx::query_as("INSERT INTO rooms (name) values (?);").bind(data.name).fetch_one(&db.db).await
+    }
+    async fn update_replace(db: ConnectionData, data: Room) -> Result<Room, sqlx::Error> {
+        sqlx::query_as("UPDATE rooms (name) values (?) WHERE id = ?;").bind(data.name).bind(data.id).fetch_one(&db.db).await
     }
 }
 
 #[allow(dead_code)]
 impl Room {
     pub async fn get_rooms(db: ConnectionData) -> Result<Vec<Room>, Error> {
-        let mut res = db.query("SELECT * FROM rooms").await?;
-        let rooms: Vec<Room> = res.take(0)?;
+        let mut res: Vec<Room> = sqlx::query_as("SELECT * FROM rooms").fetch_all(&db.db).await.expect("DB Connection Failed");
 
-        Ok(rooms)
+        Ok(res)
     }
 }

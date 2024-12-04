@@ -45,7 +45,7 @@ pub async fn verify_get(path: web::Path<String>, db: ConnectionData) -> Result<i
         }
     }
 
-    let user = match User::get_from_id(db.clone(), link.user.clone()).await {
+    let user = match User::get_from_id(db.clone(), ("users".to_string(), link.user.clone())).await {
         Ok(a) => match a {
             Some(a) => a,
             None => {
@@ -68,12 +68,12 @@ pub async fn verify_get(path: web::Path<String>, db: ConnectionData) -> Result<i
         verified: true,
     };
 
-    if let Err(e) = User::update_replace(db.clone(), link.user, new_user).await {
+    if let Err(e) = User::update_replace(db.clone(), new_user).await {
         error!("Updating user failed\n{e}");
         return Err(error::ErrorInternalServerError("Internal Server Error"));
     }
 
-    if let Err(e) = Link::delete(db, link.id).await {
+    if let Err(e) = Link::delete(db, ("links".to_string(), link.id)).await {
         warn!("Failed to delete link, ignoring\n{e}");
     }
 

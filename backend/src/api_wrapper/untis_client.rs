@@ -10,7 +10,7 @@ use super::utils::{
     self, day_of_week, DetailedSubject, FormattedFreeRoom, FormattedLesson, Holidays, Klasse, LoginResults, PeriodObject, Schoolyear, Substitution, TimegridUnits, TimetableParameter, UntisArrayResponse
 };
 use crate::{
-    api_wrapper::utils::UntisResponse, models::{manual_lb_model::ManualLB, model::DBConnection, room_model::Room, teacher_model::Teacher}, error::Error
+    api_wrapper::utils::UntisResponse, error::Error, models::{manual_lb_model::ManualLB, room_model::Room, teacher_model::Teacher}
 };
 
 #[derive(Clone)]
@@ -23,7 +23,7 @@ pub struct UntisClient {
     client: Client,
     jsessionid: String,
     ids: HashMap<String, u16>,
-    db: web::Data<DBConnection>,
+    db: web::Data<crate::AppState>,
 }
 
 #[allow(dead_code)]
@@ -51,7 +51,7 @@ impl UntisClient {
     }
 
     pub async fn init(
-        user: String, password: String, id: String, school: String, subdomain: String, db: web::Data<DBConnection>,
+        user: String, password: String, id: String, school: String, subdomain: String, db: web::Data<crate::AppState>,
     ) -> Result<Self, Error> {
         let mut untis_client = Self {
             person_type: 0,
@@ -73,7 +73,7 @@ impl UntisClient {
 
     pub async fn unsafe_init(
         jsessionid: String, person_id: u16, person_type: u16, id: String, school: String, subdomain: String,
-        db: web::Data<DBConnection>,
+        db: web::Data<crate::AppState>,
     ) -> Result<Self, Error> {
         let client = Client::new();
 
@@ -353,7 +353,7 @@ impl UntisClient {
                 let mut formatted_lesson = FormattedLesson {
                     teacher,
                     is_lb: false,
-                    start: u8::try_from(start).map_err(|err| Error::UntisError(err.to_string() + " 369"))?,
+                    start: u8::try_from(start).map_err(|err| Error::UntisError(err.to_string() + " 369"))?.into(),
                     length: if !lesson.su.is_empty()
                         && d.iter().any(|les| {
                             !les.su.is_empty()
@@ -383,12 +383,12 @@ impl UntisClient {
                             10
                         }
                         else{
-                            (((lesson.end_time - lesson.start_time) / 85) as f32).floor() as u8
+                            ((((lesson.end_time - lesson.start_time) / 85) as f32).floor() as u8).into()
                         }
                     } else {
                         1
                     },
-                    day,
+                    day: day.into(),
                     subject,
                     subject_short,
                     room,
@@ -443,7 +443,7 @@ impl UntisClient {
                  //Swim lessons
                  !formatted_lesson.room.contains("Bad");
                 if formatted_lesson.length > 1 && !lesson.su.is_empty() {
-                    skip.insert(lesson.su[0].id, formatted_lesson.length - 1);
+                    skip.insert(lesson.su[0].id, (formatted_lesson.length - 1).try_into().unwrap());
                 }
                 formatted.push(formatted_lesson);
             }
@@ -654,9 +654,9 @@ impl UntisClient {
                     every_lb.push(FormattedLesson {
                         teacher: teachers,
                         is_lb: true,
-                        start,
+                        start: start.into(),
                         length: 1,
-                        day,
+                        day: day.into(),
                         subject: lesson.0.clone(),
                         subject_short: lesson.0.clone(),
                         room: rooms,

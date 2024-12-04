@@ -93,13 +93,13 @@ pub async fn change_password_post(
         verified: user.verified,
     };
 
-    if let Err(e) = User::update_replace(db.clone(), old_user.id, new_user.clone()).await {
+    if let Err(e) = User::update_replace(db.clone(), new_user.clone()).await {
         error!("Error updating user\n{e}");
         return Err(error::ErrorInternalServerError( "Internal Server Error"));
     }
 
     let new_user_id = new_user.clone().id;
-    if let Err(e) = delete_user_sessions(db.clone(), format!("{}:{}", new_user_id.0, new_user_id.1)).await {
+    if let Err(e) = delete_user_sessions(db.clone(), format!("{}", new_user_id)).await {
         error!("Error logging user out\n{e}");
         return Err(error::ErrorInternalServerError( "Internal Server Error"));
     }

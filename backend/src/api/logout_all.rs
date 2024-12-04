@@ -4,7 +4,7 @@ use log::error;
 
 use crate::{api::utils::TextResponse, database::sessions::delete_user_sessions, models::model::DBConnection};
 
-pub async fn logout_all_post(id: Option<Identity>, db: web::Data<DBConnection>) -> Result<impl Responder> {
+pub async fn logout_all_post(id: Option<Identity>, db: web::Data<crate::AppState>) -> Result<impl Responder> {
     if let Some(identity) = id {
         let id = match identity.id() {
             Ok(a) => a,

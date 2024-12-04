@@ -17,7 +17,7 @@ pub struct LoginResponse {
 }
 
 pub async fn login_post(
-    data: web::Json<LoginData>, db: web::Data<DBConnection>, req: HttpRequest,
+    data: web::Json<LoginData>, db: web::Data<crate::AppState>, req: HttpRequest,
 ) -> Result<impl Responder> {
     let db_user: User = {
         // Very readable yes yes. Suprisingly clippy doesn't have a Problem with this
@@ -36,7 +36,7 @@ pub async fn login_post(
     };
 
     match db_user.verify_password(data.password.clone()) {
-        Ok(_) => match Identity::login(&req.extensions(), format!("{}:{}", db_user.id.0, db_user.id.1)) {
+        Ok(_) => match Identity::login(&req.extensions(), format!("{}", db_user.id)) {
             Ok(_) => Ok(web::Json(LoginResponse {
                 untis_cypher: db_user.untis_cypher,
             })),

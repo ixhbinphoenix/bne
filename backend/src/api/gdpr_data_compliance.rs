@@ -64,7 +64,7 @@ pub async fn gdpr_data_compliance_get(
     };
 
     let user_id = user.clone().id;
-    let sessions = match Session::get_user_sessions(db.clone(), format!("{}:{}", user_id.0, user_id.1)).await {
+    let sessions = match Session::get_user_sessions(db.clone(), format!("{}", user_id)).await {
         Ok(a) => a,
         Err(e) => {
             error!("Error trying to get sessions\n{e}");

@@ -1,0 +1,92 @@
+[
+    {
+        "teacher": "USTR",
+        "room": "O 1-07",
+        "start": 10,
+        "day": 0
+    },
+    {
+        "teacher": "MVEL",
+        "room": "O 1-17",
+        "start": 10,
+        "day": 0
+    },
+    {
+        "teacher": "JMÜL",
+        "room": "O E-01",
+        "start": 2,
+        "day": 2
+    },
+    {
+        "teacher": "FSMI",
+        "room": "O 1-17",
+        "start": 5,
+        "day": 2
+    },
+    {
+        "teacher": "FSMI",
+        "room": "O 1-17",
+        "start": 6,
+        "day": 2
+    },
+    {
+        "teacher": "SBER",
+        "room": "O 1-07",
+        "start": 2,
+        "day": 4
+    },
+    {
+        "teacher": "DJEN",
+        "room": "O E-01",
+        "start": 8,
+        "day": 3
+    },
+    {
+        "teacher": "LIBR",
+        "room": "O 1-01",
+        "start": 8,
+        "day": 3
+    },
+    {
+        "teacher": "THOL",
+        "room": "O 2-11",
+        "start": 3,
+        "day": 2
+    },
+    {
+        "teacher": "SBER",
+        "room": "O 1-07",
+        "start": 4,
+        "day": 3
+    },
+    {
+        "teacher": "THOL",
+        "room": "O 1-02",
+        "start": 6,
+        "day": 4
+    },
+    {
+      "teacher": "RWAL",
+      "room": "O 2-02",
+      "start": 6,
+      "day": 4
+    },
+    {
+      "teacher": "JMÜL",
+      "room": "O E-01",
+      "start": 6,
+      "day": 4
+    },
+    {
+      "teacher": "JMÜL",
+      "room": "O E-01",
+      "start": 5,
+      "day": 4
+    },
+    {
+      "teacher": "MVME",
+      "room": "O E-01",
+      "start": 8,
+      "day": 4
+    }
+]

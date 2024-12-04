@@ -30,7 +30,7 @@ pub struct ServiceWorkerQuery {
 
 pub async fn get_timetable_serviceworker(
     id: Option<Identity>, query: web::Query<TimetableQuery>, data: web::Json<ServiceWorkerQuery>, untis_data: web::Data<GlobalUntisData>,
-    db: web::Data<DBConnection>,
+    db: web::Data<crate::AppState>,
 ) -> Result<impl Responder> {
     if id.is_none() {
         return Err(error::ErrorForbidden( "Not logged in").into());

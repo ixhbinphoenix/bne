@@ -1,0 +1,6 @@
+#V2
+ UPDATE teachers SET lessons = ['L8', 'D', "LI"] WHERE shortname = 'HRPA'; UPDATE teachers SET lessons = ['LI', 'D', "EK"] WHERE shortname = 'RSCH'; UPDATE teachers SET lessons = ['LI', 'D', "S0"] WHERE shortname = 'RWAL'; UPDATE teachers SET lessons = ['M', 'CH', "IF"] WHERE shortname = 'BROT';
+select * from users;
+namespace = test
+db = test
+select * from users;

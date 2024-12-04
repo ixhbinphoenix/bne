@@ -103,7 +103,6 @@ async fn main() -> io::Result<()> {
         .await
         .expect("DB Credentials to be correct");
 
-    session_db.use_ns(db_namespace).use_db(db_database).await.expect("using namespace and db to work");
 
     info!("Connecting SMTP...");
 

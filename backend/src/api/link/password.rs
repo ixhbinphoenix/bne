@@ -66,7 +66,7 @@ pub async fn reset_password_post(
 
     let user_id = link.user;
 
-    let user = match User::get_from_id(db.clone(), user_id.clone()).await {
+    let user = match User::get_from_id(db.clone(), ("users".to_string(), user_id.clone())).await {
         Ok(a) => match a {
             Some(a) => a,
             None => {
@@ -105,16 +105,16 @@ pub async fn reset_password_post(
         verified: old_user.verified,
     };
 
-    if let Err(e) = User::update_replace(db.clone(), new_user.clone().id, new_user.clone()).await {
+    if let Err(e) = User::update_replace(db.clone(), new_user.clone()).await {
         error!("Error updating user\n{e}");
         return Err(error::ErrorInternalServerError( "Internal Server Error"));
     }
 
-    if let Err(e) = Link::delete(db.clone(), link.id).await {
+    if let Err(e) = Link::delete(db.clone(), ("links".to_string(), link.id)).await {
         warn!("Failed to delete link, ignoring\n{e}");
     }
 
-    if let Err(e) = delete_user_sessions(db.clone(), format!("{}:{}", new_user.id.0, new_user.id.1)).await {
+    if let Err(e) = delete_user_sessions(db.clone(), format!("{}", new_user.id)).await {
         error!("Error logging user out\n{e}");
         return Err(error::ErrorInternalServerError( "Internal Server Error"));
     }

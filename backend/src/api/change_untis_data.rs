@@ -62,7 +62,7 @@ pub async fn change_untis_data_post(
         person_id: body.person_id,
     };
 
-    if let Err(e) = User::update_replace(db.clone(), id.clone(), new_user).await {
+    if let Err(e) = User::update_replace(db.clone(), new_user).await {
         error!("Error updating user\n{e}");
         return Err(error::ErrorInternalServerError("Internal Server Error"));
     }
