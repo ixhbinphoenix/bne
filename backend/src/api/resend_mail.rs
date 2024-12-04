@@ -3,6 +3,7 @@ use actix_web::{error, web, Responder, Result};
 use chrono::{Months, Utc};
 use lettre::message::header::ContentType;
 use log::error;
+use surrealdb::sql::Thing;
 
 use crate::{
     api::utils::TextResponse, mail::{
@@ -22,10 +23,7 @@ pub async fn resend_mail_get(
 
     let id = id.unwrap();
     let id = match id.id() {
-        Ok(a) => {
-            let b = a.split_once(':').unwrap();
-            (b.0.to_string(), b.1.to_string())
-        },
+        Ok(a) => Thing::from(a.split_once(':').unwrap()),
         Err(e) => {
             error!("Error trying to get id\n{e}");
             return Err(error::ErrorInternalServerError("Internal Server Error"));

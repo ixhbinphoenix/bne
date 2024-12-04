@@ -8,6 +8,7 @@ use lettre::message::header::ContentType;
 use log::{debug, error};
 use rand_core::OsRng;
 use serde::Deserialize;
+use surrealdb::sql::Thing;
 
 use crate::{
     database::sessions::delete_user_sessions, error::Error, mail::{
@@ -34,17 +35,14 @@ pub async fn change_password_post(
 
     let id = id.unwrap();
     let id = match id.id() {
-        Ok(a) => {
-            let b = a.split_once(':').unwrap();
-            (b.0.to_string(), b.1.to_string())
-        },
+        Ok(a) => a,
         Err(e) => {
             error!("Error trying to get id\n{e}");
             return Err(error::ErrorInternalServerError( "Internal Server Error"));
         }
     };
 
-    let user = match User::get_from_id(db.clone(), id.clone()).await {
+    let user = match User::get_from_id(db.clone(), Thing::from(id.split_once(':').unwrap())).await {
         Ok(a) => match a {
             Some(a) => a,
             None => {
@@ -98,8 +96,7 @@ pub async fn change_password_post(
         return Err(error::ErrorInternalServerError( "Internal Server Error"));
     }
 
-    let new_user_id = new_user.clone().id;
-    if let Err(e) = delete_user_sessions(db.clone(), format!("{}:{}", new_user_id.0, new_user_id.1)).await {
+    if let Err(e) = delete_user_sessions(db.clone(), new_user.clone().id.to_string()).await {
         error!("Error logging user out\n{e}");
         return Err(error::ErrorInternalServerError( "Internal Server Error"));
     }

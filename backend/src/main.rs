@@ -159,14 +159,14 @@ async fn main() -> io::Result<()> {
         #[cfg(feature = "proxy")]
         let governor_config = GovernorConfigBuilder::default()
                 .key_extractor(NginxIpKeyExctrator)
-                .requests_per_second(10)
+                .per_second(10)
                 .burst_size(20)
                 .use_headers()
                 .finish()
                 .unwrap();
         #[cfg(not(feature = "proxy"))] 
         let governor_config = GovernorConfigBuilder::default()
-                .requests_per_second(10)
+                .per_second(10)
                 .burst_size(20)
                 .use_headers()
                 .finish()

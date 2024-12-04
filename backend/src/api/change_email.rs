@@ -3,6 +3,7 @@ use actix_web::{error, web, Responder, Result};
 use chrono::{DateTime, Days, Utc};
 use lettre::message::header::ContentType;
 use log::error;
+use surrealdb::sql::Thing;
 
 
 use crate::{
@@ -24,17 +25,14 @@ pub async fn change_email_get(
 
     let id = id.unwrap();
     let id = match id.id() {
-        Ok(a) => {
-            let b = a.split_once(':').unwrap();
-            (b.0.to_string(), b.1.to_string())
-        },
+        Ok(a) => a,
         Err(e) => {
             error!("Error trying to get id.id()\n{e}");
             return Err(error::ErrorInternalServerError( "Internal Server Error"));
         }
     };
 
-    let user = match User::get_from_id(db.clone(), id).await {
+    let user = match User::get_from_id(db.clone(), Thing::from(id.split_once(':').unwrap())).await {
         Ok(a) => match a {
             Some(a) => a,
             None => {

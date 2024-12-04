@@ -94,7 +94,7 @@ pub async fn register_post(
         return Err(error::ErrorInternalServerError("Internal Server Error"));
     }
 
-    if let Err(e) = Identity::login(&request.extensions(), format!("{}:{}", ret_user.id.0, ret_user.id.1)) {
+    if let Err(e) = Identity::login(&request.extensions(), ret_user.id.to_string()) {
         error!("Error trying to log into Identity\n{}", e);
         return Err(error::ErrorInternalServerError("Internal Server Error"));
     };

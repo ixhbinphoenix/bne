@@ -1,12 +1,13 @@
 use argon2::{Argon2, PasswordHash, PasswordVerifier};
 use serde::{Deserialize, Serialize};
+use surrealdb::sql::Thing;
 
 use super::model::{ConnectionData, DBConnection, CRUD};
 use crate::error::Error;
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct User {
-    pub id: (String, String),
+    pub id: Thing,
     pub email: String,
     pub person_id: i64,
     pub password_hash: String,

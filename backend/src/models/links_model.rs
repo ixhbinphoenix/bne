@@ -1,6 +1,7 @@
 use chrono::{DateTime, Utc};
 use log::debug;
 use serde::{Deserialize, Serialize};
+use surrealdb::sql::{Id, Thing};
 
 use super::{
     model::{ConnectionData, DBConnection, CRUD}, user_model::User
@@ -9,8 +10,8 @@ use crate::{error::Error, utils::uuid::random_id};
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Link {
-    pub id: (String, String),
-    pub user: (String, String),
+    pub id: Thing,
+    pub user: Thing,
     pub link_type: LinkType,
     pub expiry: surrealdb::sql::Datetime,
 }
@@ -42,7 +43,7 @@ impl CRUD<Link, LinkCreate> for Link {
         panic!("I fucking warned you dude. I told you bro. (https://cat-girls.club/k2d0WWDA)")
     }
 
-    async fn get_from_id(db: ConnectionData, id: (String, String)) -> Result<Option<Link>, Error> {
+    async fn get_from_id(db: ConnectionData, id: Thing) -> Result<Option<Link>, Error> {
         let res: Option<Link> = db.select(id.clone()).await?;
 
         if let Some(link) = res {
@@ -66,7 +67,10 @@ impl Link {
     ) -> Result<Self, Error> {
         let link_id = random_id();
         let user_id = user.id;
-        let db_id = ("links".to_string(), link_id);
+        let db_id = Thing {
+            tb: "links".to_string(),
+            id: Id::String(link_id),
+        };
 
         let link = Link {
             id: db_id.clone(),
@@ -115,9 +119,9 @@ impl Link {
             LinkType::VerifyAccount => "verify",
         };
         if cfg!(debug_assertions) {
-            format!("http://localhost:3000/{}/{}", typestr, self.id.1)
+            format!("http://localhost:3000/{}/{}", typestr, self.id.id.to_raw())
         } else {
-            format!("https://theschedule.de/{}/{}", typestr, self.id.1)
+            format!("https://theschedule.de/{}/{}", typestr, self.id.id.to_raw())
         }
     }
 }

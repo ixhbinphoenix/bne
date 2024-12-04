@@ -2,6 +2,7 @@ use actix_identity::Identity;
 use actix_web::{error, web, Responder, Result};
 use log::{error, warn};
 use serde::Deserialize;
+use surrealdb::sql::Thing;
 
 use crate::{
     api::utils::TextResponse, database::sessions::delete_user_sessions, models::{
@@ -23,10 +24,7 @@ pub async fn delete_post(
 
     let id = id.unwrap();
     let id = match id.id() {
-        Ok(a) => {
-            let b = a.split_once(':').unwrap();
-            (b.0.to_string(), b.1.to_string())
-        },
+        Ok(a) => Thing::from(a.split_once(':').unwrap()),
         Err(e) => {
             error!("Error trying to get id\n{e}");
             return Err(error::ErrorInternalServerError("Internal Server Error"));
@@ -52,7 +50,7 @@ pub async fn delete_post(
         return Err(error::ErrorForbidden( "Incorrect Password"));
     }
 
-    if let Err(e) = delete_user_sessions(db.clone(), format!("{}:{}", id.0, id.1)).await {
+    if let Err(e) = delete_user_sessions(db.clone(), id.to_string()).await {
         warn!("Couldn't log out, ignoring\n{e}");
     };
 

@@ -1,6 +1,7 @@
 use actix_identity::Identity;
 use actix_web::{error, web, Responder, Result};
 use log::error;
+use surrealdb::sql::Thing;
 
 use crate::models::{
         model::{ConnectionData, CRUD}, user_model::User
@@ -12,10 +13,7 @@ pub async fn verified_get(id: Option<Identity>, db: ConnectionData) -> Result<im
     }
 
     let id = match id.unwrap().id() {
-        Ok(a) => {
-            let b = a.split_once(':').unwrap();
-            (b.0.to_string(), b.1.to_string())
-        },
+        Ok(a) => Thing::from(a.split_once(':').unwrap()),
         Err(e) => {
             error!("Error getting id.id()\n{e}");
             return Err(error::ErrorInternalServerError("Internal Server Error"));

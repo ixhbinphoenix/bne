@@ -9,6 +9,7 @@ use argon2::{password_hash::SaltString, Argon2, PasswordHasher};
 use log::{error, warn};
 use rand_core::OsRng;
 use serde::Deserialize;
+use surrealdb::sql::Thing;
 use uuid::Uuid;
 
 use crate::{
@@ -37,7 +38,10 @@ pub async fn reset_password_post(
 
     let pot_link = match Link::get_from_id(
         db.clone(),
-        ("links".into(), path.into_inner())
+        Thing {
+            tb: "links".into(),
+            id: path.into_inner().into(),
+        },
     )
     .await
     {
@@ -114,7 +118,7 @@ pub async fn reset_password_post(
         warn!("Failed to delete link, ignoring\n{e}");
     }
 
-    if let Err(e) = delete_user_sessions(db.clone(), format!("{}:{}", new_user.id.0, new_user.id.1)).await {
+    if let Err(e) = delete_user_sessions(db.clone(), new_user.id.to_string()).await {
         error!("Error logging user out\n{e}");
         return Err(error::ErrorInternalServerError( "Internal Server Error"));
     }

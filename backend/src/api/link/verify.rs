@@ -2,6 +2,7 @@ use std::str::FromStr;
 
 use actix_web::{error, web, Responder, Result};
 use log::{error, warn};
+use surrealdb::sql::Thing;
 use uuid::Uuid;
 
 use crate::{
@@ -18,7 +19,10 @@ pub async fn verify_get(path: web::Path<String>, db: ConnectionData) -> Result<i
 
     let pot_link = match Link::get_from_id(
         db.clone(),
-        ("links".into(), path.into_inner())
+        Thing {
+            tb: "links".into(),
+            id: path.into_inner().into(),
+        },
     )
     .await
     {
