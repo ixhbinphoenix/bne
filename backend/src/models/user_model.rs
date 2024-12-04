@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 use super::model::{ConnectionData, DBConnection, CRUD};
 use crate::error::Error;
 
-#[derive(Debug, Serialize, Deserialize, Clone, sqlx::FromRow)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct User {
     pub id: (String, String),
     pub email: String,
@@ -14,7 +14,7 @@ pub struct User {
     pub verified: bool,
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone, sqlxinsert::PgInsert)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct UserCreate {
     pub email: String,
     pub person_id: i64,
@@ -34,7 +34,8 @@ impl CRUD<User, UserCreate> for User {
                    DEFINE FIELD password_hash ON users TYPE string;\
                    DEFINE FIELD untis_cypher ON users TYPE string;\
                    DEFINE FIELD verified ON users TYPE bool;";
-        sqlx::query(sql).execute(&db).await.expect("Database Connection failed");
+        db.query(sql).await?;
+
         Ok(())
     }
 }
@@ -42,13 +43,17 @@ impl CRUD<User, UserCreate> for User {
 #[allow(dead_code)]
 impl User {
     pub async fn get_from_email(db: ConnectionData, email: String) -> Result<Option<User>, Error> {
-        let res: Option<User> = sqlx::query_as("SELECT * FROM users WHERE email = ?").bind(email).fetch_optional(&db.db).await.expect("DB Connection Failed");
-        Ok(res)
+        let mut res = db.query("SELECT * FROM users WHERE email=$email;").bind(("email", email)).await?;
+        let user: Option<User> = res.take(0)?;
+
+        Ok(user)
     }
 
     pub async fn get_from_person_id(db: ConnectionData, person_id: i64) -> Result<Option<User>, Error> {
-        let res: Option<User> = sqlx::query_as("SELECT * FROM users WHERE person_id=?;").bind(person_id).fetch_optional(&db.db).await.expect("DB Connection Failed");
-        Ok(res)
+        let mut res = db.query("SELECT * FROM users WHERE person_id=$id;").bind(("id", person_id)).await?;
+        let user: Option<User> = res.take(0)?;
+
+        Ok(user)
     }
 
     pub fn verify_password(&self, password: String) -> Result<(), argon2::password_hash::Error> {

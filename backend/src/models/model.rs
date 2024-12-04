@@ -1,10 +1,11 @@
 use async_trait::async_trait;
 use serde::{Deserialize, Serialize};
+use surrealdb::{engine::remote::ws::Client, Surreal};
 
-use crate::{error::Error, AppState};
+use crate::error::Error;
 
-pub type DBConnection = sqlx::PgPool;
-pub type ConnectionData = actix_web::web::Data<AppState>;
+pub type DBConnection = Surreal<Client>;
+pub type ConnectionData = actix_web::web::Data<DBConnection>;
 
 #[async_trait]
 #[allow(clippy::upper_case_acronyms)]
@@ -15,8 +16,9 @@ where
 {
     async fn init_table(db: DBConnection) -> Result<(), Error>;
 
+
     async fn create(db: ConnectionData, tb: String, data: C) -> Result<D, Error> {
-        let res: Option<Vec<D>> = C.insert();
+        let res: Option<Vec<D>> = db.create(tb).content(data).await?;
 
         if let Some(mut res) = res {
             if !res.is_empty() {
@@ -49,7 +51,7 @@ where
     }
 
     async fn delete(db: ConnectionData, id: (String, String)) -> Result<(), Error> {
-        sqlx::query("DELETE FROM ? WHERE id = ?").bind(id.0).bind(id.1).execute(&db.db).await.expect("DB Connection Failed");
+        let _: Option<D> = db.delete(id).await?;
 
 
         Ok(())

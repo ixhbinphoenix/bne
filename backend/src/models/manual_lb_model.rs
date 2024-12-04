@@ -1,24 +1,25 @@
 use serde::{Deserialize, Serialize};
+use surrealdb::sql::Thing;
 
 use crate::error::Error;
 
 use super::model::{ConnectionData, DBConnection, CRUD};
 
-#[derive(Debug, Clone, Serialize, Deserialize, sqlx::FromRow)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ManualLB {
-    pub id: (String, String),
+    pub id: Thing,
     pub teacher: String,
     pub room: String,
-    pub start: i32,
-    pub day: i32
+    pub start: u8,
+    pub day: u8
 }
 
-#[derive(Debug, Serialize, Deserialize, sqlxinsert::PgInsert)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct ManualLBCreate {
     pub teacher: String,
     pub room: String,
-    pub start: i32,
-    pub day: i32
+    pub start: u8,
+    pub day: u8
 }
 
 #[async_trait::async_trait]

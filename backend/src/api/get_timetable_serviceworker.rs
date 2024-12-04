@@ -2,6 +2,7 @@ use actix_identity::Identity;
 use actix_web::{error, web, Responder, Result};
 use log::{debug, error};
 use serde::{Deserialize, Serialize};
+use surrealdb::sql::Thing;
 
 use crate::{
     api_wrapper::{
@@ -47,8 +48,7 @@ pub async fn get_timetable_serviceworker(
             Ok(i) => {
                 let split = i.split_once(':');
                 if split.is_some() {
-                    let b = split.unwrap();
-                    (b.0.to_string(), b.1.to_string())
+                    Thing::from(split.unwrap())
                 } else {
                     error!("ID in session_cookie is wrong???");
                     return Err(error::ErrorInternalServerError( "There was an error trying to get your id".to_string()).into());

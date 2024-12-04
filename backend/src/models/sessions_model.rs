@@ -1,14 +1,14 @@
-use chrono::DateTime;
 use serde::{Deserialize, Serialize};
+use surrealdb::sql::{Datetime, Thing};
 
 use super::model::ConnectionData;
 use crate::error::Error;
 
 
-#[derive(Debug, Serialize, Deserialize, sqlx::FromRow, sqlxinsert::PgInsert)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct Session {
-    expiry: DateTime,
-    id: (String, String),
+    expiry: Datetime,
+    id: Thing,
     token: String,
 }
 
@@ -18,14 +18,14 @@ impl Session {
     /// NEXER EXPOSE THIS FUNCTION TO USER INPUT, IT WILL ALLOW THEM TO SQL INJECT
     pub async fn delete_user_sessions(db: ConnectionData, id: String) -> Result<(), Error> {
         // Do not ever do this
-        sqlx::query("DELETE sessions WHERE token = ?").bind(id).execute(&db.db).await.expect("DB Connection Failed");
+        db.query(format!("DELETE sessions WHERE token = /.*{}.*/;", id)).await?;
         Ok(())
     }
 
     /// NEXER EXPOSE THIS FUNCTION TO USER INPUT, IT WILL ALLOW THEM TO SQL INJECT
     pub async fn get_user_sessions(db: ConnectionData, id: String) -> Result<Vec<Self>, Error> {
         // Once again, do not ever do this
-        let res: Vec<Self> = sqlx::query_as("SELECT * FROM sessions WHERE token = ?").bind(id).fetch_all(&db.db).await.expect("DB Connection Failed");
+        let res: Vec<Self> = db.query(format!("SELECT * FROM sessions WHERE token = /.*{}.*/", id)).await?.take(0)?;
         Ok(res)
     }
 }
