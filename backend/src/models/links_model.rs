@@ -29,7 +29,7 @@ pub type LinkCreate = Link;
 impl CRUD<Link, LinkCreate> for Link {
     async fn init_table(db: DBConnection) -> Result<(), Error> {
         let sql = "DEFINE TABLE links SCHEMAFULL;\
-                   DEFINE FIELD user ON links TYPE record<users>;\
+                   DEFINE FIELD user ON links TYPE record(users);\
                    DEFINE FIELD link_type ON links TYPE string;\
                    DEFINE FIELD expiry ON links TYPE datetime;";
         db.query(sql).await?;
