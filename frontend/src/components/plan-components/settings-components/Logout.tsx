@@ -11,17 +11,15 @@ export default function Logout(): JSX.Element {
         <h2>Melde dich hier, oder auf allen Geräten ab</h2>
         <button
           onClick={() => {
-            logout().then(() => {
-              window.location.href = "/login";
-            });
+            logout();
+            window.location.href = "/login";
           }}>
           Hier abmelden
         </button>
         <button
           onClick={() => {
-            logoutAll().then(() => {
-              window.location.href = "/login";
-            });
+            logoutAll();
+            window.location.href = "/login";
           }}>
           Auf allen Geräten abmelden
         </button>
