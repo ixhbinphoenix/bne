@@ -190,7 +190,7 @@ async fn main() -> io::Result<()> {
                 .session_lifecycle(
                     PersistentSession::default()
                         .session_ttl_extension_policy(actix_session::config::TtlExtensionPolicy::OnStateChanges)
-                        .session_ttl(Duration::days(7)),
+                        .session_ttl(Duration::days(180)),
                 )
                 .build(),
             )
