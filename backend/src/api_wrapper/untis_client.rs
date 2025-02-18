@@ -10,7 +10,7 @@ use super::utils::{
     self, day_of_week, DetailedSubject, FormattedFreeRoom, FormattedLesson, Holidays, Klasse, LoginResults, PeriodObject, Schoolyear, Substitution, TimegridUnits, TimetableParameter, UntisArrayResponse
 };
 use crate::{
-    api_wrapper::utils::UntisResponse, models::{manual_lb_model::ManualLB, model::DBConnection, room_model::Room, teacher_model::Teacher}, error::Error
+    api_wrapper::utils::UntisResponse, error::Error, models::{manual_lb_model::ManualLB, manual_lb_overwrite_model::ManualLBOverwrite, model::DBConnection, room_model::Room, teacher_model::Teacher}
 };
 
 #[derive(Clone)]
@@ -496,11 +496,12 @@ impl UntisClient {
 
         let mut additional_lbs: Vec<FormattedLesson> = vec![];
 
+        let overwrites = ManualLBOverwrite::get_manual_lbs_overwrite(self.db.clone()).await.unwrap();
+
+        all_lbs = Self::manual_overwrite_lbs(all_lbs, overwrites);
+
         // Add additional subjects the Teacher does lernbueros for, as well as substitution info
         for lb in all_lbs.clone() {
-            if Self::manual_overwrite_lbs(&lb) {
-                continue;
-            }
             let mut new_room = "".to_string();
             // Checks for substitution on lesson, and if, sets the new room
             if let Some(sub) = &lb.substitution {
@@ -684,19 +685,11 @@ impl UntisClient {
 
         Ok(every_lb)
     }
-    fn manual_overwrite_lbs(lb: &FormattedLesson) -> bool {
-        matches! (
-            (lb.day, lb.start, lb.teacher.as_str()),
-            (0, 6, "FSMI") | 
-            (0, 6 , "NIPR") |
-            (0, 6 , "UTHÜ") | 
-            (1, 1, "HPRA")  |
-            (4, 5, "FSMI") | 
-            (4, 5, "NIPR") |
-            (4, 5, "UTHÖ") |
-            (4, 6, "KHEL") |
-            (4, 7, "KHEL")
-        )
+    fn manual_overwrite_lbs(all_lbs: Vec<FormattedLesson>, all_overwrite: Vec<ManualLBOverwrite>) -> Vec<FormattedLesson> {
+        all_lbs.into_iter().filter(|lb| {
+            !all_overwrite.iter().any(|overwrite| overwrite.day == lb.day && overwrite.start == lb.start && overwrite.teacher == lb.teacher)
+        })
+        .collect()
     }
 
     async fn get_manual_lernbueros(&self) -> Result<Vec<FormattedLesson>, Error> {

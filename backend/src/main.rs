@@ -34,6 +34,7 @@ use lettre::{
     transport::smtp::authentication::{Credentials, Mechanism}, AsyncSmtpTransport, Tokio1Executor
 };
 use log::info;
+use models::manual_lb_overwrite_model::ManualLBOverwrite;
 use rustls::{Certificate, PrivateKey, ServerConfig};
 use rustls_pemfile::{certs, pkcs8_private_keys};
 use surrealdb::{engine::remote::ws::Ws, opt::auth::Root, Surreal};
@@ -95,6 +96,8 @@ async fn main() -> io::Result<()> {
     Link::init_table(db.clone()).await.expect("Table initialization to work");
 
     ManualLB::init_table(db.clone()).await.expect("Table initialization to somehow fail");
+
+    ManualLBOverwrite::init_table(db.clone()).await.expect("Table initialization to work");
 
     let session_db = Surreal::new::<Ws>(db_location).await.expect("DB to connect");
 
