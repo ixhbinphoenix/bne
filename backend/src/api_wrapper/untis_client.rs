@@ -1,9 +1,9 @@
-use std::{collections::HashMap, ops::Add, sync::Arc};
+use std::{collections::HashMap, ops::Add, sync::Arc, time::Instant};
 
 use actix_web::web;
 use actix_web_lab::__reexports::tokio::task::JoinSet;
 use chrono::{Days, NaiveDate};
-use log::{debug, error};
+use log::{debug, error, info};
 use reqwest::{Client, Response};
 
 use super::utils::{
@@ -682,7 +682,9 @@ impl UntisClient {
             .map_err(|err| Error::UntisError(err.to_string() + " 631"))?;
 
         every_lb.append(&mut formatted_holidays);
-
+        let now = Instant::now();
+        every_lb.sort_by(|a, b| a.subject_short.cmp(&b.subject_short));
+        info!("Sorting took {}ns", now.elapsed().as_nanos());
         Ok(every_lb)
     }
     fn manual_overwrite_lbs(all_lbs: Vec<FormattedLesson>, all_overwrite: Vec<ManualLBOverwrite>) -> Vec<FormattedLesson> {
