@@ -1,22 +1,23 @@
 use serde::{Deserialize, Serialize};
-use surrealdb::sql::{Array, Thing};
+use surrealdb::sql::Thing;
 
 use super::model::{ConnectionData, DBConnection, CRUD};
 use crate::error::Error;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Teacher {
-    pub id: Thing,
+    #[serde(skip_serializing)]
+    pub _id: Thing,
     pub shortname: String,
     pub longname: String,
     pub lessons: Vec<String>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct TeacherCreate {
     pub shortname: String,
     pub longname: String,
-    pub lessons: Array,
+    pub lessons: Vec<String>,
 }
 
 #[async_trait::async_trait]
@@ -49,5 +50,18 @@ impl Teacher {
         let teacher: Option<Teacher> = res.take(0)?;
 
         Ok(teacher)
+    }
+    pub async fn get_all(db: ConnectionData) -> Result<Vec<Teacher>, Error> {
+        let mut res = db.query("SELECT * FROM teachers ORDER BY shortname;").await?;
+        let teachers = res.take(0)?;
+        Ok(teachers)
+    }
+    pub async fn insert_one(db: ConnectionData, teacher: TeacherCreate) -> Result<(), Error> {
+        db.query("INSERT INTO teachers (longname, shortname, lessons) VALUES ($longname, $shortname, $lessons)").bind(teacher).await?;
+        Ok(())
+    }
+    pub async fn delete_all(db: ConnectionData) -> Result<(), Error> {
+        db.query("DELETE FROM teachers;").await?;
+        Ok(())
     }
 }

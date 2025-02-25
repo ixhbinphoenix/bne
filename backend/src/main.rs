@@ -25,9 +25,9 @@ use actix_web::{
     cookie::{time::Duration, Key}, middleware::Logger, middleware::Compress, web::{self, Data}, App, HttpResponse, HttpServer
 };
 use api::{
-    change_email::change_email_get, get_free_rooms::get_free_rooms, /* get_timetable_serviceworker::get_timetable_serviceworker ,*/ change_password::change_password_post, change_untis_data::change_untis_data_post, check_session::check_session_get, delete::delete_post, forgot_password::forgot_password_post, gdpr_data_compliance::gdpr_data_compliance_get, get_lernbueros::get_lernbueros, get_timetable::get_timetable, link::{
+    change_email::change_email_get, change_password::change_password_post, change_untis_data::change_untis_data_post, check_session::check_session_get, delete::delete_post, forgot_password::forgot_password_post, gdpr_data_compliance::gdpr_data_compliance_get, get_free_rooms::get_free_rooms, get_lernbueros::get_lernbueros, get_teachers::get_teachers, get_timetable::get_timetable, link::{
         check_uuid::check_uuid_get, email_change::email_change_post, email_reset::email_reset_post, password::reset_password_post, verify::verify_get
-    }, login::login_post, logout::logout_post, logout_all::logout_all_post, register::register_post, resend_mail::resend_mail_get, verified::verified_get
+    }, login::login_post, logout::logout_post, logout_all::logout_all_post, register::register_post, resend_mail::resend_mail_get, save_teachers::save_teachers, verified::verified_get
 };
 use dotenv::dotenv;
 use lettre::{
@@ -209,6 +209,8 @@ async fn main() -> io::Result<()> {
             .service(web::resource("/delete").route(web::post().to(delete_post)))
             .service(web::resource("/check_session").route(web::get().to(check_session_get)))
             .service(web::resource("/get_timetable").route(web::get().to(get_timetable)))
+            .service(web::resource("/get_teachers").route(web::get().to(get_teachers)))
+            .service(web::resource("/save_teachers").route(web::post().to(save_teachers)))
             //.service(web::resource("/get_timetable_serviceworker").route(web::post().to(get_timetable_serviceworker)))
             .service(web::resource("/get_lernbueros").route(web::get().to(get_lernbueros)))
             .service(web::resource("/get_free_rooms").route(web::get().to(get_free_rooms)))

@@ -1,5 +1,5 @@
 import { getLocalUntisCredentials, fetchJSessionId, deleteLocalUntisCredentials } from "./untisAPI";
-import { FreeRoom, JSESSIONIDCookieString, type TheScheduleObject } from "./main";
+import { FreeRoom, JSESSIONIDCookieString, type TheScheduleObject, type Teacher} from "./main";
 
 class Request {
   //class to handle primitive requests
@@ -323,5 +323,21 @@ export async function logoutAll() {
     deleteLocalUntisCredentials();
   } catch (error) {
     return Promise.reject(error);
+  }
+}
+export async function getTeachers() {
+  try {
+    return await Request.Get < { teachers: Teacher[]} >("get_teachers");
+  }
+  catch (error) {
+    return Promise.reject(error)
+  }
+}
+export async function saveTeachers(teachers: Teacher[]) {
+  try {
+    return await Request.Post("save_teachers", teachers)
+  }
+  catch (error) {
+    return Promise.reject(error)
   }
 }

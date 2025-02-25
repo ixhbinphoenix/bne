@@ -17,3 +17,5 @@ pub mod resend_mail;
 pub mod verified;
 //pub mod get_timetable_serviceworker;
 pub mod utils;
+pub mod get_teachers;
+pub mod save_teachers;

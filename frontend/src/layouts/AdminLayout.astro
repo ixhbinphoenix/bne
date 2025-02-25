@@ -1,0 +1,12 @@
+---
+import 'bootstrap/dist/css/bootstrap.css';
+import RootLayout from "./RootLayout.astro";
+import "bootstrap-icons/font/bootstrap-icons.min.css"
+
+const {title} = Astro.props
+---
+
+<RootLayout {title}>
+    <slot />
+    <script src="bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+</RootLayout>

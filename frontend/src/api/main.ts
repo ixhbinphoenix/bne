@@ -14,6 +14,11 @@ export interface TheScheduleObject {
     cancelled: boolean;
   } | null;
 }
+export interface Teacher {
+  longname: string,
+  shortname: string,
+  lessons: string[]
+}
 export interface FreeRoom {
   start: number;
   length: number;
@@ -42,6 +47,28 @@ export const SubjectColor: { [key: string]: string } = {
   PA: "#ff5500",
   EK: "#00490d"
 };
+export const allLbs = [
+  "M",
+  "D",
+  "E",
+  "CH",
+  "GE",
+  "ER",
+  "KR",
+  "PL",
+  "IF",
+  "MU",
+  "KU",
+  "PH",
+  "BI",
+  "L8",
+  "N0",
+  "S0",
+  "SW",
+  "SP",
+  "PA",
+  "EK",
+];
 export const SubjectNames: { [key: string]: string } = {
   M: "Mathematik",
   D: "Deutsch",
