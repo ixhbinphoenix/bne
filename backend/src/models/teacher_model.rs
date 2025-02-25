@@ -7,7 +7,7 @@ use crate::error::Error;
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Teacher {
     #[serde(skip_serializing)]
-    pub _id: Thing,
+    pub id: Thing,
     pub shortname: String,
     pub longname: String,
     pub lessons: Vec<String>,

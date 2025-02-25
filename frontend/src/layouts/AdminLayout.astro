@@ -9,4 +9,9 @@ const {title} = Astro.props
 <RootLayout {title}>
     <slot />
     <script src="bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <style>
+        html {
+            background-color: var(--bs-dark-rgb);
+        }
+    </style>
 </RootLayout>
