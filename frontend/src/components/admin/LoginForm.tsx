@@ -13,7 +13,7 @@ export default function LoginForm(): JSX.Element {
   };
   const sendLogin = (password: string) => {
     document.cookie = `admin_password=${password}; max-age=600; secure; samesite=none; domain=${import.meta.env.PUBLIC_COOKIE_DOMAIN}; path=/;`;
-    document.location.href = "./lehrkräfte"
+    document.location.href = "./lehrkraefte"
   };
   return (
     <div className="form-container">
