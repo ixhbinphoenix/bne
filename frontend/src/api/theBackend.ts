@@ -1,5 +1,5 @@
 import { getLocalUntisCredentials, fetchJSessionId, deleteLocalUntisCredentials } from "./untisAPI";
-import { FreeRoom, JSESSIONIDCookieString, type TheScheduleObject, type Teacher} from "./main";
+import { FreeRoom, JSESSIONIDCookieString, type TheScheduleObject, type Teacher, ManualLb, ManualLbOverwrite} from "./main";
 
 class Request {
   //class to handle primitive requests
@@ -339,5 +339,33 @@ export async function saveTeachers(teachers: Teacher[]) {
   }
   catch (error) {
     return Promise.reject(error)
+  }
+}
+export async function getManualLbs() {
+  try {
+    return await Request.Get<{ lbs: ManualLb[] }>("get_manual_lbs");
+  } catch (error) {
+    return Promise.reject(error);
+  }
+}
+export async function saveManualLbs(lbs: ManualLb[]) {
+  try {
+    return await Request.Post("save_manual_lbs", lbs);
+  } catch (error) {
+    return Promise.reject(error);
+  }
+}
+export async function getManualLbOverwrites() {
+  try {
+    return await Request.Get<{ lbs: ManualLbOverwrite[] }>("get_manual_lb_overwrites");
+  } catch (error) {
+    return Promise.reject(error);
+  }
+}
+export async function saveManualLbOverwrites(lbs: ManualLbOverwrite[]) {
+  try {
+    return await Request.Post("save_manual_lb_overwrites", lbs);
+  } catch (error) {
+    return Promise.reject(error);
   }
 }

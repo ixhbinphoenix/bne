@@ -19,6 +19,17 @@ export interface Teacher {
   shortname: string,
   lessons: string[]
 }
+export interface ManualLb {
+  day: number,
+  start: number,
+  teacher: string,
+  room: string
+}
+export interface ManualLbOverwrite {
+  day: number;
+  start: number;
+  teacher: string;
+}
 export interface FreeRoom {
   start: number;
   length: number;
@@ -51,6 +62,7 @@ export const allLbs = [
   "M",
   "D",
   "E",
+  "BI",
   "CH",
   "GE",
   "ER",

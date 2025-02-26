@@ -3,13 +3,13 @@ use actix_web::{error, web, HttpRequest, Responder, Result};
 use log::{debug, error};
 use surrealdb::sql::Thing;
 
-use crate::{models::{model::{DBConnection, CRUD}, teacher_model::{Teacher, TeacherCreate}, user_model::User}, utils::env::get_env_unsafe};
+use crate::{models::{manual_lb_model::{ManualLB, ManualLBCreate}, model::{DBConnection, CRUD}, user_model::User}, utils::env::get_env_unsafe};
 
 use super::utils::TextResponse;
 
 
-pub async fn save_teachers(
-    data: web::Json<Vec<TeacherCreate>>,
+pub async fn save_manual_lbs(
+    data: web::Json<Vec<ManualLBCreate>>,
     id: Option<Identity>,
     req: HttpRequest,
     db: web::Data<DBConnection>
@@ -57,10 +57,10 @@ pub async fn save_teachers(
         return Err(error::ErrorUnauthorized("Account not verified! Check your E-Mails for a verification link"));
     }
 
-    Teacher::delete_all(db.clone()).await?;
+    ManualLB::delete_all(db.clone()).await?;
 
-    for teacher in data.clone().into_iter() {
-        Teacher::insert_one(db.clone(), teacher).await?
+    for lb in data.clone().into_iter() {
+        ManualLB::insert_one(db.clone(), lb).await?
     }
 
 

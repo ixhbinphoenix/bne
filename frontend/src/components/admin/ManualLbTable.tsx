@@ -1,54 +1,53 @@
 import "../../styles/Admin.scss";
 import NewItemButton from "./NewItemButton";
-import TeacherEntry from "./TeacherEntry";
-import { Teacher } from "../../api/main";
-import { getTeachers, saveTeachers } from "../../api/theBackend";
+import { ManualLb } from "../../api/main";
+import { getManualLbs, saveManualLbs } from "../../api/theBackend";
 import { useState, useEffect } from "preact/hooks";
 import { JSX } from "preact";
+import ManualLbEntry from "./ManualLbEntry";
 export default function TeacherTable(): JSX.Element {
-  const [users, setUsers] = useState<Teacher[]>([]);
+  const [lbs, setLbs] = useState<ManualLb[]>([]);
   useEffect(() => {
-    getTeachers().then((res) => {
-      setUsers(res.teachers);
+    getManualLbs().then((res) => {
+      setLbs(res.lbs);
     });
   }, []);
 
   const submitEmployee = async () => {
-    const teacherProps: Teacher = {
-      longname: "Neue Lehrkraft",
-      shortname: "NEU",
-      lessons: []
+    const teacherProps: ManualLb = {
+      room: "RAUM",
+      start: 1,
+      teacher: "LEHRKRAFT",
+      day: 0
     };
-    setUsers((users) => users.concat(teacherProps));
+    setLbs((lbs) => lbs.concat(teacherProps));
   };
   const buildTeachers = () => {
-    const allTeachers: Teacher[] = [];
+    const allLbs: ManualLb[] = [];
     const allElems = document.getElementById("teachers-table")!;
     Array.from(allElems.children).forEach((row, index, array) => {
       if (index == array.length - 1) return;
       let cells = Array.from(row.children);
       //@ts-expect-error
-      if (cells[3].innerText != "Gelöscht") {
+      if (cells[4].innerText != "Gelöscht") {
         //@ts-expect-error
-        let shortname = cells[0].innerText;
+        let teacher = cells[0].innerText;
         //@ts-expect-error
-        let longname = cells[1].innerText;
-        let lessons: string[] = [];
-        Array.from(cells[2].children[1].firstChild!.firstChild!.firstChild!.childNodes).forEach((lesson) => {
-          //@ts-expect-error
-          lessons.push(lesson.textContent);
-        });
-        lessons.pop();
-        console.log(lessons);
-        let teacher = {
-          longname: longname,
-          shortname: shortname,
-          lessons: lessons
+        let day = parseInt(cells[1].innerText);
+        //@ts-expect-error
+        let start = parseInt(cells[2].innerText);
+        //@ts-expect-error
+        let room = cells[3].innerText;
+        let lb = {
+          teacher: teacher,
+          day: day - 1,
+          start: start,
+          room: room
         };
-        allTeachers.push(teacher);
+        allLbs.push(lb);
       }
     });
-    saveTeachers(allTeachers).catch(() => {
+    saveManualLbs(allLbs).catch(() => {
       alert("Das Admin Passwort ist falsch oder Sie sind nicht angemeldet");
     });
   };
@@ -58,23 +57,24 @@ export default function TeacherTable(): JSX.Element {
         <thead class="bg-dark">
           <tr class="border-bottom">
             <th class="col-1" scope="col">
-              Kürzel
+              Lehrkraft Kürzel
             </th>
-            <th scope="col">Name</th>
-            <th scope="col">Fächer</th>
+            <th scope="col">Tag</th>
+            <th scope="col">Stunde</th>
+            <th>Raum</th>
             <button class="btn btn-primary active my-2" onClick={buildTeachers}>
               <i class="bi bi-floppy"></i>&nbsp;Alle Speichern
             </button>
           </tr>
         </thead>
         <tbody id="teachers-table">
-          {users.map((user) => {
-            return <TeacherEntry {...user} />;
+          {lbs.map((lb) => {
+            return <ManualLbEntry {...lb} />;
           })}
 
           <tr>
             <td class="text-center border-bottom-0">
-              <NewItemButton title="Neue Lehrkraft" onClick={submitEmployee} />
+              <NewItemButton title="Neues Lernbüro" onClick={submitEmployee} />
             </td>
           </tr>
         </tbody>

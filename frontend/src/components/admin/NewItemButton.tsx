@@ -15,7 +15,7 @@ export default function NewItemButton(props: Props): JSX.Element {
           onClick={() => {
             props.onClick();
           }}>
-          <span className="bi-plus-circle">&nbsp; {props.title}</span>
+          <span className="bi-plus-circle">&nbsp; </span><span>{props.title}</span>
         </button>
       </div>
     </div>

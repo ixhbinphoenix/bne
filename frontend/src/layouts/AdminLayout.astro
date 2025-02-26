@@ -1,17 +1,56 @@
 ---
-import 'bootstrap/dist/css/bootstrap.css';
 import RootLayout from "./RootLayout.astro";
 import "bootstrap-icons/font/bootstrap-icons.min.css"
 
-const {title} = Astro.props
+const {title, active} = Astro.props
 ---
 
 <RootLayout {title}>
+    <nav class="navbar navbar-expand-lg bg-body-tertiary" data-bs-theme="dark">
+    <div class="container-fluid">
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <a class={"nav-link " + (active == "lehrkräfte" ? "active" : "")} href="./lehrkräfte">Lehrkräfte</a>
+        </li>
+        <li class="nav-item">
+          <a class={"nav-link " + (active == "manual_lbs" ? "active" : "")} href="./manual_lbs">Manuelle Lernbüros</a>
+        </li>
+        <li class="nav-item">
+          <a class={"nav-link " + (active == "manual_lb_overwrites" ? "active" : "")} href="./manual_lb_overwrites">Lernbüro Überschreibungen</a>
+        </li>
+        
+        
+      </ul>
+      <ul class="navbar-nav float-end">    
+            <li class="nav-item">
+                <a href="./login" class="nav-link">Admin-Login</a>
+            </li>
+        </ul>
+    </div>
+  </div>
+</nav>
     <slot />
     <script src="bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <style>
+    <style lang="scss">
+        @import url("bootstrap/scss/bootstrap.scss");
+        :root {
+            --bs-dark: #24273a;
+            --bs-table-bg: #24273a !important;
+        }
         html {
+            min-height: 100vh;
             background-color: var(--bs-dark-rgb);
+        }
+        body {
+            min-height: 100vh;
+            background-color: var(--bs-dark) !important;
+        }
+        th, td {
+            background-color: #24273a !important;
         }
     </style>
 </RootLayout>

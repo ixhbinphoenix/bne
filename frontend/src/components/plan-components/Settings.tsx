@@ -118,6 +118,7 @@ export default function Settings(): JSX.Element {
         <a href="mailto:support@theschedule.de">Support</a>
         <a href="https://github.com/ixhbinphoenix/bne">Source-Code</a>
         <a href="https://raw.githubusercontent.com/ixhbinphoenix/bne/master/LICENSE">Lizenz</a>
+        <a href="/admin/login">Admin</a>
       </div>
     </div>
   );

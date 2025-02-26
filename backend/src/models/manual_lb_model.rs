@@ -7,6 +7,7 @@ use super::model::{ConnectionData, DBConnection, CRUD};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ManualLB {
+    #[serde(skip_serializing)]
     pub id: Thing,
     pub teacher: String,
     pub room: String,
@@ -14,7 +15,7 @@ pub struct ManualLB {
     pub day: u8
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct ManualLBCreate {
     pub teacher: String,
     pub room: String,
@@ -38,9 +39,17 @@ impl CRUD<ManualLB, ManualLBCreate> for ManualLB {
 
 impl ManualLB {
     pub async fn get_manual_lbs(db: ConnectionData) -> Result<Vec<ManualLB>, Error> {
-        let mut res = db.query("SELECT * FROM manual_lbs").await?;
+        let mut res = db.query("SELECT * FROM manual_lbs ORDER BY day, start").await?;
         let lbs: Vec<ManualLB> = res.take(0)?;
 
         Ok(lbs)
+    }
+    pub async fn insert_one(db: ConnectionData, manuallb: ManualLBCreate) -> Result<(), Error> {
+        db.query("INSERT INTO manual_lbs (teacher, day, start, room) VALUES ($teacher, $day, $start, $room)").bind(manuallb).await?;
+        Ok(())
+    }
+    pub async fn delete_all(db: ConnectionData) -> Result<(), Error> {
+        db.query("DELETE FROM manual_lbs;").await?;
+        Ok(())
     }
 }
