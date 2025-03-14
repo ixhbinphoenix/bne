@@ -77,6 +77,7 @@ export const allLbs = [
   "SW",
   "PA",
   "EK",
+  "LI"
 ];
 export const SubjectNames: { [key: string]: string } = {
   M: "Mathematik",
