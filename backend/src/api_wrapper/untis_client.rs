@@ -328,7 +328,7 @@ impl UntisClient {
                             substituted = true;
                             orgname
                         }
-                        None => lesson.te.into_iter().map(|x| x.name).collect::<Vec<String>>().join(", ").to_owned(),
+                        None => lesson.te.clone().into_iter().map(|x| x.name).collect::<Vec<String>>().join(", ").to_owned(),
                     }
                 } else {
                     "".to_string()
