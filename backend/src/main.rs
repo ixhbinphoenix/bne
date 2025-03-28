@@ -25,6 +25,7 @@ use actix_web::{
     cookie::{time::Duration, Key}, middleware::Logger, middleware::Compress, web::{self, Data}, App, HttpResponse, HttpServer
 };
 use api::{
+    get_jahrgaenge::get_jahrgaenge, save_jahrgaenge::save_jahrgaenge,
     change_email::change_email_get, change_password::change_password_post, change_untis_data::change_untis_data_post, check_session::check_session_get, delete::delete_post, forgot_password::forgot_password_post, gdpr_data_compliance::gdpr_data_compliance_get, get_free_rooms::get_free_rooms, get_lernbueros::get_lernbueros, get_manual_lb_overwrites::get_manual_lb_overwrites, get_manual_lbs::get_manual_lbs, get_teachers::get_teachers, get_timetable::get_timetable, link::{
         check_uuid::check_uuid_get, email_change::email_change_post, email_reset::email_reset_post, password::reset_password_post, verify::verify_get
     }, login::login_post, logout::logout_post, logout_all::logout_all_post, register::register_post, resend_mail::resend_mail_get, save_manual_lb_overwrites::save_manual_lb_overwrites, save_manual_lbs::save_manual_lbs, save_teachers::save_teachers, verified::verified_get
@@ -98,6 +99,8 @@ async fn main() -> io::Result<()> {
     ManualLB::init_table(db.clone()).await.expect("Table initialization to somehow fail");
 
     ManualLBOverwrite::init_table(db.clone()).await.expect("Table initialization to work");
+
+    Jahrgang::init_table(db.clone()).await.expect("Table initialization to work");
 
     let session_db = Surreal::new::<Ws>(db_location).await.expect("DB to connect");
 
@@ -215,6 +218,8 @@ async fn main() -> io::Result<()> {
             .service(web::resource("/get_manual_lb_overwrites").route(web::get().to(get_manual_lb_overwrites)))
             .service(web::resource("save_manual_lbs").route(web::post().to(save_manual_lbs)))
             .service(web::resource("save_manual_lb_overwrites").route(web::post().to(save_manual_lb_overwrites)))
+            .service(web::resource("/get_jahrgaenge").route(web::get().to(get_jahrgaenge)))
+            .service(web::resource("/save_jahrgaenge").route(web::post().to(save_jahrgaenge)))
             //.service(web::resource("/get_timetable_serviceworker").route(web::post().to(get_timetable_serviceworker)))
             .service(web::resource("/get_lernbueros").route(web::get().to(get_lernbueros)))
             .service(web::resource("/get_free_rooms").route(web::get().to(get_free_rooms)))

@@ -23,3 +23,5 @@ pub mod get_manual_lbs;
 pub mod get_manual_lb_overwrites;
 pub mod save_manual_lb_overwrites;
 pub mod save_manual_lbs;
+pub mod get_jahrgaenge;
+pub mod save_jahrgaenge;
