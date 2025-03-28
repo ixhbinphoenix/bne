@@ -25,12 +25,12 @@ pub async fn login_post(
             Ok(n) => n,
             Err(e) => {
                 error!("Unknown error occured when trying to get user.\n{}", e);
-                return Err(error::ErrorInternalServerError( "Internal Server Error".to_owned()));
+                return Err(error::ErrorInternalServerError("Internal Server Error".to_owned()));
             }
         } {
             Some(u) => u,
             None => {
-                return Err(error::ErrorForbidden( "E-Mail or Password is incorrect!".to_owned()));
+                return Err(error::ErrorForbidden("E-Mail or Password is incorrect!".to_owned()));
             }
         }
     };
@@ -42,9 +42,9 @@ pub async fn login_post(
             })),
             Err(e) => {
                 error!("Error: Unknown error trying to login to Identity\n{}", e);
-                Err(error::ErrorInternalServerError( "Internal Server Error".to_owned()))
+                Err(error::ErrorInternalServerError("Internal Server Error".to_owned()))
             }
         },
-        Err(_) => Err(error::ErrorForbidden( "E-Mail or Password is incorrect!".to_owned())),
+        Err(_) => Err(error::ErrorForbidden("E-Mail or Password is incorrect!".to_owned())),
     }
 }

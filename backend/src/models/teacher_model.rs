@@ -57,7 +57,9 @@ impl Teacher {
         Ok(teachers)
     }
     pub async fn insert_one(db: ConnectionData, teacher: TeacherCreate) -> Result<(), Error> {
-        db.query("INSERT INTO teachers (longname, shortname, lessons) VALUES ($longname, $shortname, $lessons)").bind(teacher).await?;
+        db.query("INSERT INTO teachers (longname, shortname, lessons) VALUES ($longname, $shortname, $lessons)")
+            .bind(teacher)
+            .await?;
         Ok(())
     }
     pub async fn delete_all(db: ConnectionData) -> Result<(), Error> {

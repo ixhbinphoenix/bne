@@ -4,7 +4,6 @@ use surrealdb::sql::{Datetime, Thing};
 use super::model::ConnectionData;
 use crate::error::Error;
 
-
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Session {
     expiry: Datetime,

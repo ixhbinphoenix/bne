@@ -1,5 +1,6 @@
 use lettre::{
-    message::{header::ContentType, IntoBody}, AsyncTransport, Message
+    message::{header::ContentType, IntoBody},
+    AsyncTransport, Message,
 };
 
 use super::{error::MailError, utils::Mailer};

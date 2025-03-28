@@ -11,14 +11,14 @@ pub struct ManualLBOverwrite {
     pub id: Thing,
     pub teacher: String,
     pub start: u8,
-    pub day: u8
+    pub day: u8,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct ManualLBOverwriteCreate {
     pub teacher: String,
     pub start: u8,
-    pub day: u8
+    pub day: u8,
 }
 
 #[async_trait::async_trait]
@@ -42,7 +42,9 @@ impl ManualLBOverwrite {
         Ok(lbs)
     }
     pub async fn insert_one(db: ConnectionData, manuallb: ManualLBOverwriteCreate) -> Result<(), Error> {
-        db.query("INSERT INTO manual_lbs_overwrite (teacher, day, start) VALUES ($teacher, $day, $start)").bind(manuallb).await?;
+        db.query("INSERT INTO manual_lbs_overwrite (teacher, day, start) VALUES ($teacher, $day, $start)")
+            .bind(manuallb)
+            .await?;
         Ok(())
     }
     pub async fn delete_all(db: ConnectionData) -> Result<(), Error> {

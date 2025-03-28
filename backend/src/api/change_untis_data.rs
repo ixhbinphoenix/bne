@@ -5,9 +5,12 @@ use serde::Deserialize;
 use surrealdb::sql::Thing;
 
 use crate::{
-    api::utils::TextResponse, database::sessions::delete_user_sessions, models::{
-        model::{ConnectionData, CRUD}, user_model::User
-    }
+    api::utils::TextResponse,
+    database::sessions::delete_user_sessions,
+    models::{
+        model::{ConnectionData, CRUD},
+        user_model::User,
+    },
 };
 
 #[derive(Debug, Deserialize)]
@@ -21,7 +24,7 @@ pub async fn change_untis_data_post(
     body: web::Json<UntisData>, db: ConnectionData, id: Option<Identity>,
 ) -> Result<impl Responder> {
     if id.is_none() {
-        return Err(error::ErrorForbidden( "Not logged in"));
+        return Err(error::ErrorForbidden("Not logged in"));
     }
 
     let id = id.unwrap();
@@ -48,7 +51,7 @@ pub async fn change_untis_data_post(
     };
 
     if user.verify_password(body.password.clone()).is_err() {
-        return Err(error::ErrorForbidden( "Incorrect Password".to_string()));
+        return Err(error::ErrorForbidden("Incorrect Password".to_string()));
     }
 
     let new_user = User {
@@ -69,5 +72,7 @@ pub async fn change_untis_data_post(
         warn!("Error deleting user sessions, ignoring\n{e}");
     }
 
-    Ok(web::Json(TextResponse { message: "Successfully changed Untis Data".to_string()}))
+    Ok(web::Json(TextResponse {
+        message: "Successfully changed Untis Data".to_string(),
+    }))
 }

@@ -13,9 +13,15 @@ use surrealdb::sql::Thing;
 use uuid::Uuid;
 
 use crate::{
-    api::utils::TextResponse, database::sessions::delete_user_sessions, error::Error, models::{
-        links_model::{Link, LinkType}, model::{ConnectionData, CRUD}, user_model::User
-    }, utils::password::valid_password
+    api::utils::TextResponse,
+    database::sessions::delete_user_sessions,
+    error::Error,
+    models::{
+        links_model::{Link, LinkType},
+        model::{ConnectionData, CRUD},
+        user_model::User,
+    },
+    utils::password::valid_password,
 };
 
 #[derive(Debug, Deserialize)]
@@ -30,7 +36,7 @@ pub async fn reset_password_post(
     path: web::Path<String>, db: ConnectionData, body: web::Json<PasswordChange>,
 ) -> Result<impl Responder> {
     if Uuid::from_str(&path).is_err() {
-        return Err(error::ErrorUnprocessableEntity( "UUID is not a valid uuid"));
+        return Err(error::ErrorUnprocessableEntity("UUID is not a valid uuid"));
     }
     if let Err(e) = valid_password(&body.new_password) {
         return Err(Error::from(e).into());
@@ -48,12 +54,12 @@ pub async fn reset_password_post(
         Ok(a) => a,
         Err(e) => {
             error!("There was an error getting a link from the database\n{e}");
-            return Err(error::ErrorInternalServerError( "There was a database error"));
+            return Err(error::ErrorInternalServerError("There was a database error"));
         }
     };
 
     if pot_link.is_none() {
-        return Err(error::ErrorNotFound( "Link not found"));
+        return Err(error::ErrorNotFound("Link not found"));
     }
 
     let link = pot_link.unwrap();
@@ -64,7 +70,7 @@ pub async fn reset_password_post(
             // Potential Attacker really shouldn't know if there's a link of another type with the
             // provided UUID
             warn!("Link found but wrong type");
-            return Err(error::ErrorNotFound( "Link not found"));
+            return Err(error::ErrorNotFound("Link not found"));
         }
     }
 
@@ -75,19 +81,19 @@ pub async fn reset_password_post(
             Some(a) => a,
             None => {
                 error!("User ID in link is not valid");
-                return Err(error::ErrorInternalServerError( "There was a database error"));
+                return Err(error::ErrorInternalServerError("There was a database error"));
             }
         },
         Err(e) => {
             error!("Database error trying to get user from link\n{e}");
-            return Err(error::ErrorInternalServerError( "There was a database error"));
+            return Err(error::ErrorInternalServerError("There was a database error"));
         }
     };
 
     let argon2 = Argon2::default();
 
     if user.verify_password(body.new_password.clone()).is_ok() {
-        return Err(error::ErrorUnprocessableEntity( "New Password can't be Old Password"));
+        return Err(error::ErrorUnprocessableEntity("New Password can't be Old Password"));
     }
 
     let salt = SaltString::generate(OsRng);
@@ -95,7 +101,7 @@ pub async fn reset_password_post(
         Ok(a) => a.to_string(),
         Err(e) => {
             error!("Error trying to hash password\n{e}");
-            return Err(error::ErrorInternalServerError( "Unknown error trying to hash password".to_string()));
+            return Err(error::ErrorInternalServerError("Unknown error trying to hash password".to_string()));
         }
     };
 
@@ -111,7 +117,7 @@ pub async fn reset_password_post(
 
     if let Err(e) = User::update_replace(db.clone(), new_user.clone().id, new_user.clone()).await {
         error!("Error updating user\n{e}");
-        return Err(error::ErrorInternalServerError( "Internal Server Error"));
+        return Err(error::ErrorInternalServerError("Internal Server Error"));
     }
 
     if let Err(e) = Link::delete(db.clone(), link.id).await {
@@ -120,8 +126,10 @@ pub async fn reset_password_post(
 
     if let Err(e) = delete_user_sessions(db.clone(), new_user.id.to_string()).await {
         error!("Error logging user out\n{e}");
-        return Err(error::ErrorInternalServerError( "Internal Server Error"));
+        return Err(error::ErrorInternalServerError("Internal Server Error"));
     }
 
-    Ok(web::Json(TextResponse { message: "Successfully updated Password".to_string()}))
+    Ok(web::Json(TextResponse {
+        message: "Successfully updated Password".to_string(),
+    }))
 }

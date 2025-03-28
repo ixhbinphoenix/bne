@@ -8,11 +8,18 @@ use rand_core::OsRng;
 use serde::Deserialize;
 
 use crate::{
-    api::utils::TextResponse, error::Error, mail::{
-        mailing::{build_mail, send_mail}, utils::{load_template, Mailer}
-    }, models::{
-        links_model::{Link, LinkType}, model::{DBConnection, CRUD}, user_model::{User, UserCreate}
-    }, utils::password::valid_password
+    api::utils::TextResponse,
+    error::Error,
+    mail::{
+        mailing::{build_mail, send_mail},
+        utils::{load_template, Mailer},
+    },
+    models::{
+        links_model::{Link, LinkType},
+        model::{DBConnection, CRUD},
+        user_model::{User, UserCreate},
+    },
+    utils::password::valid_password,
 };
 
 #[derive(Deserialize)]
@@ -27,12 +34,12 @@ pub async fn register_post(
     data: web::Json<RegisterData>, db: web::Data<DBConnection>, request: HttpRequest, mailer: web::Data<Mailer>,
 ) -> Result<impl Responder> {
     if data.email.clone().parse::<Address>().is_err() {
-        return Err(error::ErrorUnprocessableEntity( "Not a valid email address"));
+        return Err(error::ErrorUnprocessableEntity("Not a valid email address"));
     }
 
     let pot_user = User::get_from_email(db.clone(), data.email.clone()).await;
     if pot_user.is_ok() && pot_user.unwrap().is_some() {
-        return Err(error::ErrorForbidden( "E-mail already associated to account!".to_string()));
+        return Err(error::ErrorForbidden("E-mail already associated to account!".to_string()));
     }
     if let Err(e) = valid_password(&data.password) {
         return Err(Error::from(e).into());
@@ -99,5 +106,7 @@ pub async fn register_post(
         return Err(error::ErrorInternalServerError("Internal Server Error"));
     };
 
-    Ok(web::Json(TextResponse { message: "Account successfully registered".to_string()}))
+    Ok(web::Json(TextResponse {
+        message: "Account successfully registered".to_string(),
+    }))
 }

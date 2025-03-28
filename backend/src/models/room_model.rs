@@ -7,12 +7,12 @@ use crate::error::Error;
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Room {
     pub id: Thing,
-    pub name: String
+    pub name: String,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct RoomCreate {
-    pub name: String
+    pub name: String,
 }
 
 #[async_trait::async_trait]

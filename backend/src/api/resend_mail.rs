@@ -6,19 +6,23 @@ use log::error;
 use surrealdb::sql::Thing;
 
 use crate::{
-    api::utils::TextResponse, mail::{
-        mailing::{build_mail, send_mail}, utils::{load_template, Mailer}
-    }, models::{
-        links_model::{Link, LinkType}, model::{ConnectionData, CRUD}, user_model::User
-    }
+    api::utils::TextResponse,
+    mail::{
+        mailing::{build_mail, send_mail},
+        utils::{load_template, Mailer},
+    },
+    models::{
+        links_model::{Link, LinkType},
+        model::{ConnectionData, CRUD},
+        user_model::User,
+    },
 };
-
 
 pub async fn resend_mail_get(
     db: ConnectionData, mailer: web::Data<Mailer>, id: Option<Identity>,
 ) -> Result<impl Responder> {
     if id.is_none() {
-        return Err(error::ErrorForbidden( "Not logged in".to_string()));
+        return Err(error::ErrorForbidden("Not logged in".to_string()));
     }
 
     let id = id.unwrap();
@@ -45,7 +49,7 @@ pub async fn resend_mail_get(
     };
 
     if user.clone().verified {
-        return Err(error::ErrorUnprocessableEntity( "You're already verified".to_string()));
+        return Err(error::ErrorUnprocessableEntity("You're already verified".to_string()));
     }
 
     if let Err(e) = Link::delete_from_user_type(db.clone(), user.clone(), LinkType::VerifyAccount).await {
@@ -84,5 +88,7 @@ pub async fn resend_mail_get(
         return Err(error::ErrorInternalServerError("Internal Server Error"));
     }
 
-    Ok(web::Json(TextResponse { message: "Sent E-Mail, check your inbox".to_string()}))
+    Ok(web::Json(TextResponse {
+        message: "Sent E-Mail, check your inbox".to_string(),
+    }))
 }

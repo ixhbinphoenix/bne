@@ -1,7 +1,10 @@
-use std::{net::{IpAddr, SocketAddr}, str::FromStr};
 use actix_governor::{KeyExtractor, SimpleKeyExtractionError};
 use actix_web::web;
 use log::{error, info};
+use std::{
+    net::{IpAddr, SocketAddr},
+    str::FromStr,
+};
 
 use crate::utils::env::get_env_or;
 
@@ -34,15 +37,14 @@ impl KeyExtractor for NginxIpKeyExctrator {
 
         match peer_ip {
             // request is from reverse proxy, so use 'Forwarded' or 'X-Forwarded-For' header
-            Some(peer) if peer == proxy_ip => connection_info
-                .realip_remote_addr()
-                .ok_or_else(|| { couldntExtract!() })
-                .and_then(|str| {
+            Some(peer) if peer == proxy_ip => {
+                connection_info.realip_remote_addr().ok_or_else(|| couldntExtract!()).and_then(|str| {
                     SocketAddr::from_str(str)
                         .map(|socket| socket.ip())
                         .or_else(|_| IpAddr::from_str(str))
-                        .map_err(|_| { couldntExtract!() })
-                }),
+                        .map_err(|_| couldntExtract!())
+                })
+            }
             Some(peer) => {
                 if cfg!(not(debug_assertions)) && peer.to_string() != "127.0.0.1" {
                     error!("!!!FATAL!!! SERVER MISCONFIGURED, GOT REQUEST FROM REVERSE PROXY DIRECTLY");
@@ -51,10 +53,8 @@ impl KeyExtractor for NginxIpKeyExctrator {
                 }
                 connection_info
                     .peer_addr()
-                    .ok_or_else(|| { couldntExtract!() })
-                    .and_then(|str| {
-                        SocketAddr::from_str(str).map_err(|_| {couldntExtract!()})
-                    })
+                    .ok_or_else(|| couldntExtract!())
+                    .and_then(|str| SocketAddr::from_str(str).map_err(|_| couldntExtract!()))
                     .map(|socket| socket.ip())
             }
             _ => {
@@ -64,10 +64,8 @@ impl KeyExtractor for NginxIpKeyExctrator {
                 }
                 connection_info
                     .peer_addr()
-                    .ok_or_else(|| { couldntExtract!() })
-                    .and_then(|str| {
-                        SocketAddr::from_str(str).map_err(|_| {couldntExtract!()})
-                    })
+                    .ok_or_else(|| couldntExtract!())
+                    .and_then(|str| SocketAddr::from_str(str).map_err(|_| couldntExtract!()))
                     .map(|socket| socket.ip())
             }
         }

@@ -16,7 +16,6 @@ where
 {
     async fn init_table(db: DBConnection) -> Result<(), Error>;
 
-
     async fn create(db: ConnectionData, tb: String, data: C) -> Result<D, Error> {
         let mut res: Vec<D> = db.create(tb).content(data).await?;
 
@@ -34,7 +33,7 @@ where
 
         match res {
             Some(a) => Ok(a),
-            None => Err(Error::DBOptionNone)
+            None => Err(Error::DBOptionNone),
         }
     }
 
@@ -52,7 +51,6 @@ where
 
     async fn delete(db: ConnectionData, id: Thing) -> Result<(), Error> {
         let _: Option<D> = db.delete(id).await?;
-
 
         Ok(())
     }

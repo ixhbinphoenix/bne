@@ -4,7 +4,8 @@ use serde::{Deserialize, Serialize};
 use surrealdb::sql::{Id, Thing};
 
 use super::{
-    model::{ConnectionData, DBConnection, CRUD}, user_model::User
+    model::{ConnectionData, DBConnection, CRUD},
+    user_model::User,
 };
 use crate::{error::Error, utils::uuid::random_id};
 
@@ -83,7 +84,7 @@ impl Link {
 
         match res {
             Some(a) => Ok(a),
-            None => Err(Error::DBOptionNone)
+            None => Err(Error::DBOptionNone),
         }
     }
 

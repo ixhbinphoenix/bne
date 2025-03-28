@@ -6,10 +6,16 @@ use surrealdb::sql::Thing;
 
 use crate::{
     api_wrapper::{
-        untis_client::UntisClient, utils::{FormattedFreeRoom, TimetableParameter}
-    }, error::Error, models::{
-        model::{DBConnection, CRUD}, user_model::User
-    }, utils::time::{format_for_untis, get_this_friday, get_this_monday}, GlobalUntisData
+        untis_client::UntisClient,
+        utils::{FormattedFreeRoom, TimetableParameter},
+    },
+    error::Error,
+    models::{
+        model::{DBConnection, CRUD},
+        user_model::User,
+    },
+    utils::time::{format_for_untis, get_this_friday, get_this_monday},
+    GlobalUntisData,
 };
 
 #[derive(Serialize)]
@@ -28,13 +34,13 @@ pub async fn get_free_rooms(
     db: web::Data<DBConnection>,
 ) -> Result<impl Responder> {
     if id.is_none() {
-        return Err(error::ErrorForbidden( "Not logged in".to_string()));
+        return Err(error::ErrorForbidden("Not logged in".to_string()));
     }
 
     let jsessionid = if let Some(session_cookie) = req.cookie("JSESSIONID") {
         session_cookie.value().to_string()
     } else {
-        return Err(error::ErrorForbidden( "No JSESSIONID provided".to_string()));
+        return Err(error::ErrorForbidden("No JSESSIONID provided".to_string()));
     };
 
     let pot_user: Option<User> = User::get_from_id(
@@ -46,12 +52,14 @@ pub async fn get_free_rooms(
                     Thing::from(split.unwrap())
                 } else {
                     error!("ID in session_cookie is wrong???");
-                    return Err(error::ErrorInternalServerError( "There was an error trying to get your id".to_string()));
+                    return Err(error::ErrorInternalServerError(
+                        "There was an error trying to get your id".to_string(),
+                    ));
                 }
             }
             Err(e) => {
                 error!("Error getting Identity id\n{e}");
-                return Err(error::ErrorInternalServerError( "There was an error trying to get your id".to_string()));
+                return Err(error::ErrorInternalServerError("There was an error trying to get your id".to_string()));
             }
         },
     )
@@ -61,7 +69,7 @@ pub async fn get_free_rooms(
         Some(u) => u,
         None => {
             debug!("Deleted(?) User tried to log in with old session token");
-            return Err(error::ErrorNotFound( "This account doesn't exist!".to_string()));
+            return Err(error::ErrorNotFound("This account doesn't exist!".to_string()));
         }
     };
 
@@ -83,9 +91,9 @@ pub async fn get_free_rooms(
         Ok(u) => u,
         Err(e) => {
             if let Error::Reqwest(_) = e {
-                return Err(error::ErrorUnprocessableEntity( "You done fucked up"));
+                return Err(error::ErrorUnprocessableEntity("You done fucked up"));
             } else {
-                return Err(error::ErrorInternalServerError( "Untis done fucked up ".to_string() + &e.to_string()));
+                return Err(error::ErrorInternalServerError("Untis done fucked up ".to_string() + &e.to_string()));
             }
         }
     };

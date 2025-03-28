@@ -8,13 +8,13 @@ use crate::error::Error;
 pub struct Jahrgang {
     pub id: Thing,
     pub name: String,
-    pub active: bool
+    pub active: bool,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct JahrgangCreate {
     pub name: String,
-    pub active: bool
+    pub active: bool,
 }
 
 #[async_trait::async_trait]

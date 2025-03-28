@@ -12,9 +12,7 @@ pub async fn load_template(name: &str) -> io::Result<String> {
         "password_changed.html" => include_str!("../../email-templates/password_changed.html"),
         "password_reset.html" => include_str!("../../email-templates/password_reset.html"),
         "verify.html" => include_str!("../../email-templates/verify.html"),
-        _ => {
-            return Err(io::Error::new(io::ErrorKind::NotFound, format!("Template {} not found", name)))
-        }
+        _ => return Err(io::Error::new(io::ErrorKind::NotFound, format!("Template {} not found", name))),
     };
     Ok(string.to_string())
 }

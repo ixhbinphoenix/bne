@@ -6,15 +6,17 @@ use surrealdb::sql::Thing;
 use uuid::Uuid;
 
 use crate::{
-    api::utils::TextResponse, models::{
-        links_model::{Link, LinkType}, model::{ConnectionData, CRUD}, user_model::User
-    }
+    api::utils::TextResponse,
+    models::{
+        links_model::{Link, LinkType},
+        model::{ConnectionData, CRUD},
+        user_model::User,
+    },
 };
-
 
 pub async fn verify_get(path: web::Path<String>, db: ConnectionData) -> Result<impl Responder> {
     if Uuid::from_str(&path).is_err() {
-        return Err(error::ErrorUnprocessableEntity( "UUID is not a valid uuid"));
+        return Err(error::ErrorUnprocessableEntity("UUID is not a valid uuid"));
     }
 
     let pot_link = match Link::get_from_id(
@@ -34,7 +36,7 @@ pub async fn verify_get(path: web::Path<String>, db: ConnectionData) -> Result<i
     };
 
     if pot_link.is_none() {
-        return Err(error::ErrorNotFound( "Link not found"));
+        return Err(error::ErrorNotFound("Link not found"));
     }
 
     let link = pot_link.unwrap();
@@ -45,7 +47,7 @@ pub async fn verify_get(path: web::Path<String>, db: ConnectionData) -> Result<i
             // Potential Attacker really shouldn't know if there's a link of another type with the
             // provided UUID
             warn!("Link found but wrong type");
-            return Err(error::ErrorNotFound( "Link not found"));
+            return Err(error::ErrorNotFound("Link not found"));
         }
     }
 
@@ -81,5 +83,7 @@ pub async fn verify_get(path: web::Path<String>, db: ConnectionData) -> Result<i
         warn!("Failed to delete link, ignoring\n{e}");
     }
 
-    Ok(web::Json(TextResponse { message: "Successfully verified!".to_string()}))
+    Ok(web::Json(TextResponse {
+        message: "Successfully verified!".to_string(),
+    }))
 }

@@ -5,9 +5,12 @@ use serde::Deserialize;
 use surrealdb::sql::Thing;
 
 use crate::{
-    api::utils::TextResponse, database::sessions::delete_user_sessions, models::{
-        model::{ConnectionData, CRUD}, user_model::User
-    }
+    api::utils::TextResponse,
+    database::sessions::delete_user_sessions,
+    models::{
+        model::{ConnectionData, CRUD},
+        user_model::User,
+    },
 };
 
 #[derive(Debug, Deserialize)]
@@ -19,7 +22,7 @@ pub async fn delete_post(
     body: web::Json<DeleteBody>, id: Option<Identity>, db: ConnectionData,
 ) -> Result<impl Responder> {
     if id.is_none() {
-        return Err(error::ErrorForbidden( "Not logged in"));
+        return Err(error::ErrorForbidden("Not logged in"));
     }
 
     let id = id.unwrap();
@@ -47,7 +50,7 @@ pub async fn delete_post(
 
     if user.verify_password(body.password.clone()).is_err() {
         warn!("Incorrect password");
-        return Err(error::ErrorForbidden( "Incorrect Password"));
+        return Err(error::ErrorForbidden("Incorrect Password"));
     }
 
     if let Err(e) = delete_user_sessions(db.clone(), id.to_string()).await {
@@ -59,5 +62,7 @@ pub async fn delete_post(
         return Err(error::ErrorInternalServerError("Internal Server Error"));
     };
 
-    Ok(web::Json(TextResponse { message: "Deleted your Account, bye-bye!".to_string()}))
+    Ok(web::Json(TextResponse {
+        message: "Deleted your Account, bye-bye!".to_string(),
+    }))
 }

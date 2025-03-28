@@ -4,12 +4,13 @@ use log::error;
 use surrealdb::sql::Thing;
 
 use crate::models::{
-        model::{ConnectionData, CRUD}, user_model::User
-    };
+    model::{ConnectionData, CRUD},
+    user_model::User,
+};
 
 pub async fn verified_get(id: Option<Identity>, db: ConnectionData) -> Result<impl Responder> {
     if id.is_none() {
-        return Err(error::ErrorForbidden( "Not logged in!".to_string()));
+        return Err(error::ErrorForbidden("Not logged in!".to_string()));
     }
 
     let id = match id.unwrap().id() {
