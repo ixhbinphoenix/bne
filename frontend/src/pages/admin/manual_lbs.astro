@@ -1,11 +1,6 @@
 ---
 import AdminLayout from "../../layouts/AdminLayout.astro";
 import ManualLbTable from "../../components/admin/ManualLbTable";
-
-const id: string | undefined = Astro.cookies.get("id").value;
-if (!id) {
-    return Astro.redirect("/admin/login");
-}
 ---
 
 <AdminLayout title="Manuelle Lernbüros" active="manual_lbs">

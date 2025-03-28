@@ -1,12 +1,6 @@
 ---
 import AdminLayout from "../../layouts/AdminLayout.astro";
 import TeacherTable from "../../components/admin/TeacherTable";
-
-const id: string | undefined = Astro.cookies.get("id").value;
-
-if (!id) {
-    return Astro.redirect("/admin/login");
-}
 ---
 
 <AdminLayout title="Lehrkräfte" active="lehrkräfte">

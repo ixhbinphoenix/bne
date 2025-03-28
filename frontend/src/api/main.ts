@@ -14,6 +14,10 @@ export interface TheScheduleObject {
     cancelled: boolean;
   } | null;
 }
+export interface Jahrgang {
+  name: string;
+  active: boolean;
+}
 export interface Teacher {
   longname: string,
   shortname: string,

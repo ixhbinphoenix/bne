@@ -1,0 +1,8 @@
+---
+import AdminLayout from "../../layouts/AdminLayout.astro";
+import JahrgaengeForm from "../../components/admin/JahrgaengeForm";
+---
+
+<AdminLayout title="Jahrgänge" active="jahrgaenge">
+    <JahrgaengeForm client:only="preact"/>
+</AdminLayout>

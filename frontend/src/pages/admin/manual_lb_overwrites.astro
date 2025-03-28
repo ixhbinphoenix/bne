@@ -1,11 +1,6 @@
 ---
 import AdminLayout from "../../layouts/AdminLayout.astro";
 import ManualLbTable from "../../components/admin/ManualLbOverwriteTable";
-
-const id: string | undefined = Astro.cookies.get("id").value;
-if (!id) {
-    return Astro.redirect("/admin/login");
-}
 ---
 
 <AdminLayout title="Lernbüro Überschreibungen" active="manual_lb_overwrites">

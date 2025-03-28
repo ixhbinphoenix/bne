@@ -1,5 +1,5 @@
 import { getLocalUntisCredentials, fetchJSessionId, deleteLocalUntisCredentials } from "./untisAPI";
-import { FreeRoom, JSESSIONIDCookieString, type TheScheduleObject, type Teacher, ManualLb, ManualLbOverwrite} from "./main";
+import { FreeRoom, JSESSIONIDCookieString, type TheScheduleObject, type Teacher, ManualLb, ManualLbOverwrite, Jahrgang} from "./main";
 
 class Request {
   //class to handle primitive requests
@@ -333,6 +333,14 @@ export async function getTeachers() {
     return Promise.reject(error)
   }
 }
+export async function getJahrgaenge() {
+  try {
+    return await Request.Get < { jahrgaenge: Jahrgang[]} >("get_jahrgaenge");
+  }
+  catch (error) {
+    return Promise.reject(error)
+  }
+}
 export async function saveTeachers(teachers: Teacher[]) {
   try {
     return await Request.Post("save_teachers", teachers)
@@ -351,6 +359,13 @@ export async function getManualLbs() {
 export async function saveManualLbs(lbs: ManualLb[]) {
   try {
     return await Request.Post("save_manual_lbs", lbs);
+  } catch (error) {
+    return Promise.reject(error);
+  }
+}
+export async function sendJahrgaenge(jahrgaenge: Jahrgang[]) {
+  try {
+    return await Request.Post("save_jahrgaenge", jahrgaenge);
   } catch (error) {
     return Promise.reject(error);
   }

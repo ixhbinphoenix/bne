@@ -5,6 +5,7 @@ import { Teacher } from "../../api/main";
 import { getTeachers, saveTeachers } from "../../api/theBackend";
 import { useState, useEffect } from "preact/hooks";
 import { JSX } from "preact";
+import React from "preact/compat";
 export default function TeacherTable(): JSX.Element {
   const [users, setUsers] = useState<Teacher[]>([]);
   useEffect(() => {
