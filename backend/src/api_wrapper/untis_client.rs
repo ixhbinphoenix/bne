@@ -14,8 +14,7 @@ use crate::{
     api_wrapper::utils::UntisResponse,
     error::Error,
     models::{
-        manual_lb_model::ManualLB, manual_lb_overwrite_model::ManualLBOverwrite, model::DBConnection, room_model::Room,
-        teacher_model::Teacher,
+        jahrgang_model::Jahrgang, manual_lb_model::ManualLB, manual_lb_overwrite_model::ManualLBOverwrite, model::DBConnection, room_model::Room, teacher_model::Teacher
     },
 };
 
@@ -490,6 +489,8 @@ impl UntisClient {
 
         // Get IDs of EF, Q1, Q2
 
+        let active_jahrgaenge: Vec<String> = Jahrgang::get_jahrgaenge(self.db.clone()).await.expect("Jahrgänge to exist").into_iter().filter(|x| x.active).map(|x| x.name).collect();
+
         let ef_parameter = parameter.clone();
         let q1_parameter = parameter.clone();
         let q2_parameter = parameter.clone();
@@ -497,17 +498,27 @@ impl UntisClient {
 
         // Fetch timetables of EF, Q1, Q2 in parallel
         let ef_client = Arc::new(self.clone());
-        future_lessons
+        if active_jahrgaenge.contains(&"EF".to_string()) {
+            future_lessons
             .spawn(async move { ef_client.clone().get_timetable(ef_parameter, Some("EF".to_string())).await });
+        }
         let q1_client = Arc::new(self.clone());
-        future_lessons
+        if active_jahrgaenge.contains(&"Q1".to_string()) {
+            future_lessons
             .spawn(async move { q1_client.clone().get_timetable(q1_parameter, Some("Q1".to_string())).await });
+        }
         let q2_client = Arc::new(self.clone());
-        future_lessons
+        if active_jahrgaenge.contains(&"Q2".to_string()) {
+            future_lessons
             .spawn(async move { q2_client.clone().get_timetable(q2_parameter, Some("Q2".to_string())).await });
+        }
         let lbos_client = Arc::new(self.clone());
-        future_lessons
+        if active_jahrgaenge.contains(&"LB_OS".to_string()) {
+            future_lessons
             .spawn(async move { lbos_client.clone().get_timetable(lbos_parameter, Some("LB_OS".to_string())).await });
+        }
+        
+        
 
         let mut lessons: Vec<Vec<FormattedLesson>> = vec![];
 
@@ -519,54 +530,21 @@ impl UntisClient {
         }
 
         // Combine lernbueros of EF, Q1, Q2 into a single vec
-        all_lbs.append(
-            &mut lessons[0]
-                .clone()
-                .into_iter()
-                .filter(|lesson| {
-                    lesson.is_lb
-                        && lesson.subject_short != "S0"
-                        && lesson.subject_short != "N0"
-                        && lesson.subject_short != "OS"
-                })
-                .collect::<Vec<FormattedLesson>>(),
-        );
-        all_lbs.append(
-            &mut lessons[1]
-                .clone()
-                .into_iter()
-                .filter(|lesson| {
-                    lesson.is_lb
-                        && lesson.subject_short != "S0"
-                        && lesson.subject_short != "N0"
-                        && lesson.subject_short != "OS"
-                })
-                .collect::<Vec<FormattedLesson>>(),
-        );
-        all_lbs.append(
-            &mut lessons[2]
-                .clone()
-                .into_iter()
-                .filter(|lesson| {
-                    lesson.is_lb
-                        && lesson.subject_short != "S0"
-                        && lesson.subject_short != "N0"
-                        && lesson.subject_short != "OS"
-                })
-                .collect::<Vec<FormattedLesson>>(),
-        );
-        all_lbs.append(
-            &mut lessons[3]
-                .clone()
-                .into_iter()
-                .filter(|lesson| {
-                    lesson.is_lb
-                        && lesson.subject_short != "S0"
-                        && lesson.subject_short != "N0"
-                        && lesson.subject_short != "OS"
-                })
-                .collect::<Vec<FormattedLesson>>(),
-        );
+        for lesson in lessons {
+            all_lbs.append(
+                &mut lesson
+                    .clone()
+                    .into_iter()
+                    .filter(|lesson| {
+                        lesson.is_lb
+                            && lesson.subject_short != "S0"
+                            && lesson.subject_short != "N0"
+                            && lesson.subject_short != "OS"
+                    })
+                    .collect::<Vec<FormattedLesson>>(),
+            );
+        };
+        
 
         let mut additional_lbs: Vec<FormattedLesson> = vec![];
 
@@ -830,6 +808,8 @@ impl UntisClient {
     pub async fn get_free_rooms(&self, parameter: TimetableParameter) -> Result<Vec<FormattedFreeRoom>, Error> {
         let mut future_lessons = JoinSet::new();
 
+        let active_jahrgaenge: Vec<String> = Jahrgang::get_jahrgaenge(self.db.clone()).await.expect("Jahrgänge to exist").into_iter().filter(|x| x.active).map(|x| x.name).collect();
+
         let ef_parameter = parameter.clone();
         let q1_parameter = parameter.clone();
         let q2_parameter = parameter.clone();
@@ -837,17 +817,25 @@ impl UntisClient {
 
         // Fetch timetables of EF, Q1, Q2 in parallel
         let ef_client = Arc::new(self.clone());
-        future_lessons
+        if active_jahrgaenge.contains(&"EF".to_string()) {
+            future_lessons
             .spawn(async move { ef_client.clone().get_timetable(ef_parameter, Some("EF".to_string())).await });
+        }
         let q1_client = Arc::new(self.clone());
-        future_lessons
+        if active_jahrgaenge.contains(&"Q1".to_string()) {
+            future_lessons
             .spawn(async move { q1_client.clone().get_timetable(q1_parameter, Some("Q1".to_string())).await });
+        }
         let q2_client = Arc::new(self.clone());
-        future_lessons
+        if active_jahrgaenge.contains(&"Q2".to_string()) {
+            future_lessons
             .spawn(async move { q2_client.clone().get_timetable(q2_parameter, Some("Q2".to_string())).await });
+        }
         let lbos_client = Arc::new(self.clone());
-        future_lessons
+        if active_jahrgaenge.contains(&"LB_OS".to_string()) {
+            future_lessons
             .spawn(async move { lbos_client.clone().get_timetable(lbos_parameter, Some("LB_OS".to_string())).await });
+        }
 
         let mut lessons: Vec<Vec<FormattedLesson>> = vec![];
 
