@@ -1,7 +1,7 @@
 use actix_identity::Identity;
 use actix_web::{error, web, HttpRequest, Responder, Result};
 
-use crate::{models::{model::DBConnection}, teacher_model::{Teacher, TeacherCreate}, }, utils::env::get_env_unsafe};
+use crate::{models::{model::DBConnection}, teacher_model::{Teacher, TeacherCreate}, utils::env::get_env_unsafe};
 
 use super::utils::TextResponse;
 
