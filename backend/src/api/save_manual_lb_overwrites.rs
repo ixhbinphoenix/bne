@@ -1,16 +1,14 @@
 use actix_identity::Identity;
 use actix_web::{error, web, HttpRequest, Responder, Result};
-use log::{debug, error};
-use surrealdb::sql::Thing;
 
-use crate::{models::{manual_lb_overwrite_model::{ManualLBOverwrite, ManualLBOverwriteCreate}, model::{DBConnection, CRUD}, user_model::User}, utils::env::get_env_unsafe};
+
+use crate::{models::{manual_lb_overwrite_model::{ManualLBOverwrite, ManualLBOverwriteCreate}, model::DBConnection}, utils::env::get_env_unsafe};
 
 use super::utils::TextResponse;
 
 
 pub async fn save_manual_lb_overwrites(
     data: web::Json<Vec<ManualLBOverwriteCreate>>,
-    id: Option<Identity>,
     req: HttpRequest,
     db: web::Data<DBConnection>
 ) -> Result<impl Responder> {

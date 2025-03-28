@@ -1,10 +1,8 @@
 use actix_identity::Identity;
 use actix_web::{error, web, Responder, Result};
-use log::{debug, error};
 use serde::Serialize;
-use surrealdb::sql::Thing;
 
-use crate::models::{model::{DBConnection, CRUD}, teacher_model::Teacher, user_model::User};
+use crate::{models::{model::DBConnection, teacher_model::Teacher, }, utils::env::get_env_unsafe};
 
 #[derive(Serialize)]
 struct TeachersResponse {
@@ -12,7 +10,7 @@ struct TeachersResponse {
 }
 
 pub async fn get_teachers(
-    id: Option<Identity>,
+    req: HttpRequest,
     db: web::Data<DBConnection>
 ) -> Result<impl Responder> {
     let password = if let Some(session_cookie) = req.cookie("admin_password") {

@@ -41,7 +41,7 @@ use rustls_pemfile::{certs, pkcs8_private_keys};
 use surrealdb::{engine::remote::ws::Ws, opt::auth::Root, Surreal};
 
 use crate::{
-    mail::utils::Mailer, models::{links_model::Link, model::CRUD, user_model::User, manual_lb_model::ManualLB}, utils::env::{get_env_unsafe, get_env_or, get_env}
+    mail::utils::Mailer, models::{links_model::Link, model::CRUD, user_model::User, manual_lb_model::ManualLB, jahrgang_model::Jahrgang}, utils::env::{get_env_unsafe, get_env_or, get_env}
 };
 
 #[cfg(feature = "proxy")]

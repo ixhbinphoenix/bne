@@ -1,10 +1,8 @@
 use actix_identity::Identity;
 use actix_web::{error, web, Responder, Result};
-use log::{debug, error};
 use serde::Serialize;
-use surrealdb::sql::Thing;
 
-use crate::models::{manual_lb_model::ManualLB, model::{DBConnection, CRUD}, user_model::User};
+use crate::{models::{manual_lb_model::ManualLB, model::DBConnection }, utils::env::get_env_unsafe};
 
 #[derive(Serialize)]
 struct LbResponse {
@@ -12,7 +10,7 @@ struct LbResponse {
 }
 
 pub async fn get_manual_lbs(
-    id: Option<Identity>,
+    req: HttpRequest,
     db: web::Data<DBConnection>
 ) -> Result<impl Responder> {
     let password = if let Some(session_cookie) = req.cookie("admin_password") {

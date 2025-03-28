@@ -1,16 +1,13 @@
 use actix_identity::Identity;
 use actix_web::{error, web, HttpRequest, Responder, Result};
-use log::{debug, error};
-use surrealdb::sql::Thing;
 
-use crate::{models::{manual_lb_model::{ManualLB, ManualLBCreate}, model::{DBConnection, CRUD}, user_model::User}, utils::env::get_env_unsafe};
+use crate::{models::{manual_lb_model::{ManualLB, ManualLBCreate}, model::DBConnection}, utils::env::get_env_unsafe};
 
 use super::utils::TextResponse;
 
 
 pub async fn save_manual_lbs(
     data: web::Json<Vec<ManualLBCreate>>,
-    id: Option<Identity>,
     req: HttpRequest,
     db: web::Data<DBConnection>
 ) -> Result<impl Responder> {

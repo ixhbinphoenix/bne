@@ -1,10 +1,8 @@
 use actix_identity::Identity;
 use actix_web::{error, web, Responder, Result};
-use log::{debug, error};
 use serde::Serialize;
-use surrealdb::sql::Thing;
 
-use crate::models::{model::{DBConnection, CRUD}, jahrgang_model::Jahrgang, user_model::User};
+use crate::{models::{model::DBConnection jahrgang_model::Jahrgang, }, utils::env::get_env_unsafe};
 
 #[derive(Serialize)]
 struct JahrgaengeResponse {
@@ -12,7 +10,7 @@ struct JahrgaengeResponse {
 }
 
 pub async fn get_jahrgaenge(
-    id: Option<Identity>,
+    req: HttpRequest,
     db: web::Data<DBConnection>
 ) -> Result<impl Responder> {
     let password = if let Some(session_cookie) = req.cookie("admin_password") {

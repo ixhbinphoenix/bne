@@ -1,16 +1,13 @@
 use actix_identity::Identity;
 use actix_web::{error, web, HttpRequest, Responder, Result};
-use log::{debug, error};
-use surrealdb::sql::Thing;
 
-use crate::{models::{model::{DBConnection, CRUD}, teacher_model::{Teacher, TeacherCreate}, user_model::User}, utils::env::get_env_unsafe};
+use crate::{models::{model::DBConnection}, teacher_model::{Teacher, TeacherCreate}, }, utils::env::get_env_unsafe};
 
 use super::utils::TextResponse;
 
 
 pub async fn save_teachers(
     data: web::Json<Vec<TeacherCreate>>,
-    id: Option<Identity>,
     req: HttpRequest,
     db: web::Data<DBConnection>
 ) -> Result<impl Responder> {
