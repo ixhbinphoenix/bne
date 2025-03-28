@@ -1,4 +1,3 @@
-use actix_identity::Identity;
 use actix_web::{error, web, HttpRequest, Responder, Result};
 
 use crate::{
