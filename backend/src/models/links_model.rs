@@ -41,7 +41,7 @@ impl CRUD<Link, LinkCreate> for Link {
     /// DO NOT USE THIS IT WILL ALWAYS ERROR
     /// USE `Link::create_from_user` OR `Link::create_id` WITH A RANDOM UUIDv4 INSTEAD
     async fn create(_: ConnectionData, _: String, _: LinkCreate) -> Result<Link, Error> {
-        panic!("I fucking warned you dude. I told you bro. (https://cat-girls.club/k2d0WWDA)")
+        panic!("Unexpected function call")
     }
 
     async fn get_from_id(db: ConnectionData, id: Thing) -> Result<Option<Link>, Error> {

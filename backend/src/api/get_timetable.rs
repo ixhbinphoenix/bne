@@ -98,11 +98,11 @@ pub async fn get_timetable(
         Ok(u) => u,
         Err(e) => {
             if let Error::Reqwest(_) = e {
-                return Err(error::ErrorUnprocessableEntity("You done fucked up"));
+                return Err(error::ErrorUnprocessableEntity("Request could not be processed"));
             } else if let Error::UntisError(body) = e {
-                return Err(error::ErrorInternalServerError("Untis done fucked up ".to_string() + &body));
+                return Err(error::ErrorInternalServerError(body));
             } else {
-                return Err(error::ErrorInternalServerError("Some mysterious guy done fucked up"));
+                return Err(error::ErrorInternalServerError("Unexpected Server Error"));
             }
         }
     };
@@ -120,7 +120,7 @@ pub async fn get_timetable(
     {
         Ok(timetable) => timetable,
         Err(err) => {
-            return Err(error::ErrorInternalServerError("Untis done fucked up ".to_string() + &err.to_string()));
+            return Err(error::ErrorInternalServerError(err.to_string()));
         }
     };
     Ok(web::Json(TimetableResponse { lessons: timetable }))

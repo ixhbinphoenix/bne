@@ -91,9 +91,9 @@ pub async fn get_lernbueros(
         Ok(u) => u,
         Err(e) => {
             if let Error::Reqwest(_) = e {
-                return Err(error::ErrorUnprocessableEntity("You done fucked up"));
+                return Err(error::ErrorUnprocessableEntity("Request could not be processed"));
             } else {
-                return Err(error::ErrorInternalServerError("Untis done fucked up ".to_string() + &e.to_string()));
+                return Err(error::ErrorInternalServerError(e.to_string()));
             }
         }
     };

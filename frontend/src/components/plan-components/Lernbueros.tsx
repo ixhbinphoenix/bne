@@ -60,7 +60,7 @@ export default function Lernbueros(): JSX.Element {
         setTableDays(tableDaysTemp);
       },
       (error) => {
-        if (error.message == "Untis done fucked up Fetching from Untis failed") {
+        if (error.message == "Fetching from Untis failed") {
           fetchJSessionId(getLocalUntisCredentials().username, getLocalUntisCredentials().password).then((result) => {
             if (result.JSessionId) {
               closePopup();
@@ -134,7 +134,7 @@ export default function Lernbueros(): JSX.Element {
         setTableDays(tableDaysTemp);
       },
       (error) => {
-        if (error.message == "Untis done fucked up Fetching from Untis failed") {
+        if (error.message == "Fetching from Untis failed") {
           fetchJSessionId(getLocalUntisCredentials().username, getLocalUntisCredentials().password).then((result) => {
             if (result.JSessionId) {
               document.cookie = JSESSIONIDCookieString(result.JSessionId);
@@ -172,7 +172,7 @@ export default function Lernbueros(): JSX.Element {
         setTableDays(tableDaysTemp);
       },
       (error) => {
-        if (error.message == "Untis done fucked up Fetching from Untis failed") {
+        if (error.message == "Fetching from Untis failed") {
           fetchJSessionId(getLocalUntisCredentials().username, getLocalUntisCredentials().password).then((result) => {
             if (result.JSessionId) {
               document.cookie = JSESSIONIDCookieString(result.JSessionId);

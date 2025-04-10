@@ -89,12 +89,12 @@ pub async fn get_timetable_serviceworker(
         Ok(u) => u,
         Err(e) => {
             if let Error::Reqwest(_) = e {
-                return Err(error::ErrorUnprocessableEntity( "You done fucked up"));
+                return Err(error::ErrorUnprocessableEntity( "Request could not be processed"));
             } else if let Error::UntisError(body) = e {
-                return Err(error::ErrorInternalServerError( "Untis done fucked up ".to_string() + &body).into());
+                return Err(error::ErrorInternalServerError( &body).into());
             }
             else {
-                return Err(error::ErrorInternalServerError( "Some mysterious guy done fucked up"));
+                return Err(error::ErrorInternalServerError( "Unexpected Server Error"));
             }
         }
     };
@@ -111,7 +111,7 @@ pub async fn get_timetable_serviceworker(
     let timetable = match untis.clone().get_timetable(TimetableParameter::default(untis, from, until), class_name).await {
         Ok(timetable) => timetable,
         Err(err) => {
-            return Err(error::ErrorInternalServerError( "Untis done fucked up ".to_string() + &err.to_string()).into());
+            return Err(error::ErrorInternalServerError( &err.to_string()).into());
         }
     };
     Ok(web::Json(TimetableResponse { lessons: timetable }).into())

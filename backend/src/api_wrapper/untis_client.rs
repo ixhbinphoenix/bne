@@ -613,8 +613,6 @@ impl UntisClient {
             .map_err(|err| Error::UntisError(err.to_string() + " 533"))?;
 
         #[allow(clippy::type_complexity)]
-        // "My code is self-explained" MFs:
-        // Holy shit there's a reason for that type complexity warning
         // HashMap (for weekdays+lesson) containing a HashMap (for subject) of
         // a Vec of (Teacher, Room, Option<SubstitutionInfo>)
         let mut lbs_per_week: HashMap<String, HashMap<String, Vec<(String, String, Option<Substitution>)>>> =
@@ -622,9 +620,6 @@ impl UntisClient {
 
         // Structures all LBs into a HashMap
         for lb in all_lbs {
-            // Why tf is this check here? We would save so much computation if we checked this
-            // beforehand
-            // TODOO: Move this check to somewhere more sensible
             if !lb.is_lb {
                 continue;
             };
@@ -656,9 +651,7 @@ impl UntisClient {
             let day = time[0].parse::<u8>().map_err(|err| Error::UntisError(err.to_string() + " 565"))?;
             let start = time[1].parse::<u8>().map_err(|err| Error::UntisError(err.to_string() + " 566"))?;
 
-            // Irritatingly false variable name
             // subject_short->Vec<LB per Subject individually>
-            // Loops over SUBJECTS???
             for lesson in lessons {
                 let mut teachers = "".to_string();
                 let mut sub = "".to_string();
@@ -674,7 +667,6 @@ impl UntisClient {
                     }
                 });
 
-                // Loops over LERNBUEROS of a SUBJECT????
                 for subject in lesson.1 {
                     // If, for some reason, the teacher has multiple parallel lernbueros, we don't
                     // want to count them multiple times
@@ -710,7 +702,7 @@ impl UntisClient {
                     teachers += &subject.0;
                     rooms += &new_room;
                 }
-                // Why does this check exist? This case is non-existent but go for it?
+            
                 if rooms == *"" {
                     continue;
                 } else {
@@ -770,10 +762,7 @@ impl UntisClient {
     }
 
     async fn get_manual_lernbueros(&self) -> Result<Vec<FormattedLesson>, Error> {
-        // let file = File::open("./test.json").expect("file to exist");
-        // let reader = BufReader::new(file);
-        // let lbs_from_file: Vec<ManualLB> = serde_json::from_reader(reader).expect("json to be parsed");
-
+       
         let db_lbs = ManualLB::get_manual_lbs(self.db.clone()).await?;
 
         let mut lbs: Vec<FormattedLesson> = vec![];
