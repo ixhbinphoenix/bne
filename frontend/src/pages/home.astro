@@ -7,7 +7,7 @@ Astro.response.headers.append("Service-Worker-Allowed", "/");
 
 if (id) {
   try {
-    let result = await checkSessionIdAstro(id);
+    await checkSessionIdAstro(id);
   } catch (error) {
     console.log(error);
     return Astro.redirect("/login");
