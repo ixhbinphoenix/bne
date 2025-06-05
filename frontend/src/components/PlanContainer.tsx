@@ -5,6 +5,7 @@ import type { JSX } from "preact";
 import "../styles/Sidebar.css";
 import { lazy, Suspense } from "preact/compat";
 import Loading from "./Loading";
+import PullToRefresh from "pulltorefreshjs";
 
 const Stundenplan = lazy(() => import("./plan-components/Stundenplan"));
 const Lernbuero = lazy(() => import("./plan-components/Lernbueros"));
@@ -16,6 +17,12 @@ export default function Sidebar(): JSX.Element {
 
   useEffect(() => {
     setActivePage(<Stundenplan />);
+    PullToRefresh.init({
+      mainElement: "#title",
+      onRefresh() {
+        window.location.reload();
+      }
+    });
   }, []);
 
   const highlightButton = (button: string) => {
@@ -28,7 +35,7 @@ export default function Sidebar(): JSX.Element {
 
   return (
     <div class="background">
-      <div class="title">
+      <div class="title" id="title">
         <h1>TheSchedule</h1>
       </div>
       <div class="content">

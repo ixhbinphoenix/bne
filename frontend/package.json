@@ -25,6 +25,7 @@
     "bootstrap-icons": "^1.11.3",
     "crypto-js": "^4.1.1",
     "preact": "^10.15.1",
+    "pulltorefreshjs": "^0.1.22",
     "rollup": "^3.28.0",
     "use-bootstrap-select": "^2.2.1"
   },
