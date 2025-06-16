@@ -27,7 +27,7 @@ export default function DemandEmail(): JSX.Element {
         </form>
         <h4>
           Wenn du keinen Zugriff mehr auf deine E-Mail-Adresse hast, kannst du uns eine{" "}
-          <a href="mailto:support@theschedule.de?subject=Zugriff auf E-Mail-Adresse verloren">Mail</a> von einer anderen
+          <a href="mailto:fschmitte@gemm.ms.de?subject=Zugriff auf E-Mail-Adresse verloren">Mail</a> von einer anderen
           Adresse schicken
         </h4>
         <div class="error-message">{errorMessage}</div>
