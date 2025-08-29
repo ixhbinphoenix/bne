@@ -54,9 +54,10 @@ export const SubjectColor: { [key: string]: string } = {
   KU: "#4c4c4c",
   PH: "#43c95b",
   BI: "#00d226",
-  L8: "#f87406",
+  L: "#f87406",
   N0: "#ff4d17",
-  S0: "#ff4d17",
+  S: "#ff4d17",
+  F: "#ff4d17",
   SW: "#212193",
   SP: "#4091e4",
   PA: "#ff5500",
@@ -75,14 +76,16 @@ export const allLbs = [
   "IF",
   "PH",
   "MU",
-  "L8",
+  "L",
   "N0",
-  "S0",
+  "S",
+  "F",
   "SW",
   "PA",
   "EK",
   "LI"
 ];
+
 export const SubjectNames: { [key: string]: string } = {
   M: "Mathematik",
   D: "Deutsch",
@@ -96,9 +99,10 @@ export const SubjectNames: { [key: string]: string } = {
   MU: "Musik",
   PH: "Physik",
   BI: "Biologie",
-  L8: "Latein",
+  L: "Latein",
   N0: "Niederländisch",
-  S0: "Spanisch",
+  S: "Spanisch",
+  F: "Französisch",
   SW: "Sozialwissenschaft",
   SP: "Sport",
   PA: "Pädagogik",
@@ -109,11 +113,11 @@ export function JSESSIONIDCookieString(JSESSIONID: string): string {
   return `JSESSIONID=${JSESSIONID}; max-age=600; secure; samesite=none; domain=${import.meta.env.PUBLIC_COOKIE_DOMAIN}`;
 }
 export async function getCommitHash(): Promise<string> {
-  const result = (await fetch("https://api.github.com/repos/ixhbinphoenix/bne/commits/master", {
+  const result = await fetch("https://api.github.com/repos/ixhbinphoenix/bne/commits/master", {
     method: "GET"
-  })) as unknown as Array<any>;
+  });
   try {
-    return JSON.parse(await readStream(result.body)).sha.substring(0, 7);
+    return JSON.parse(await readStream(result.body!)).sha.substring(0, 7);
   } catch (error) {
     return Promise.reject(error);
   }
