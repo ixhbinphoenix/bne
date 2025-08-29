@@ -5,12 +5,14 @@ title: "Impressum"
 
 #### Allgemeiner Ansprechpartner
 
-Herr Sascha Thiel
+Ulli Thöne
 
-Beethovenstraße 28
+Jüdefelderstraße 10
 
-48165 Münster
+48143 Münster
 
-Telefon: [+4915172120520](tel:+4915172120520)
+Telefon: 38 45 04 00
 
-E-Mail: <support@theschedule.de>
+Telefax: 38 45 04 49
+
+E-Mail: <gesamtschule@stadt-muenster.de>

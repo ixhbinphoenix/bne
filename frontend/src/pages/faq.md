@@ -33,7 +33,7 @@ Wende dich an das Oberstufenbüro.
 ## Meine App funktioniert nicht wie sie sollte:
 Das kann verschiedene Gründe haben, melde dich als erstes ab und wieder an.  
 Wenn du die App benutzt, lösche sie und installiere sie neu.  
-Wenn das Problem bestehen bleibt, schreib uns eine Mail an support@theschedule.de.
+Wenn das Problem bestehen bleibt, schreib uns eine Mail an fschmitte@gemm.ms.de.
 
 ## Warum gibt es so viele Fehler in eurem Plan?
 Gute Frage. Wir versuchen alle Fehler möglichst schnell zu beheben, aber wir haben nicht auf alles Einfluss.  
