@@ -51,17 +51,20 @@ impl Teacher {
 
         Ok(teacher)
     }
+
     pub async fn get_all(db: ConnectionData) -> Result<Vec<Teacher>, Error> {
         let mut res = db.query("SELECT * FROM teachers ORDER BY shortname;").await?;
         let teachers = res.take(0)?;
         Ok(teachers)
     }
+
     pub async fn insert_one(db: ConnectionData, teacher: TeacherCreate) -> Result<(), Error> {
         db.query("INSERT INTO teachers (longname, shortname, lessons) VALUES ($longname, $shortname, $lessons)")
             .bind(teacher)
             .await?;
         Ok(())
     }
+
     pub async fn delete_all(db: ConnectionData) -> Result<(), Error> {
         db.query("DELETE FROM teachers;").await?;
         Ok(())

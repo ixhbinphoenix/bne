@@ -2,25 +2,18 @@ use actix_identity::Identity;
 use actix_web::{error, web, Responder, Result};
 use chrono::Local;
 use lettre::{
-    message::{header::ContentType, Attachment, Mailbox, MultiPart, SinglePart},
-    Message,
+    message::{header::ContentType, Attachment, Mailbox, MultiPart, SinglePart}, Message
 };
 use log::error;
 use serde::Serialize;
 use surrealdb::sql::Thing;
 
 use crate::{
-    api::utils::TextResponse,
-    mail::{
-        mailing::send_mail,
-        utils::{load_template, Mailer},
-    },
-    models::{
-        links_model::Link,
-        model::{ConnectionData, CRUD},
-        sessions_model::Session,
-        user_model::User,
-    },
+    api::utils::TextResponse, mail::{
+        mailing::send_mail, utils::{load_template, Mailer}
+    }, models::{
+        links_model::Link, model::{ConnectionData, CRUD}, sessions_model::Session, user_model::User
+    }
 };
 
 #[derive(Debug, Serialize)]

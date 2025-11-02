@@ -4,8 +4,7 @@ use serde::{Deserialize, Serialize};
 use surrealdb::sql::{Id, Thing};
 
 use super::{
-    model::{ConnectionData, DBConnection, CRUD},
-    user_model::User,
+    model::{ConnectionData, DBConnection, CRUD}, user_model::User
 };
 use crate::{error::Error, utils::uuid::random_id};
 
@@ -124,5 +123,10 @@ impl Link {
         } else {
             format!("https://theschedule.de/{}/{}", typestr, self.id.id.to_raw())
         }
+    }
+
+    pub async fn delete_expired_links(db: DBConnection) -> Result<(), Error> {
+        db.query("DELETE FROM links WHERE expiry < time::now();").await?;
+        Ok(())
     }
 }

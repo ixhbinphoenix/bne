@@ -1,14 +1,11 @@
 use actix_web::{error, web, HttpRequest, Responder, Result};
 
+use super::utils::TextResponse;
 use crate::{
     models::{
-        manual_lb_overwrite_model::{ManualLBOverwrite, ManualLBOverwriteCreate},
-        model::DBConnection,
-    },
-    utils::env::get_env_unsafe,
+        manual_lb_overwrite_model::{ManualLBOverwrite, ManualLBOverwriteCreate}, model::DBConnection
+    }, utils::env::get_env_unsafe
 };
-
-use super::utils::TextResponse;
 
 pub async fn save_manual_lb_overwrites(
     data: web::Json<Vec<ManualLBOverwriteCreate>>, req: HttpRequest, db: web::Data<DBConnection>,

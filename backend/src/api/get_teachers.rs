@@ -2,8 +2,7 @@ use actix_web::{error, web, HttpRequest, Responder, Result};
 use serde::Serialize;
 
 use crate::{
-    models::{model::DBConnection, teacher_model::Teacher},
-    utils::env::get_env_unsafe,
+    models::{model::DBConnection, teacher_model::Teacher}, utils::env::get_env_unsafe
 };
 
 #[derive(Serialize)]

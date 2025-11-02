@@ -9,14 +9,11 @@ mod mail;
 mod models;
 mod utils;
 
-use std::{
-    collections::HashMap,
-    env, fs,
-    io::{self, BufReader},
-};
-
 #[cfg(feature = "proxy")]
 use std::net::IpAddr;
+use std::{
+    collections::HashMap, env, fs, io::{self, BufReader}
+};
 
 use actix_cors::Cors;
 use actix_governor::{Governor, GovernorConfigBuilder};
@@ -24,46 +21,16 @@ use actix_identity::{config::LogoutBehaviour, IdentityMiddleware};
 use actix_session::{config::PersistentSession, SessionMiddleware};
 use actix_session_surrealdb::SurrealSessionStore;
 use actix_web::{
-    cookie::{time::Duration, Key},
-    middleware::Compress,
-    middleware::Logger,
-    web::{self, Data},
-    App, HttpResponse, HttpServer,
+    cookie::{time::Duration, Key}, middleware::{Compress, Logger}, web::{self, Data}, App, HttpResponse, HttpServer
 };
 use api::{
-    change_email::change_email_get,
-    change_password::change_password_post,
-    change_untis_data::change_untis_data_post,
-    check_session::check_session_get,
-    delete::delete_post,
-    forgot_password::forgot_password_post,
-    gdpr_data_compliance::gdpr_data_compliance_get,
-    get_free_rooms::get_free_rooms,
-    get_jahrgaenge::get_jahrgaenge,
-    get_lernbueros::get_lernbueros,
-    get_manual_lb_overwrites::get_manual_lb_overwrites,
-    get_manual_lbs::get_manual_lbs,
-    get_teachers::get_teachers,
-    get_timetable::get_timetable,
-    link::{
-        check_uuid::check_uuid_get, email_change::email_change_post, email_reset::email_reset_post,
-        password::reset_password_post, verify::verify_get,
-    },
-    login::login_post,
-    logout::logout_post,
-    logout_all::logout_all_post,
-    register::register_post,
-    resend_mail::resend_mail_get,
-    save_jahrgaenge::save_jahrgaenge,
-    save_manual_lb_overwrites::save_manual_lb_overwrites,
-    save_manual_lbs::save_manual_lbs,
-    save_teachers::save_teachers,
-    verified::verified_get,
+    change_email::change_email_get, change_password::change_password_post, change_untis_data::change_untis_data_post, check_session::check_session_get, delete::delete_post, forgot_password::forgot_password_post, gdpr_data_compliance::gdpr_data_compliance_get, get_free_rooms::get_free_rooms, get_jahrgaenge::get_jahrgaenge, get_lernbueros::get_lernbueros, get_manual_lb_overwrites::get_manual_lb_overwrites, get_manual_lbs::get_manual_lbs, get_teachers::get_teachers, get_timetable::get_timetable, link::{
+        check_uuid::check_uuid_get, email_change::email_change_post, email_reset::email_reset_post, password::reset_password_post, verify::verify_get
+    }, login::login_post, logout::logout_post, logout_all::logout_all_post, register::register_post, resend_mail::resend_mail_get, save_jahrgaenge::save_jahrgaenge, save_manual_lb_overwrites::save_manual_lb_overwrites, save_manual_lbs::save_manual_lbs, save_teachers::save_teachers, verified::verified_get
 };
 use dotenv::dotenv;
 use lettre::{
-    transport::smtp::authentication::{Credentials, Mechanism},
-    AsyncSmtpTransport, Tokio1Executor,
+    transport::smtp::authentication::{Credentials, Mechanism}, AsyncSmtpTransport, Tokio1Executor
 };
 use log::info;
 use models::manual_lb_overwrite_model::ManualLBOverwrite;
@@ -71,14 +38,13 @@ use rustls::{Certificate, PrivateKey, ServerConfig};
 use rustls_pemfile::{certs, pkcs8_private_keys};
 use surrealdb::{engine::remote::ws::Ws, opt::auth::Root, Surreal};
 
-use crate::{
-    mail::utils::Mailer,
-    models::{jahrgang_model::Jahrgang, links_model::Link, manual_lb_model::ManualLB, model::CRUD, user_model::User},
-    utils::env::{get_env, get_env_or, get_env_unsafe},
-};
-
 #[cfg(feature = "proxy")]
 use crate::governor::NginxIpKeyExctrator;
+use crate::{
+    mail::utils::Mailer, models::{
+        jahrgang_model::Jahrgang, links_model::Link, manual_lb_model::ManualLB, model::CRUD, sessions_model::Session, user_model::User
+    }, utils::env::{get_env, get_env_or, get_env_unsafe}
+};
 
 #[derive(Clone)]
 pub struct GlobalUntisData {
@@ -134,6 +100,10 @@ async fn main() -> io::Result<()> {
     ManualLBOverwrite::init_table(db.clone()).await.expect("Table initialization to work");
 
     Jahrgang::init_table(db.clone()).await.expect("Table initialization to work");
+
+    Session::delete_expired_sessions(db.clone()).await.expect("Deleting expired sessions to work");
+
+    Link::delete_expired_links(db.clone()).await.expect("Deleting expired links to work");
 
     let session_db = Surreal::new::<Ws>(db_location).await.expect("DB to connect");
 

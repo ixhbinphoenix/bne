@@ -37,10 +37,12 @@ impl Jahrgang {
 
         Ok(jahrgaenge)
     }
+
     pub async fn insert_one(db: ConnectionData, jahrgang: JahrgangCreate) -> Result<(), Error> {
         db.query("INSERT INTO jahrgaenge (name, active) VALUES ($name, $active)").bind(jahrgang).await?;
         Ok(())
     }
+
     pub async fn delete_all(db: ConnectionData) -> Result<(), Error> {
         db.query("DELETE FROM jahrgaenge;").await?;
         Ok(())

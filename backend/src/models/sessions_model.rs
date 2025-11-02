@@ -1,3 +1,4 @@
+use actix_session_surrealdb::DBConnection;
 use serde::{Deserialize, Serialize};
 use surrealdb::sql::{Datetime, Thing};
 
@@ -26,5 +27,10 @@ impl Session {
         // Once again, do not ever do this
         let res: Vec<Self> = db.query(format!("SELECT * FROM sessions WHERE token = /.*{}.*/", id)).await?.take(0)?;
         Ok(res)
+    }
+
+    pub async fn delete_expired_sessions(db: DBConnection) -> Result<(), Error> {
+        db.query("DELETE FROM sessions WHERE expiry < time::now();").await?;
+        Ok(())
     }
 }

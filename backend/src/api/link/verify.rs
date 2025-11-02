@@ -6,12 +6,9 @@ use surrealdb::sql::Thing;
 use uuid::Uuid;
 
 use crate::{
-    api::utils::TextResponse,
-    models::{
-        links_model::{Link, LinkType},
-        model::{ConnectionData, CRUD},
-        user_model::User,
-    },
+    api::utils::TextResponse, models::{
+        links_model::{Link, LinkType}, model::{ConnectionData, CRUD}, user_model::User
+    }
 };
 
 pub async fn verify_get(path: web::Path<String>, db: ConnectionData) -> Result<impl Responder> {

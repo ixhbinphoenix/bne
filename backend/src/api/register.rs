@@ -8,18 +8,11 @@ use rand_core::OsRng;
 use serde::Deserialize;
 
 use crate::{
-    api::utils::TextResponse,
-    error::Error,
-    mail::{
-        mailing::{build_mail, send_mail},
-        utils::{load_template, Mailer},
-    },
-    models::{
-        links_model::{Link, LinkType},
-        model::{DBConnection, CRUD},
-        user_model::{User, UserCreate},
-    },
-    utils::password::valid_password,
+    api::utils::TextResponse, error::Error, mail::{
+        mailing::{build_mail, send_mail}, utils::{load_template, Mailer}
+    }, models::{
+        links_model::{Link, LinkType}, model::{DBConnection, CRUD}, user_model::{User, UserCreate}
+    }, utils::password::valid_password
 };
 
 #[derive(Deserialize)]

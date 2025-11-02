@@ -5,19 +5,14 @@ use lettre::message::header::ContentType;
 use log::error;
 use surrealdb::sql::Thing;
 
+use super::utils::TextResponse;
 use crate::{
     mail::{
-        mailing::{build_mail, send_mail},
-        utils::{load_template, Mailer},
-    },
-    models::{
-        links_model::{Link, LinkType},
-        model::{ConnectionData, CRUD},
-        user_model::User,
-    },
+        mailing::{build_mail, send_mail}, utils::{load_template, Mailer}
+    }, models::{
+        links_model::{Link, LinkType}, model::{ConnectionData, CRUD}, user_model::User
+    }
 };
-
-use super::utils::TextResponse;
 
 pub async fn change_email_get(
     id: Option<Identity>, db: ConnectionData, mailer: web::Data<Mailer>,

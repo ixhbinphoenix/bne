@@ -13,15 +13,9 @@ use surrealdb::sql::Thing;
 use uuid::Uuid;
 
 use crate::{
-    api::utils::TextResponse,
-    database::sessions::delete_user_sessions,
-    error::Error,
-    models::{
-        links_model::{Link, LinkType},
-        model::{ConnectionData, CRUD},
-        user_model::User,
-    },
-    utils::password::valid_password,
+    api::utils::TextResponse, database::sessions::delete_user_sessions, error::Error, models::{
+        links_model::{Link, LinkType}, model::{ConnectionData, CRUD}, user_model::User
+    }, utils::password::valid_password
 };
 
 #[derive(Debug, Deserialize)]

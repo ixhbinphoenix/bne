@@ -1,9 +1,8 @@
 use serde::{Deserialize, Serialize};
 use surrealdb::sql::Thing;
 
-use crate::error::Error;
-
 use super::model::{ConnectionData, DBConnection, CRUD};
+use crate::error::Error;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ManualLB {
@@ -44,12 +43,14 @@ impl ManualLB {
 
         Ok(lbs)
     }
+
     pub async fn insert_one(db: ConnectionData, manuallb: ManualLBCreate) -> Result<(), Error> {
         db.query("INSERT INTO manual_lbs (teacher, day, start, room) VALUES ($teacher, $day, $start, $room)")
             .bind(manuallb)
             .await?;
         Ok(())
     }
+
     pub async fn delete_all(db: ConnectionData) -> Result<(), Error> {
         db.query("DELETE FROM manual_lbs;").await?;
         Ok(())

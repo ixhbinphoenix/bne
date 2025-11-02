@@ -1,10 +1,10 @@
+use std::{
+    net::{IpAddr, SocketAddr}, str::FromStr
+};
+
 use actix_governor::{KeyExtractor, SimpleKeyExtractionError};
 use actix_web::web;
 use log::{error, info};
-use std::{
-    net::{IpAddr, SocketAddr},
-    str::FromStr,
-};
 
 use crate::utils::env::get_env_or;
 
@@ -19,7 +19,6 @@ macro_rules! couldntExtract {
 
 impl KeyExtractor for NginxIpKeyExctrator {
     type Key = IpAddr;
-
     type KeyExtractionError = SimpleKeyExtractionError<&'static str>;
 
     fn name(&self) -> &'static str {

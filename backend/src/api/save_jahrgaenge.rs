@@ -1,14 +1,11 @@
 use actix_web::{error, web, HttpRequest, Responder, Result};
 
+use super::utils::TextResponse;
 use crate::{
     models::{
-        jahrgang_model::{Jahrgang, JahrgangCreate},
-        model::DBConnection,
-    },
-    utils::env::get_env_unsafe,
+        jahrgang_model::{Jahrgang, JahrgangCreate}, model::DBConnection
+    }, utils::env::get_env_unsafe
 };
-
-use super::utils::TextResponse;
 
 pub async fn save_jahrgaenge(
     data: web::Json<Vec<JahrgangCreate>>, req: HttpRequest, db: web::Data<DBConnection>,

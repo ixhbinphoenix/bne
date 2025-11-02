@@ -1,8 +1,6 @@
 use actix_identity::Identity;
 use actix_web::{
-    error,
-    web::{self, Json},
-    Responder, Result,
+    error, web::{self, Json}, Responder, Result
 };
 use argon2::{password_hash::SaltString, Argon2, PasswordHasher};
 use chrono::{Days, Utc};
@@ -12,20 +10,12 @@ use rand_core::OsRng;
 use serde::Deserialize;
 use surrealdb::sql::Thing;
 
-use crate::api::utils::TextResponse;
 use crate::{
-    database::sessions::delete_user_sessions,
-    error::Error,
-    mail::{
-        mailing::{build_mail, send_mail},
-        utils::{load_template, Mailer},
-    },
-    models::{
-        links_model::{Link, LinkType},
-        model::{ConnectionData, CRUD},
-        user_model::User,
-    },
-    utils::password::valid_password,
+    api::utils::TextResponse, database::sessions::delete_user_sessions, error::Error, mail::{
+        mailing::{build_mail, send_mail}, utils::{load_template, Mailer}
+    }, models::{
+        links_model::{Link, LinkType}, model::{ConnectionData, CRUD}, user_model::User
+    }, utils::password::valid_password
 };
 
 #[derive(Debug, Deserialize)]

@@ -1,14 +1,11 @@
 use actix_web::{error, web, HttpRequest, Responder, Result};
 
+use super::utils::TextResponse;
 use crate::{
     models::{
-        model::DBConnection,
-        teacher_model::{Teacher, TeacherCreate},
-    },
-    utils::env::get_env_unsafe,
+        model::DBConnection, teacher_model::{Teacher, TeacherCreate}
+    }, utils::env::get_env_unsafe
 };
-
-use super::utils::TextResponse;
 
 pub async fn save_teachers(
     data: web::Json<Vec<TeacherCreate>>, req: HttpRequest, db: web::Data<DBConnection>,

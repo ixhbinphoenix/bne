@@ -6,16 +6,11 @@ use log::error;
 use surrealdb::sql::Thing;
 
 use crate::{
-    api::utils::TextResponse,
-    mail::{
-        mailing::{build_mail, send_mail},
-        utils::{load_template, Mailer},
-    },
-    models::{
-        links_model::{Link, LinkType},
-        model::{ConnectionData, CRUD},
-        user_model::User,
-    },
+    api::utils::TextResponse, mail::{
+        mailing::{build_mail, send_mail}, utils::{load_template, Mailer}
+    }, models::{
+        links_model::{Link, LinkType}, model::{ConnectionData, CRUD}, user_model::User
+    }
 };
 
 pub async fn resend_mail_get(

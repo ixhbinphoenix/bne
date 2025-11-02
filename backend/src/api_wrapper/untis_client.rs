@@ -7,15 +7,12 @@ use log::{debug, error, info};
 use reqwest::{Client, Response};
 
 use super::utils::{
-    self, day_of_week, DetailedSubject, FormattedFreeRoom, FormattedLesson, Holidays, Klasse, LoginResults,
-    PeriodObject, Schoolyear, Substitution, TimegridUnits, TimetableParameter, UntisArrayResponse,
+    self, day_of_week, DetailedSubject, FormattedFreeRoom, FormattedLesson, Holidays, Klasse, LoginResults, PeriodObject, Schoolyear, Substitution, TimegridUnits, TimetableParameter, UntisArrayResponse
 };
 use crate::{
-    api_wrapper::utils::UntisResponse,
-    error::Error,
-    models::{
+    api_wrapper::utils::UntisResponse, error::Error, models::{
         jahrgang_model::Jahrgang, manual_lb_model::ManualLB, manual_lb_overwrite_model::ManualLBOverwrite, model::DBConnection, room_model::Room, teacher_model::Teacher
-    },
+    }
 };
 
 #[derive(Clone)]
@@ -489,7 +486,13 @@ impl UntisClient {
 
         // Get IDs of EF, Q1, Q2
 
-        let active_jahrgaenge: Vec<String> = Jahrgang::get_jahrgaenge(self.db.clone()).await.expect("Jahrgänge to exist").into_iter().filter(|x| x.active).map(|x| x.name).collect();
+        let active_jahrgaenge: Vec<String> = Jahrgang::get_jahrgaenge(self.db.clone())
+            .await
+            .expect("Jahrgänge to exist")
+            .into_iter()
+            .filter(|x| x.active)
+            .map(|x| x.name)
+            .collect();
 
         let ef_parameter = parameter.clone();
         let q1_parameter = parameter.clone();
@@ -500,25 +503,25 @@ impl UntisClient {
         let ef_client = Arc::new(self.clone());
         if active_jahrgaenge.contains(&"EF".to_string()) {
             future_lessons
-            .spawn(async move { ef_client.clone().get_timetable(ef_parameter, Some("EF".to_string())).await });
+                .spawn(async move { ef_client.clone().get_timetable(ef_parameter, Some("EF".to_string())).await });
         }
         let q1_client = Arc::new(self.clone());
         if active_jahrgaenge.contains(&"Q1".to_string()) {
             future_lessons
-            .spawn(async move { q1_client.clone().get_timetable(q1_parameter, Some("Q1".to_string())).await });
+                .spawn(async move { q1_client.clone().get_timetable(q1_parameter, Some("Q1".to_string())).await });
         }
         let q2_client = Arc::new(self.clone());
         if active_jahrgaenge.contains(&"Q2".to_string()) {
             future_lessons
-            .spawn(async move { q2_client.clone().get_timetable(q2_parameter, Some("Q2".to_string())).await });
+                .spawn(async move { q2_client.clone().get_timetable(q2_parameter, Some("Q2".to_string())).await });
         }
         let lbos_client = Arc::new(self.clone());
         if active_jahrgaenge.contains(&"LB_OS".to_string()) {
-            future_lessons
-            .spawn(async move { lbos_client.clone().get_timetable(lbos_parameter, Some("LB_OS".to_string())).await });
+            future_lessons.spawn(async move {
+                lbos_client.clone().get_timetable(lbos_parameter, Some("LB_OS".to_string())).await
+            });
         }
-        
-        
+
 
         let mut lessons: Vec<Vec<FormattedLesson>> = vec![];
 
@@ -543,8 +546,8 @@ impl UntisClient {
                     })
                     .collect::<Vec<FormattedLesson>>(),
             );
-        };
-        
+        }
+
 
         let mut additional_lbs: Vec<FormattedLesson> = vec![];
 
@@ -702,7 +705,7 @@ impl UntisClient {
                     teachers += &subject.0;
                     rooms += &new_room;
                 }
-            
+
                 if rooms == *"" {
                     continue;
                 } else {
@@ -748,6 +751,7 @@ impl UntisClient {
         info!("Sorting took {}ns", now.elapsed().as_nanos());
         Ok(every_lb)
     }
+
     fn manual_overwrite_lbs(
         all_lbs: Vec<FormattedLesson>, all_overwrite: Vec<ManualLBOverwrite>,
     ) -> Vec<FormattedLesson> {
@@ -762,7 +766,6 @@ impl UntisClient {
     }
 
     async fn get_manual_lernbueros(&self) -> Result<Vec<FormattedLesson>, Error> {
-       
         let db_lbs = ManualLB::get_manual_lbs(self.db.clone()).await?;
 
         let mut lbs: Vec<FormattedLesson> = vec![];
@@ -794,10 +797,17 @@ impl UntisClient {
         }
         Ok(lbs)
     }
+
     pub async fn get_free_rooms(&self, parameter: TimetableParameter) -> Result<Vec<FormattedFreeRoom>, Error> {
         let mut future_lessons = JoinSet::new();
 
-        let active_jahrgaenge: Vec<String> = Jahrgang::get_jahrgaenge(self.db.clone()).await.expect("Jahrgänge to exist").into_iter().filter(|x| x.active).map(|x| x.name).collect();
+        let active_jahrgaenge: Vec<String> = Jahrgang::get_jahrgaenge(self.db.clone())
+            .await
+            .expect("Jahrgänge to exist")
+            .into_iter()
+            .filter(|x| x.active)
+            .map(|x| x.name)
+            .collect();
 
         let ef_parameter = parameter.clone();
         let q1_parameter = parameter.clone();
@@ -808,22 +818,23 @@ impl UntisClient {
         let ef_client = Arc::new(self.clone());
         if active_jahrgaenge.contains(&"EF".to_string()) {
             future_lessons
-            .spawn(async move { ef_client.clone().get_timetable(ef_parameter, Some("EF".to_string())).await });
+                .spawn(async move { ef_client.clone().get_timetable(ef_parameter, Some("EF".to_string())).await });
         }
         let q1_client = Arc::new(self.clone());
         if active_jahrgaenge.contains(&"Q1".to_string()) {
             future_lessons
-            .spawn(async move { q1_client.clone().get_timetable(q1_parameter, Some("Q1".to_string())).await });
+                .spawn(async move { q1_client.clone().get_timetable(q1_parameter, Some("Q1".to_string())).await });
         }
         let q2_client = Arc::new(self.clone());
         if active_jahrgaenge.contains(&"Q2".to_string()) {
             future_lessons
-            .spawn(async move { q2_client.clone().get_timetable(q2_parameter, Some("Q2".to_string())).await });
+                .spawn(async move { q2_client.clone().get_timetable(q2_parameter, Some("Q2".to_string())).await });
         }
         let lbos_client = Arc::new(self.clone());
         if active_jahrgaenge.contains(&"LB_OS".to_string()) {
-            future_lessons
-            .spawn(async move { lbos_client.clone().get_timetable(lbos_parameter, Some("LB_OS".to_string())).await });
+            future_lessons.spawn(async move {
+                lbos_client.clone().get_timetable(lbos_parameter, Some("LB_OS".to_string())).await
+            });
         }
 
         let mut lessons: Vec<Vec<FormattedLesson>> = vec![];
@@ -834,13 +845,13 @@ impl UntisClient {
                     .map_err(|err| Error::UntisError(err.to_string() + " 698"))?,
             )
         }
-        //load manual lernbueros from json file
+        // load manual lernbueros from json file
         let manual_lbs = self.get_manual_lernbueros().await.expect("manual lbs to exist");
 
         lessons.push(manual_lbs);
 
         let all_rooms = Room::get_rooms(self.db.clone()).await.expect("db to have rooms");
-        //Vec of Days, containing Vec of lessons, containing a Vector of all Rooms
+        // Vec of Days, containing Vec of lessons, containing a Vector of all Rooms
         let mut all_days: Vec<Vec<Vec<Room>>> = vec![];
         for day_index in 0..5 {
             let mut day: Vec<Vec<Room>> = vec![];
@@ -853,14 +864,13 @@ impl UntisClient {
             }
             all_days.push(day);
         }
-        /*
-        for day_index in 0..5 {
-            debug!("{:#?}", lessons[0]);
-            if lessons[day_index].is_empty() || &lessons[day_index].len() <= &3 {
-                debug!("empty day");
-                all_days.remove(day_index);
-            }
-        } */
+        // for day_index in 0..5 {
+        // debug!("{:#?}", lessons[0]);
+        // if lessons[day_index].is_empty() || &lessons[day_index].len() <= &3 {
+        // debug!("empty day");
+        // all_days.remove(day_index);
+        // }
+        // }
         let mut block_room = |lesson: &FormattedLesson| {
             let day = &mut all_days[lesson.day as usize];
             for n in lesson.start - 1..=lesson.start - 1 + lesson.length - 1 {

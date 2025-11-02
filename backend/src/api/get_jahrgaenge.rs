@@ -2,8 +2,7 @@ use actix_web::{error, web, HttpRequest, Responder, Result};
 use serde::Serialize;
 
 use crate::{
-    models::{jahrgang_model::Jahrgang, model::DBConnection},
-    utils::env::get_env_unsafe,
+    models::{jahrgang_model::Jahrgang, model::DBConnection}, utils::env::get_env_unsafe
 };
 
 #[derive(Serialize)]

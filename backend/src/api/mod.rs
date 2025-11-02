@@ -15,7 +15,7 @@ pub mod logout_all;
 pub mod register;
 pub mod resend_mail;
 pub mod verified;
-//pub mod get_timetable_serviceworker;
+// pub mod get_timetable_serviceworker;
 pub mod get_jahrgaenge;
 pub mod get_manual_lb_overwrites;
 pub mod get_manual_lbs;

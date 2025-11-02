@@ -8,13 +8,9 @@ use surrealdb::sql::Thing;
 use uuid::Uuid;
 
 use crate::{
-    api::utils::TextResponse,
-    database::sessions::delete_user_sessions,
-    models::{
-        links_model::{Link, LinkType},
-        model::{ConnectionData, CRUD},
-        user_model::User,
-    },
+    api::utils::TextResponse, database::sessions::delete_user_sessions, models::{
+        links_model::{Link, LinkType}, model::{ConnectionData, CRUD}, user_model::User
+    }
 };
 
 #[derive(Deserialize)]

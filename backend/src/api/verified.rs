@@ -4,8 +4,7 @@ use log::error;
 use surrealdb::sql::Thing;
 
 use crate::models::{
-    model::{ConnectionData, CRUD},
-    user_model::User,
+    model::{ConnectionData, CRUD}, user_model::User
 };
 
 pub async fn verified_get(id: Option<Identity>, db: ConnectionData) -> Result<impl Responder> {

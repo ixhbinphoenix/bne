@@ -6,16 +6,10 @@ use surrealdb::sql::Thing;
 
 use crate::{
     api_wrapper::{
-        untis_client::UntisClient,
-        utils::{FormattedLesson, TimetableParameter},
-    },
-    error::Error,
-    models::{
-        model::{DBConnection, CRUD},
-        user_model::User,
-    },
-    utils::time::{format_for_untis, get_this_friday, get_this_monday},
-    GlobalUntisData,
+        untis_client::UntisClient, utils::{FormattedLesson, TimetableParameter}
+    }, error::Error, models::{
+        model::{DBConnection, CRUD}, user_model::User
+    }, utils::time::{format_for_untis, get_this_friday, get_this_monday}, GlobalUntisData
 };
 
 #[derive(Serialize)]

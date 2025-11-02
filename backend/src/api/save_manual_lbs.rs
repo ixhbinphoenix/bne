@@ -1,14 +1,11 @@
 use actix_web::{error, web, HttpRequest, Responder, Result};
 
+use super::utils::TextResponse;
 use crate::{
     models::{
-        manual_lb_model::{ManualLB, ManualLBCreate},
-        model::DBConnection,
-    },
-    utils::env::get_env_unsafe,
+        manual_lb_model::{ManualLB, ManualLBCreate}, model::DBConnection
+    }, utils::env::get_env_unsafe
 };
-
-use super::utils::TextResponse;
 
 pub async fn save_manual_lbs(
     data: web::Json<Vec<ManualLBCreate>>, req: HttpRequest, db: web::Data<DBConnection>,

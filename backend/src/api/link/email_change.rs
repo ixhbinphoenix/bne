@@ -9,17 +9,11 @@ use surrealdb::sql::Thing;
 use uuid::Uuid;
 
 use crate::{
-    api::utils::TextResponse,
-    database::sessions::delete_user_sessions,
-    mail::{
-        mailing::{build_mail, send_mail},
-        utils::{load_template, Mailer},
-    },
-    models::{
-        links_model::{Link, LinkType},
-        model::{ConnectionData, CRUD},
-        user_model::User,
-    },
+    api::utils::TextResponse, database::sessions::delete_user_sessions, mail::{
+        mailing::{build_mail, send_mail}, utils::{load_template, Mailer}
+    }, models::{
+        links_model::{Link, LinkType}, model::{ConnectionData, CRUD}, user_model::User
+    }
 };
 
 #[derive(Deserialize)]

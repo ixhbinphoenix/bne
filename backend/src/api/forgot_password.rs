@@ -5,16 +5,11 @@ use log::error;
 use serde::Deserialize;
 
 use crate::{
-    api::utils::TextResponse,
-    mail::{
-        mailing::{build_mail, send_mail},
-        utils::{load_template, Mailer},
-    },
-    models::{
-        links_model::{Link, LinkType},
-        model::ConnectionData,
-        user_model::User,
-    },
+    api::utils::TextResponse, mail::{
+        mailing::{build_mail, send_mail}, utils::{load_template, Mailer}
+    }, models::{
+        links_model::{Link, LinkType}, model::ConnectionData, user_model::User
+    }
 };
 
 #[derive(Debug, Deserialize)]
